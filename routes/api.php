@@ -53,6 +53,7 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('/pickup', [ShippingController::class, 'requestPickup']);
+        Route::post('/track', [ShippingController::class, 'trackShipment']);
 
         //Profile
         Route::get('/profile', [UserProfileController::class, 'show']);

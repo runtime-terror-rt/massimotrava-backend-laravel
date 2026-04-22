@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class DhlShippingService
 {
@@ -24,24 +25,37 @@ class DhlShippingService
 
     public function trackShipment(string $trackingNumber)
     {
-        return Http::withBasicAuth($this->apiKey, config('services.dhl.secret'))
-            ->get("{$this->baseUrl}/shipments/{$trackingNumber}/tracking")
-            ->json();
+        $response = Http::withHeaders([
+            'DHL-API-Key' => $this->apiKey,
+            'Accept'      => 'application/json',
+        ])->get($this->baseUrl, [
+            'trackingNumber' => $trackingNumber
+        ]);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        Log::error('DHL Tracking Error: ' . $response->body());
+        return null;
     }
 
-    public function schedulePickup(array $pickupDetails)
+    public function schedulePickup(array $pickupData)
     {
-        $url = config('services.dhl.url') . '/pickups';
-        
-        return Http::withBasicAuth(
-            config('services.dhl.key'), 
-            config('services.dhl.secret')
-        )
-        ->withHeaders([
+        $pickupUrl = str_replace('/track/shipments', '/pickups', $this->baseUrl);
+
+        $response = Http::withHeaders([
+            'DHL-API-Key'  => $this->apiKey,
             'Content-Type' => 'application/json',
-        ])
-        ->post($url, $pickupDetails)
-        ->json();
+            'Accept'       => 'application/json',
+        ])->post($pickupUrl, $pickupData);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        Log::error('DHL Pickup Error: ' . $response->body());
+        return $response->json();
     }
 
     // public function schedulePickup(array $pickupDetails)
