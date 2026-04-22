@@ -33,4 +33,16 @@ class ShippingController extends Controller
 
         return response()->json(['status' => 'error', 'message' => $response], 400);
     }
+
+    public function track(Request $request, DhlShippingService $dhl)
+    {
+        $trackingNumber = $request->input('number');
+        $data = $dhl->trackShipment($trackingNumber);
+
+        if ($data) {
+            return response()->json($data);
+        }
+        
+        return response()->json(['error' => 'Could not track shipment'], 400);
+    }
 }

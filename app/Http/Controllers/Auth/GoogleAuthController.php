@@ -11,9 +11,9 @@ class GoogleAuthController extends Controller
 {
     public function tokenLogin(Request $request)
     {
-        // 1. Validate request
+        // 1. Validate request.
         $request->validate([
-            'id_token' => 'required|string',
+            'id_token' =>'required|string',
         ]);
 
         $idToken = $request->id_token;
