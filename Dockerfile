@@ -1,4 +1,4 @@
-FROM php:8.2-cli
+FROM php:8.3-cli
 
 # Set working directory for the application
 WORKDIR /var/www/html
@@ -33,7 +33,12 @@ COPY . /var/www/html
 RUN chown -R www-data:www-data /var/www/html
 
 # Install PHP dependencies
-RUN composer install --optimize-autoloader --no-dev
+RUN git config --global --add safe.directory /var/www/html \
+    && composer install --optimize-autoloader --no-dev
+
+
+
+#RUN composer install --optimize-autoloader --no-dev
 
 # Install Node.js dependencies and build assets (for frontend)
 
