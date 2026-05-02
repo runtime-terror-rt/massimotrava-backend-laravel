@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\AppleAuthController;
 use App\Http\Controllers\ShippingController;
+use App\Http\Controllers\UserController;
 
 Route::prefix('v1')->group(function () {
 
@@ -46,17 +47,19 @@ Route::prefix('v1')->group(function () {
     Route::get('plans', [SubscriptionPlanController::class, 'index']);
     Route::get('plans/{id}', [SubscriptionPlanController::class, 'show']);
 
-
+    Route::post('/pickup', [ShippingController::class, 'requestPickup']);
+    Route::post('/track', [ShippingController::class, 'trackShipment']);
+    Route::get('/track-shipment/{trackingNumber}', [ShippingController::class, 'trackShipment']);
     // ----------------------------
     // Protected Routes (Require Auth)
     // ----------------------------
     Route::middleware('auth:sanctum')->group(function () {
 
-        Route::post('/pickup', [ShippingController::class, 'requestPickup']);
-        Route::post('/track', [ShippingController::class, 'trackShipment']);
+        
 
         //Profile
         Route::get('/profile', [UserProfileController::class, 'show']);
+        Route::post('/profile', [UserController::class, 'updateProfile']);
 
         Route::post('logout', [LoginController::class, 'logout']);
 

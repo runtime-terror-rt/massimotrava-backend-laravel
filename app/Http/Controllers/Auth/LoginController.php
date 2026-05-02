@@ -8,82 +8,85 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Jobs\SendOtpEmail;
 use Illuminate\Support\Carbon;
+    use Illuminate\Support\Facades\Auth;
 
 
 class LoginController extends Controller
 {
+
+
     public function login(Request $request)
     {
-        try {
-            // ✅ Validation
-            $request->validate([
+        try
+        {
+            // ✅ ১. ভ্যালিডেশন
+            $credentials = $request->validate([
                 'email' => 'required|email',
                 'password' => 'required|string|min:5',
             ], [
                 'email.required' => 'Email field is required.',
-                'email.email' => 'Please enter a valid email address.',
-                'password.required' => 'Password field is required.',
-                'password.string' => 'Password must be a string.',
                 'password.min' => 'Password must be at least 5 characters.',
             ]);
 
-            // ✅ Find user by email
-            $user = User::where('email', $request->email)->first();
-
-            // ✅ Check credentials
-            if (!$user || !Hash::check($request->password, $user->password)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid credentials.',
-                ], 401);
+            // ✅ ২. লগইন চেষ্টা (Web Session + API Token এর জন্য প্রস্তুত করা)
+            // Auth::attempt ব্যবহার করলে এটি স্বয়ংক্রিয়ভাবে পাসওয়ার্ড চেক করে এবং Web Session তৈরি করে
+            $remember = $request->has('remember');
+            
+            if (!Auth::attempt($credentials, $remember)) {
+                if ($request->expectsJson()) {
+                    return response()->json(['success' => false, 'message' => 'Invalid credentials.'], 401);
+                }
+                return back()->withErrors(['email' => 'Invalid credentials.'])->withInput();
             }
 
-            // ✅ Decide expiry based on "remember me"
-            $expiresAt = $request->remember
-                ? now()->addDays(30)   // long-lived token
-                : now()->addHours(2);  // short-lived token
+            $user = Auth::user();
 
-            // ✅ Generate token
-            $token = $user->createToken('auth_token_' . $user->id);
+            // ✅ ৩. টোকেন জেনারেট (শুধুমাত্র API রিকোয়েস্ট বা স্পেসিফিক রিকোয়েস্টের জন্য)
+            $expiresAt = $remember ? now()->addDays(30) : now()->addHours(2);
+            $tokenResult = $user->createToken('auth_token_' . $user->id);
+            
+            // Expiry সেট করা
+            $tokenResult->accessToken->expires_at = $expiresAt;
+            $tokenResult->accessToken->save();
 
-            // Save expiry in DB (personal_access_tokens table has `expires_at` if you add it)
-            $token->accessToken->expires_at = $expiresAt;
-            $token->accessToken->save();
+            // ✅ ৪. রেসপন্স হ্যান্ডলিং
+            if ($request->expectsJson()) {
+                // API এর জন্য JSON রেসপন্স
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Login successful.',
+                    'data' => [
+                        'user' => [
+                            'id' => $user->id,
+                            'email' => $user->email,
+                            'role' => $user->getRoleNames()->first() ?? null,
+                        ],
+                        'token' => $tokenResult->plainTextToken,
+                        'token_type' => 'Bearer',
+                    ]
+                ], 200);
+            }
 
+            // Web এর জন্য রিডাইরেক্ট (Dashboard এ)
+            return redirect()->intended('/dashboard')->with('success', 'Welcome back!');
 
-
-            // ✅ Return success response
-            return response()->json([
-                'success' => true,
-                'message' => 'Login successful.',
-                'data' => [
-                    'user' => [
-                        'id' => $user->id,
-                        'email' => $user->email,
-                        'role' => $user->getRoleNames()->first() ?? null,
-
-                    ],
-
-                    'token' => $token->plainTextToken,
-                    'token_type' => 'Bearer',
-                ]
-            ], 200);
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // ✅ Validation error: first message only
+        } 
+        catch (\Illuminate\Validation\ValidationException $e) 
+        {
             $firstError = collect($e->errors())->flatten()->first();
 
-            return response()->json([
-                'success' => false,
-                'message' => $firstError,
-            ], 422);
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => $firstError], 422);
+            }
+            return back()->withErrors($e->errors())->withInput();
 
         } catch (\Exception $e) {
             \Log::error('Login Error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Something went wrong. Please try again.',
-            ], 500);
+            
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Something went wrong.'], 500);
+            }
+            return back()->with('error', 'Something went wrong. Please try again.');
         }
     }
 
@@ -144,19 +147,37 @@ class LoginController extends Controller
     public function logout(Request $request)
     {
         try {
-            $request->user()->currentAccessToken()->delete();
+            if ($request->user() && $request->user()->currentAccessToken()) {
+                $request->user()->currentAccessToken()->delete();
+            }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Logged out successfully.'
-            ], 200);
+            if (Auth::guard('web')->check()) {
+                Auth::guard('web')->logout();
+                
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+            }
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Logged out successfully.'
+                ], 200);
+            }
+
+            return redirect('/login')->with('success', 'You have been logged out.');
 
         } catch (\Exception $e) {
             \Log::error('Logout Error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to logout. Please try again.',
-            ], 500);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to logout. Please try again.',
+                ], 500);
+            }
+
+            return back()->with('error', 'Something went wrong during logout.');
         }
     }
 }

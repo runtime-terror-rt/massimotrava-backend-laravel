@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('gender')->nullable();
             $table->string('height')->nullable();
             $table->string('weight')->nullable();
+            $table->string('image')->nullable();
             $table->boolean('remember_me')->default(false);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

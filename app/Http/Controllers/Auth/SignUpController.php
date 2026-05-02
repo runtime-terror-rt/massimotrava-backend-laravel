@@ -15,72 +15,79 @@ use Illuminate\Support\Carbon;
 
 class SignUpController extends Controller
 {
-  public function register(Request $request)
-{
-    try {
-        // ✅ Validation with custom messages
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email',
-            'password' => [
-                'required',
-                Password::min(8)->letters()->mixedCase()->numbers()->symbols()
-            ],
+    public function register(Request $request)
+    {
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email',
+                'password' => [
+                    'required',
+                    Password::min(8)->letters()->mixedCase()->numbers()->symbols()
+                ],
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+            ], [
+                'name.required' => 'Name field is required.',
+                'email.required' => 'Email field is required.',
+                'email.unique' => 'Email is already registered.',
+                'password.required' => 'Password is required.',
+            ]);
 
-        ], [
-            'name.required' => 'Name field is required.',
-            'name.string' => 'Name must be a string.',
-            'name.max' => 'Name cannot exceed 255 characters.',
-            'email.required' => 'Email field is required.',
-            'email.email' => 'Please enter a valid email address.',
-            'password.required' => 'Password is required.',
-        ]);
+            $user = User::create([
+                'email' => $request->email,
+                'name' => $request->name,
+                'password' => Hash::make($request->password),
+            ]);
 
-        // Check if email already exists
-        if (User::where('email', $request->email)->exists()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Email is already registered.'
-            ], 409);
+            $user->assignRole('user');
+
+            if (!$request->expectsJson()) {
+                Auth::login($user);
+            }
+
+            if ($request->expectsJson()) {
+                $token = $user->createToken('auth_token')->plainTextToken;
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Registration successful.',
+                    'data' => [
+                        'id' => $user->id,
+                        'email' => $user->email,
+                        'role' => $user->getRoleNames()->first(),
+                        'token' => $token,
+                        'token_type' => 'Bearer',
+                    ]
+                ], 201);
+            }
+
+            return redirect('/admin/dashboard')->with('success', 'Registration successful! Welcome.');
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $firstError = collect($e->errors())->flatten()->first();
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $firstError,
+                ], 422);
+            }
+            
+            return back()->withErrors($e->errors())->withInput();
+
+        } catch (\Exception $e) {
+            \Log::error('Registration Error: ' . $e->getMessage());
+            
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Something went wrong. Please try again.',
+                ], 500);
+            }
+
+            return back()->with('error', 'Something went wrong. Please try again.');
         }
-
-        // Create user
-        $user = User::create([
-            'email' => $request->email,
-            'name' => $request->name,
-            'password' => Hash::make($request->password),
-        ]);
-
-        // Assign role
-        $user->assignRole('user');
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Registration successful.',
-            'data' => [
-                'id' => $user->id,
-                'email' => $user->email,
-                'role' => $user->getRoleNames()->first(),
-            ]
-        ], 201);
-
-    } catch (\Illuminate\Validation\ValidationException $e) {
-        // ✅ Show first validation error as message
-        $firstError = collect($e->errors())->flatten()->first();
-
-        return response()->json([
-            'success' => false,
-            'message' => $firstError,
-        ], 422);
-
-    } catch (\Exception $e) {
-        \Log::error('Registration Error: ' . $e->getMessage());
-        return response()->json([
-            'success' => false,
-            'message' => 'Something went wrong. Please try again.',
-        ], 500);
     }
-}
 
     /**
      * Verify OTP

@@ -2,24 +2,23 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class BiomarkerReport extends Model
 {
-    protected $fillable = [
-        'user_id',
-        'kit_id',
-        'biomarker_category_id',
-        'biomarker_subcategory_id',
-        'value',
-        'unit',
-        'inv_code',
-        'status'
-    ];
+    use HasFactory;
 
-    public function kit()
+    protected $guarded = [];
+
+    public function user()
     {
-        return $this->belongsTo(Kit::class);
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function biomarkerSubcategory()
+    {
+        return $this->belongsTo(BiomarkerSubcategory::class, 'biomarker_subcategory_id');
     }
 
     public function biomarkerCategory()
@@ -27,8 +26,8 @@ class BiomarkerReport extends Model
         return $this->belongsTo(BiomarkerCategory::class, 'biomarker_category_id');
     }
 
-    public function biomarkerSubcategory()
+    public function kit()
     {
-        return $this->belongsTo(BiomarkerSubcategory::class, 'biomarker_subcategory_id');
+        return $this->belongsTo(Kit::class, 'kit_id');
     }
 }

@@ -3,71 +3,38 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class DhlShippingService
 {
     protected $apiKey;
+    protected $apiSecret;
     protected $baseUrl;
 
     public function __construct()
     {
-        $this->apiKey = config('services.dhl.key');
-        $this->baseUrl = config('services.dhl.url');
+        $this->apiKey    = config('services.dhl.key');
+        $this->apiSecret = config('services.dhl.secret');
+        $this->baseUrl   = config('services.dhl.url');
     }
 
-    public function createShipment(array $shipmentData)
+    // ১. পিকআপের জন্য (Shipping API)
+    public function schedulePickup($payload)
     {
-        return Http::withBasicAuth($this->apiKey, config('services.dhl.secret'))
-            ->post("{$this->baseUrl}/shipments", $shipmentData)
+        return Http::withBasicAuth($this->apiKey, $this->apiSecret)
+            ->withHeaders(['Content-Type' => 'application/json', 'Accept' => 'application/json'])
+            ->post($this->baseUrl . '/pickups', $payload)
             ->json();
     }
 
-    public function trackShipment(string $trackingNumber)
+    // ২. ট্র্যাকিংয়ের জন্য (Unified Tracking API)
+    public function getTrackingInfo($trackingNumber)
     {
-        $response = Http::withHeaders([
-            'DHL-API-Key' => $this->apiKey,
-            'Accept'      => 'application/json',
-        ])->get($this->baseUrl, [
-            'trackingNumber' => $trackingNumber
-        ]);
+        // ট্র্যাকিংয়ের জন্য নির্দিষ্ট URL ব্যবহার করুন (shipping API নয়)
+        $url = "https://api-eu.dhl.com/track/shipments?trackingNumber={$trackingNumber}";
 
-        if ($response->successful()) {
-            return $response->json();
-        }
-
-        Log::error('DHL Tracking Error: ' . $response->body());
-        return null;
+        return Http::withBasicAuth($this->apiKey, $this->apiSecret)
+            ->withHeaders(['Accept' => 'application/json'])
+            ->get($url)
+            ->json();
     }
-
-    public function schedulePickup(array $pickupData)
-    {
-        $pickupUrl = str_replace('/track/shipments', '/pickups', $this->baseUrl);
-
-        $response = Http::withHeaders([
-            'DHL-API-Key'  => $this->apiKey,
-            'Content-Type' => 'application/json',
-            'Accept'       => 'application/json',
-        ])->post($pickupUrl, $pickupData);
-
-        if ($response->successful()) {
-            return $response->json();
-        }
-
-        Log::error('DHL Pickup Error: ' . $response->body());
-        return $response->json();
-    }
-
-    // public function schedulePickup(array $pickupDetails)
-    // {
-    //     return Http::withBasicAuth(
-    //         config('services.dhl.key'), 
-    //         config('services.dhl.secret')
-    //     )
-    //     ->withHeaders([
-    //         'Content-Type' => 'application/json',
-    //     ])
-    //     ->post(config('services.dhl.url') . '/pickups', $pickupDetails)
-    //     ->json();
-    // }
 }

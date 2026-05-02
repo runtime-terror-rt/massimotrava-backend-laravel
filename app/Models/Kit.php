@@ -17,4 +17,9 @@ class Kit extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function biomarkerReports() 
+    {
+        return $this->hasMany(BiomarkerReport::class, 'kit_id');
+    }
 }
