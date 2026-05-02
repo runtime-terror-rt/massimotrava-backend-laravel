@@ -1,9 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Auth\AppleAuthController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
-use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\SignUpController;
 use App\Http\Controllers\BiomarkerCategoryController;
@@ -20,7 +18,6 @@ use App\Http\Controllers\SubscriptionPlanController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\AppleAuthController;
-use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\UserController;
 
 
