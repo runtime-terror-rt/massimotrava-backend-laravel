@@ -2,34 +2,50 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BiomarkerReport;
-use Illuminate\Http\Request;
 use App\Models\BiomarkerCategory;
+use App\Models\BiomarkerReport;
 use App\Models\BiomarkerSubcategory;
+use App\Models\Kit;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Auth;
 
 class BiomarkerReportController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        $reports = BiomarkerReport::with([
+        $query = BiomarkerReport::with([
             'kit', 
             'biomarkerSubcategory.category',
-            'biomarkerSubcategory'
-        ])->get();
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $reports
+            'biomarkerSubcategory',
+            'user'
         ]);
+
+        if ($request->has('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        $reports = $query->latest()->paginate(10);
+
+        if ($request->expectsJson()) {
+            return response()->json(['status' => 'success', 'data' => $reports]);
+        }
+
+        $specificUser = $request->has('user_id') ? User::find($request->user_id) : null;
+
+        return view('admin.reports.index', compact('reports', 'specificUser'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    public function create()
+    {
+        $users = User::all();
+        $kits = Kit::all();
+        $categories = BiomarkerCategory::all();
+        $subcategories = BiomarkerSubcategory::all();
+
+        return view('admin.reports.create', compact('users', 'kits', 'categories', 'subcategories'));
+    }
 
     public function storeReport(Request $request)
     {
@@ -43,6 +59,7 @@ class BiomarkerReportController extends Controller
         ]);
 
         $savedReports = [];
+        $inv_code = $request->inv_code ?? 'INV-' . strtoupper(Str::random(10));
 
         foreach ($request->reports as $reportData) {
             $subcategory = BiomarkerSubcategory::find($reportData['subcategory_id']);
@@ -58,32 +75,17 @@ class BiomarkerReportController extends Controller
                     'value' => $reportData['value'],
                     'unit' => $subcategory->unit ?? null,
                     'status' => 1,
-                    'inv_code' => $request->inv_code ?? 'INV-' . strtoupper(Str::random(10))
+                    'inv_code' => $inv_code
                 ]
             );
             $savedReports[] = $report->load(['biomarkerCategory', 'biomarkerSubcategory']);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Reports saved successfully',
-            'data' => $savedReports
-        ]);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
-    {
-        $report = BiomarkerReport::find($id);
-        if (!$report) {
-            return response()->json(['message' => 'Report not found'], 404);
+        if ($request->expectsJson()) {
+            return response()->json(['status' => 'success', 'message' => 'Reports saved successfully', 'data' => $savedReports]);
         }
 
-        $report->delete();
-
-        return response()->json(['message' => 'Report deleted successfully']);
+        return back()->with('success', 'Reports saved successfully');
     }
 
     public function getReports(Request $request)
@@ -94,8 +96,9 @@ class BiomarkerReportController extends Controller
         ]);
 
         $reports = BiomarkerReport::with([
-            'biomarkerSubcategory.category:id,title',
-            'biomarkerSubcategory:id,biomarker_category_id,title,min_range,max_range,unit'
+                'biomarkerSubcategory.category:id,title',
+                'biomarkerSubcategory:id,biomarker_category_id,title,min_range,max_range,unit',
+                'user:id,name,email'
             ])
             ->when($request->user_id, function ($query) use ($request) {
                 return $query->where('user_id', $request->user_id);
@@ -107,15 +110,39 @@ class BiomarkerReportController extends Controller
             ->get();
 
         if ($reports->isEmpty()) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => 'No reports found for the given criteria.'
-            ], 404);
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'No reports found for the given criteria.'
+                ], 404);
+            }
+            return back()->with('error', 'No reports found.');
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data'   => $reports
-        ], 200);
+        if ($request->expectsJson()) {
+            return response()->json([
+                'status' => 'success',
+                'data'   => $reports
+            ], 200);
+        }
+
+        $specificUser = $request->user_id ? \App\Models\User::find($request->user_id) : null;
+        return view('admin.reports.index', compact('reports', 'specificUser'));
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        $report = BiomarkerReport::find($id);
+        if (!$report) {
+            return $request->expectsJson() 
+                ? response()->json(['message' => 'Report not found'], 404) 
+                : back()->with('error', 'Report not found');
+        }
+
+        $report->delete();
+
+        return $request->expectsJson() 
+            ? response()->json(['message' => 'Report deleted successfully']) 
+            : back()->with('success', 'Report deleted successfully');
     }
 }

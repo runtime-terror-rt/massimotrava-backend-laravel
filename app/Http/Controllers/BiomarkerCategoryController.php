@@ -27,6 +27,7 @@ class BiomarkerCategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    
     public function storeCategory(Request $request)
     {
         $request->validate([
@@ -44,14 +45,20 @@ class BiomarkerCategoryController extends Controller
             ]
         );
 
-        $isUpdate = $request->has('id');
+        $isUpdate = $request->filled('id');
+        $message = $isUpdate ? 'Category updated successfully' : 'Category created successfully';
 
-        return response()->json([
-            'status' => 'success',
-            'message' => $isUpdate ? 'Category updated successfully' : 'Category created successfully',
-            'data' => $category
-        ], $isUpdate ? 200 : 201);
+        if ($request->wantsJson()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => $message,
+                'data' => $category
+            ], $isUpdate ? 200 : 201);
+        }
+
+        return redirect()->back()->with('success', $message);
     }
+
     /**
      * Display the specified resource.
      */
