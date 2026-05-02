@@ -1,7 +1,5 @@
 <head>
-    <!-- ... অন্যান্য ট্যাগ ... -->
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
-    <!-- আইকনের জন্য FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
     <div class="auth-wrapper">

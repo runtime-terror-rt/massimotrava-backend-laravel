@@ -19,7 +19,6 @@ class LoginController extends Controller
     {
         try
         {
-            // ✅ ১. ভ্যালিডেশন
             $credentials = $request->validate([
                 'email' => 'required|email',
                 'password' => 'required|string|min:5',
@@ -28,8 +27,6 @@ class LoginController extends Controller
                 'password.min' => 'Password must be at least 5 characters.',
             ]);
 
-            // ✅ ২. লগইন চেষ্টা (Web Session + API Token এর জন্য প্রস্তুত করা)
-            // Auth::attempt ব্যবহার করলে এটি স্বয়ংক্রিয়ভাবে পাসওয়ার্ড চেক করে এবং Web Session তৈরি করে
             $remember = $request->has('remember');
             
             if (!Auth::attempt($credentials, $remember)) {
@@ -41,17 +38,13 @@ class LoginController extends Controller
 
             $user = Auth::user();
 
-            // ✅ ৩. টোকেন জেনারেট (শুধুমাত্র API রিকোয়েস্ট বা স্পেসিফিক রিকোয়েস্টের জন্য)
             $expiresAt = $remember ? now()->addDays(30) : now()->addHours(2);
             $tokenResult = $user->createToken('auth_token_' . $user->id);
             
-            // Expiry সেট করা
             $tokenResult->accessToken->expires_at = $expiresAt;
             $tokenResult->accessToken->save();
 
-            // ✅ ৪. রেসপন্স হ্যান্ডলিং
             if ($request->expectsJson()) {
-                // API এর জন্য JSON রেসপন্স
                 return response()->json([
                     'success' => true,
                     'message' => 'Login successful.',
@@ -67,7 +60,6 @@ class LoginController extends Controller
                 ], 200);
             }
 
-            // Web এর জন্য রিডাইরেক্ট (Dashboard এ)
             return redirect()->intended('/dashboard')->with('success', 'Welcome back!');
 
         } 
