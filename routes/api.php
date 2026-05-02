@@ -1,25 +1,28 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Auth\FirebaseAuthController;
+use App\Http\Controllers\Auth\AppleAuthController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\SignUpController;
 use App\Http\Controllers\BiomarkerCategoryController;
 use App\Http\Controllers\BiomarkerReportController;
 use App\Http\Controllers\BiomarkerSubcategoryController;
 use App\Http\Controllers\ContactsController;
+use App\Http\Controllers\Courier\CourierTrackController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\KitController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\Profile\UserProfileController;
+use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\SubscriptionPlanController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\AppleAuthController;
 use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\UserController;
+
 
 Route::prefix('v1')->group(function () {
 
@@ -50,6 +53,9 @@ Route::prefix('v1')->group(function () {
     Route::post('/pickup', [ShippingController::class, 'requestPickup']);
     Route::post('/track', [ShippingController::class, 'trackShipment']);
     Route::get('/track-shipment/{trackingNumber}', [ShippingController::class, 'trackShipment']);
+
+    Route::get('/track-shipment', [CourierTrackController::class, 'trackShipment']);
+
     // ----------------------------
     // Protected Routes (Require Auth)
     // ----------------------------
@@ -108,5 +114,6 @@ Route::prefix('v1')->group(function () {
         Route::post('/plans/store-or-update', [SubscriptionPlanController::class, 'storeOrUpdatePlan']);
         Route::delete('/plans/{id}', [SubscriptionPlanController::class, 'destroy']);
         Route::post('/plans/toggle-status/{id}', [SubscriptionPlanController::class, 'toggleStatus']);
+
     });
 });

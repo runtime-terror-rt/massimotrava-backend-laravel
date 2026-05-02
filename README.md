@@ -1,59 +1,118 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# Laravel 12 Installation Guide — Local and Docker from GitHub
+This document shows step‑by‑step instructions to clone a Laravel 12 project from GitHub and run it locally (native PHP + Composer) and dockerized (Docker Compose). It includes a ready set of files and commands you can copy into your repo so any developer can reproduce the environment.
 
-## About Laravel
+##  Prerequisites
+- For local install
+  - PHP 8.3+ installed and on PATH.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+  - Composer installed globally.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+  - Node.js 18+ and npm or pnpm for frontend assets.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+  - A local database (MySQL 8 / MariaDB / PostgreSQL) or use SQLite for quick testing.
 
-## Learning Laravel
+- For Docker
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+  - Docker Desktop (Windows/macOS) or Docker Engine + Docker Compose (Linux).
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+  - Basic familiarity with Docker volumes and networking.
 
-## Laravel Sponsors
+- Git to clone the repository.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Local Installation
+1. Clone the GitHub Repository
+```bash
+git clone https://github.com/your-org/your-laravel12-repo.git my-laravel-app
+cd my-laravel-app
+```
 
-### Premium Partners
+2. Install PHP dependencies
+```bash
+composer install --no-interaction --prefer-dist
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+3. Environment file and app key
 
-## Contributing
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+Edit .env and set database credentials and other secrets:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+APP_NAME=MyApp
+APP_ENV=local
+APP_KEY=base64:...
+APP_URL=http://127.0.0.1:8000
 
-## Code of Conduct
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=myapp
+DB_USERNAME=root
+DB_PASSWORD=secret
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+4. Database setup and migrations
+```bash
+php artisan migrate --seed
 
-## Security Vulnerabilities
+```
+5. Install frontend dependencies and build
+```bash
+npm install
+npm run dev        # for development
+npm run build      # for production assets
+```
+6. Run the app
+```bash
+php artisan serve --host=127.0.0.1 --port=8000
+# Visit http://127.0.0.1:8000
+```
+## Dockerized Installation (Docker Compose)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1. Create DockerFile
+2. Nginx/Caddy config (optional)
+3. Create docker-compose.yml or Compose.yaml
+4. Create .env.docker (do not commit secrets):
 
-## License
+```bash
+APP_NAME=MyApp
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_URL=http://localhost:8080
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+DB_CONNECTION=mysql
+DB_HOST=mysql
+DB_PORT=3306
+DB_DATABASE=myapp
+DB_USERNAME=myapp
+DB_PASSWORD=secret
+
+CACHE_DRIVER=file
+SESSION_DRIVER=file
+QUEUE_CONNECTION=sync
+
+```
+5. Build and Run
+
+```bash
+# Build and start containers
+docker compose up -d --build
+
+# Install composer dependencies inside container (if not baked in)
+docker compose exec app composer install --no-interaction --prefer-dist
+
+# Generate app key
+docker compose exec app php artisan key:generate
+
+# Run migrations
+docker compose exec app php artisan migrate --seed
+
+# Build frontend assets (runs in node container)
+docker compose exec node npm install
+docker compose exec node npm run dev
+
+```
