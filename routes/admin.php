@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('/login', [DashboardController::class, 'login'])->name('login');
 Route::get('/register',          [DashboardController::class, 'register'])->name('register');
+Route::get('/forgot-password', [DashboardController::class, 'forgotPassword'])->name('password.request');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::prefix('admin')
     ->name('admin.')
@@ -44,6 +45,9 @@ Route::prefix('admin')
           Route::get('/reports/create', [BiomarkerReportController::class, 'create'])->name('reports.create');
           Route::delete('/reports/{id}', [BiomarkerReportController::class, 'destroy'])->name('reports.destroy');
           Route::post('/reports/store', [BiomarkerReportController::class, 'storeReport'])->name('reports.store');
+          // ✅ PDF DOWNLOAD ROUTE (ADD THIS)
+            Route::get('/reports/download-pdf', [BiomarkerReportController::class, 'downloadPdf'])
+            ->name('reports.download.pdf');
 
           //Kits 
           Route::get('/kits', [KitController::class, 'index'])->name('kits.index');

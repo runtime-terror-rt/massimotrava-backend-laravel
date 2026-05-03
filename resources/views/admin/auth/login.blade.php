@@ -33,7 +33,7 @@
                     <input type="checkbox" id="remember">
                     <span>Remember me</span>
                 </label>
-                <a href="#" class="auth-link">Forgot Password?</a>
+                <a href="/forgot-password" class="auth-link">Forgot Password?</a>
             </div>
 
             <button type="submit" class="btn btn-primary btn-auth">
@@ -42,9 +42,9 @@
             </button>
         </form>
 
-        <div class="auth-footer">
+        <!-- <div class="auth-footer">
             Don't have an account? <a href="/register" class="auth-link">Create Account</a>
-        </div>
+        </div> -->
     </div>
 </div>
 

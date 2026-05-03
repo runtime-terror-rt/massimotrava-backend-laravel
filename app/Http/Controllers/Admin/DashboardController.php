@@ -19,6 +19,11 @@ class DashboardController extends Controller
     {
         return view('admin.auth.register');
     }
+
+    public function forgotPassword(Request $request)
+    {
+        return view('admin.auth.forgot-password');
+    }
     /**
      * Admin Dashboard - Overview Page
      */
