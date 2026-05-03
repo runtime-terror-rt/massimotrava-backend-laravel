@@ -34,7 +34,7 @@ class ForgotPasswordController extends Controller
 
 
             // ✅ Generate 5-digit OTP
-            $otp = random_int(1000, 9999);
+            $otp = random_int(10000, 99999);
 
             $user->update([
                 'otp' => $otp,
@@ -72,12 +72,12 @@ class ForgotPasswordController extends Controller
             // ✅ Validation with custom messages
             $request->validate([
                 'email' => 'required|email',
-                'otp' => 'required|digits:4',
+                'otp' => 'required|digits:5',
             ], [
                 'email.required' => 'Email field is required.',
                 'email.email' => 'Please enter a valid email address.',
                 'otp.required' => 'OTP field is required.',
-                'otp.digits' => 'OTP must be 4 digits.',
+                'otp.digits' => 'OTP must be 5 digits.',
             ]);
 
             $user = User::where('email', $request->email)->first();
