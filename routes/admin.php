@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('/login', [DashboardController::class, 'login'])->name('login');
 Route::get('/register',          [DashboardController::class, 'register'])->name('register');
+Route::get('/forgot-password', [DashboardController::class, 'forgotPassword'])->name('password.request');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::prefix('admin')
     ->name('admin.')
