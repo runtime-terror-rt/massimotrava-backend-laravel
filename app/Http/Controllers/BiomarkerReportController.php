@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class BiomarkerReportController extends Controller
 {
@@ -145,4 +146,20 @@ class BiomarkerReportController extends Controller
             ? response()->json(['message' => 'Report deleted successfully']) 
             : back()->with('success', 'Report deleted successfully');
     }
+
+
+    public function downloadPdf(Request $request)
+    {
+    $query = BiomarkerReport::with(['user', 'biomarkerSubcategory']);
+
+    if ($request->user_id) {
+        $query->where('user_id', $request->user_id);
+    }
+
+    $reports = $query->get();
+
+    $pdf = Pdf::loadView('admin.reports.pdf', compact('reports'));
+
+    return $pdf->download('biomarker-reports.pdf');
+}
 }

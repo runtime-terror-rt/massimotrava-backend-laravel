@@ -45,6 +45,9 @@ Route::prefix('admin')
           Route::get('/reports/create', [BiomarkerReportController::class, 'create'])->name('reports.create');
           Route::delete('/reports/{id}', [BiomarkerReportController::class, 'destroy'])->name('reports.destroy');
           Route::post('/reports/store', [BiomarkerReportController::class, 'storeReport'])->name('reports.store');
+          // ✅ PDF DOWNLOAD ROUTE (ADD THIS)
+            Route::get('/reports/download-pdf', [BiomarkerReportController::class, 'downloadPdf'])
+            ->name('reports.download.pdf');
 
           //Kits 
           Route::get('/kits', [KitController::class, 'index'])->name('kits.index');

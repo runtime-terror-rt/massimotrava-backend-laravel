@@ -42,9 +42,9 @@
             </button>
         </form>
 
-        <div class="auth-footer">
+        <!-- <div class="auth-footer">
             Don't have an account? <a href="/register" class="auth-link">Create Account</a>
-        </div>
+        </div> -->
     </div>
 </div>
 
