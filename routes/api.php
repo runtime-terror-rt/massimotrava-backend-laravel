@@ -58,11 +58,9 @@ Route::prefix('v1')->group(function () {
     // ----------------------------
     Route::middleware('auth:sanctum')->group(function () {
 
-        
-
         //Profile
         Route::get('/profile', [UserProfileController::class, 'show']);
-        Route::post('/profile', [UserController::class, 'updateProfile']);
+        Route::post('/profile', [UserProfileController::class, 'updateProfile']);
 
         Route::post('logout', [LoginController::class, 'logout']);
 

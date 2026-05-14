@@ -1,0 +1,2064 @@
+{
+  "info": {
+    "_postman_id": "57b452cf-aa65-4f56-ae93-4607fe9b92a7",
+    "name": "Massimotrava",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "51599681",
+    "_collection_link": "https://go.postman.co/collection/51599681-57b452cf-aa65-4f56-ae93-4607fe9b92a7?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "register",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "multipart/form-data",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Rafi",
+                  "type": "text",
+                  "uuid": "5ec77877-3ef4-4d22-8e3b-d70d6459e59c"
+                },
+                {
+                  "key": "email",
+                  "value": "fofak87553@mypethealh.com",
+                  "type": "text",
+                  "uuid": "c8025d43-f869-4602-b21d-8afd90b18147"
+                },
+                {
+                  "key": "password",
+                  "value": "Password123!",
+                  "type": "text",
+                  "uuid": "ed83878a-b48c-401a-b488-90211d220b97"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{url_local}}/register",
+              "host": [
+                "{{url_local}}"
+              ],
+              "path": [
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"admin@example.com\",\r\n    \"password\": \"Password123!\",\r\n    \"remember\": false\r\n\r\n    // \"email\": \"lab@example.com\",\r\n    // \"password\": \"Password456!\"\r\n\r\n    // \"email\": \"fofak87553@mypethealh.com\",\r\n    // \"password\": \"Password123!\",\r\n    // \"remember\": false\r\n\r\n    //NewPass@123\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/login",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "forgot-password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"fofak87553@mypethealh.com\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url_local}}/forgot-password",
+              "host": [
+                "{{url_local}}"
+              ],
+              "path": [
+                "forgot-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "verify OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"fofak87553@mypethealh.com\",\r\n  \"otp\": 7536\r\n}\r\n"
+            },
+            "url": {
+              "raw": "{{url_local}}/verify-otp",
+              "host": [
+                "{{url_local}}"
+              ],
+              "path": [
+                "verify-otp"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "resend-otp",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"fosobo6700@kobace.com\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/resend-otp",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "resend-otp"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "reset-password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n{\r\n  \"email\": \"fofak87553@mypethealh.com\",\r\n  \"new_password\": \"NewPass@123\",\r\n  \"new_password_confirmation\": \"NewPass@123\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url_local}}/reset-password",
+              "host": [
+                "{{url_local}}"
+              ],
+              "path": [
+                "reset-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Apple with login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"apple_token\": \"JWT_FROM_APPLE\",\r\n  \"name\": \"Rehana Kabir\",       // Optional\r\n  \"email\": \"rehana@example.com\"  // Optional\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/auth/apple",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "auth",
+                "apple"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "google with login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"id_token\": \"ya29.a0AfH6SMDexampletoken\"\r\n}\r\n"
+            },
+            "url": {
+              "raw": "{{url}}/auth/google",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "auth",
+                "google"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "change-password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{supply}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"current_password\": \"Password123!\",\r\n    \"new_password\": \"Password@123\",\r\n    \"new_password_confirmation\": \"Password@123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/change-password",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "change-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{url_local}}/logout",
+              "host": [
+                "{{url_local}}"
+              ],
+              "path": [
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User management",
+      "item": [
+        {
+          "name": "user-list",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/admin/users",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "admin",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete-user",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{url}}/admin/users/4",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "4"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "view-profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url_local}}/admin/users/5",
+              "host": [
+                "{{url_local}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "5"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "active-deactive-user",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/users/toggle-active/6",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "users",
+                "toggle-active",
+                "6"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "show profile (user)",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_local}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{url_local}}/profile",
+              "host": [
+                "{{url_local}}"
+              ],
+              "path": [
+                "profile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update profile (user)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_local}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Sabbir Hossain",
+                  "type": "text",
+                  "uuid": "f2c4daf0-b99f-4f0f-ad3b-1c8c05b71626"
+                },
+                {
+                  "key": "phone",
+                  "value": "01569894551",
+                  "type": "text",
+                  "uuid": "4a44bdb0-2ea9-413e-95a1-1d5bde7f3dea"
+                },
+                {
+                  "key": "age",
+                  "value": "20",
+                  "type": "text",
+                  "uuid": "4093d341-7c28-4555-a56e-7c027fcb040b"
+                },
+                {
+                  "key": "gender",
+                  "value": "male",
+                  "type": "text",
+                  "uuid": "b3ac5a1d-0bc3-4966-9b35-890c7b006f45"
+                },
+                {
+                  "key": "height",
+                  "value": "182",
+                  "type": "text",
+                  "uuid": "23c4f36f-93ee-4701-836c-d759eb436cb2"
+                },
+                {
+                  "key": "weight",
+                  "value": "80",
+                  "type": "text",
+                  "uuid": "3355beda-9579-43f1-8c4d-a899b2148a92"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "uuid": "e0564e31-addb-4148-adab-b97aa83da063",
+                  "src": "/Users/sabbirhossain/Softvence/Projects/greatguy11-backend-laravel/public/images/20260511034309.png"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{url_local}}/profile",
+              "host": [
+                "{{url_local}}"
+              ],
+              "path": [
+                "profile"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Privacy Policy | Terms & Condition",
+      "item": [
+        {
+          "name": "show",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{url}}/privacy-policy",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "privacy-policy"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create-update-privacy-policy",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"title\": \"Massimotrava Privacy Policy\",\r\n    \"is_active\": true,\r\n    \"items\": [\r\n        {\r\n            \"id\": 1,\r\n            \"heading\": \"Information We Collect\",\r\n            \"content\": \"a. Information You Provide: - Name and email address - Account registration details - Goals, habits, preferences, and wellness-related inputs - Images or visual content you choose to upload - Customer support communications b. Information Collected Automatically: - Device and browser information - App and website usage data - IP address - Cookies and similar technologies (website only)\"\r\n        },\r\n        {\r\n            \"id\": 2,\r\n            \"heading\": \"How We Use Your Information\",\r\n            \"content\": \"We use your information to: - Provide and maintain the Services - Personalize your experience - Improve functionality and performance - Send notifications or communications you opt into - Respond to support or privacy requests\"\r\n        },\r\n        \r\n        {\r\n            \"id\": 3,\r\n            \"heading\": \"Sharing of Information\",\r\n            \"content\": \"We may share information only: - With service providers who support platform operations - When required by law - To protect rights, safety, or security We do not sell personal data.\"\r\n        },\r\n        \r\n        {\r\n            \"id\": 4,\r\n            \"heading\": \"Data Security\",\r\n            \"content\": \"We implement administrative, technical, and organizational safeguards. However, no system is 100% secure.\"\r\n        },\r\n        {\r\n            \"id\": 5,\r\n            \"heading\": \"Data Retention\",\r\n            \"content\": \"We retain data only as long as necessary to: - Provide Services - Meet legal obligations You can request deletion anytime.\"\r\n        },\r\n        {\r\n            \"id\": 6,\r\n            \"heading\": \"Your Rights\",\r\n            \"content\": \"You may have rights to: - Access data - Correct data - Delete data - Opt out of communications Contact us via email below.\"\r\n        },\r\n        {\r\n            \"id\": 7,\r\n            \"heading\": \"Children’s Privacy\",\r\n            \"content\": \"Massimotrava is not intended for individuals under 18.\"\r\n        },\r\n        {\r\n            \"id\": 8,\r\n            \"heading\": \"Policy Updates\",\r\n            \"content\": \"We collect information you provide such as name, email address, goals, and health related inputs.\"\r\n        },\r\n        {\r\n            \"id\": 9,\r\n            \"heading\": \"Contact\",\r\n            \"content\": \"For privacy questions: 📧 massimotravaSupport@gmail.com\"\r\n        }\r\n    ]\r\n}"
+            },
+            "url": {
+              "raw": "{{url}}/save-terms",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "save-terms"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notification",
+      "item": [
+        {
+          "name": "create-notification",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{indiv}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"reminder_time\": \"11:00 AM\",\r\n    \"missed_checkin_alerts\": false\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/user/notification-settings",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "user",
+                "notification-settings"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-all-notifications",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{url}}/notification-list-by-user",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "notification-list-by-user"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "notification-list",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{url}}/notification-list-by-user",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "notification-list-by-user"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "mark as read (all notification)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{url}}/all-notification-mark-as-read",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "all-notification-mark-as-read"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "mark as read (Single Notifcation)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"notification_id\": \"1fc0ccd9-f48d-4671-a46d-da6b313e1dd5\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/mark-single-as-read",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "mark-single-as-read"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete all notification",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/delete-all-notification",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "delete-all-notification"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete (single notification)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"notification_id\": \"1fc0ccd9-f48d-4671-a46d-da6b313e1dd5\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{local}}/delete-single-notification",
+              "host": [
+                "{{local}}"
+              ],
+              "path": [
+                "delete-single-notification"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "user-notification",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{url}}/user/notification",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "user",
+                "notification"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Faq",
+      "item": [
+        {
+          "name": "all-faq",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/faqs",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "faqs"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create-faq",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    //\"id\": 1, //for update\r\n    \"question\": \"Is the Wellness Score a medical diagnosis?\",\r\n    \"answer\": \"No. The Wellness Score is a digital tool designed for lifestyle tracking and motivation. It should not be used as a replacement for professional medical advice or clinical reports.\",\r\n    \"is_active\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/faqs",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "faqs"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete-faq",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{url}}/faqs/2",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "faqs",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "faq-admin-dashboard",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{url}}/admin/faqs",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "admin",
+                "faqs"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "toggleActive",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/faqs/status/1",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "faqs",
+                "status",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Contacts",
+      "item": [
+        {
+          "name": "contact-message",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Siyam\",\r\n    \"email\": \"siyam@gmail.com\",\r\n    \"message\": \"How ca i use this platform?\",\r\n    \"status\": \"true\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/contact",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "contact"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "show-contact-message",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/admin/contacts",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "admin",
+                "contacts"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Kit",
+      "item": [
+        {
+          "name": "my-kits",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/my-kits",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "my-kits"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "connect-kit",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"activation_code\": \"ABC12342\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url_local}}/kit/activate",
+              "host": [
+                "{{url_local}}"
+              ],
+              "path": [
+                "kit",
+                "activate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete-kit",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/kit/3",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "kit",
+                "3"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "all-kits",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/kits",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "kits"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "BiomecarCategory",
+      "item": [
+        {
+          "name": "get-category",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{lab}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/biomarker-subcategories/1",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "biomarker-subcategories",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "store-category",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{lab}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"title\": \"CVC\",\r\n    \"description\": \"This is description\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/biomarker-category/store",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "biomarker-category",
+                "store"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete-category",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{lab}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/biomarker-category/2",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "biomarker-category",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "BiomacerSubCategory",
+      "item": [
+        {
+          "name": "all-sub-category",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{lab}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/biomarker-subcategories",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "biomarker-subcategories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-sub-category-with-category",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{lab}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/biomarker-subcategories/1",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "biomarker-subcategories",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "store-sub-category",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{lab}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"biomarker_category_id\": 2,\r\n    \"title\": \"CSV test\",\r\n    \"description\": \"Checks for bone strength and hormone health.\",\r\n    \"min_range\": 30.00,\r\n    \"max_range\": 100.00,\r\n    \"unit\": \"ng/mL\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/biomarker-subcategory/store",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "biomarker-subcategory",
+                "store"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete-sub-category",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{lab}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/biomarker-subcategory/2",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "biomarker-subcategory",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "BiomacerReports",
+      "item": [
+        {
+          "name": "generate-reports",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{lab}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"user_id\": 12,\r\n    \"kit_id\": 4,\r\n    \"biomarker_category_id\": 2,\r\n    \"reports\": [\r\n        {\r\n            \"subcategory_id\": 5, \r\n            \"value\": 48.50\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/biomarker-report/store",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "biomarker-report",
+                "store"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "all-reports",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/biomarker-reports",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "biomarker-reports"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "single-report",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{lab}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/get-reports?user_id=12&inv_code=INV-RDFTGSPWIL",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "get-reports"
+              ],
+              "query": [
+                {
+                  "key": "user_id",
+                  "value": "12"
+                },
+                {
+                  "key": "inv_code",
+                  "value": "INV-RDFTGSPWIL"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "SubscriptionPlan",
+      "item": [
+        {
+          "name": "all-plan",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/plans",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "plans"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "single-plan",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{url}}/plans/1",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "plans",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "store-update-plan",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"id\": 1,\r\n    \"user_id\": 2,\r\n    \"name\": \"Massimo Premium update\",\r\n    \"billing_cycle\": \"monthly\",\r\n    \"price\": 99.99,\r\n    \"duration\": 30,\r\n    \"features\": [\"Feature  1\", \"Feature 2\", \"Feature 3\"],\r\n    \"status\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{url}}/plans/store-or-update",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "plans",
+                "store-or-update"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "plan-active-inactive",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{url}}/plans/toggle-status/1",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "plans",
+                "toggle-status",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete-plan",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{url}}/plans/2",
+              "host": [
+                "{{url}}"
+              ],
+              "path": [
+                "plans",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "url",
+      "value": ""
+    },
+    {
+      "key": "url_local",
+      "value": ""
+    },
+    {
+      "key": "admin",
+      "value": ""
+    },
+    {
+      "key": "user",
+      "value": ""
+    },
+    {
+      "key": "lab",
+      "value": ""
+    },
+    {
+      "key": "token_local",
+      "value": ""
+    }
+  ]
+}
