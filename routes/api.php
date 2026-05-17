@@ -18,6 +18,7 @@ use App\Http\Controllers\SubscriptionPlanController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\AppleAuthController;
+use App\Http\Controllers\LabController;
 use App\Http\Controllers\UserController;
 
 
@@ -106,6 +107,10 @@ Route::prefix('v1')->group(function () {
         Route::post('/biomarker-report/store', [BiomarkerReportController::class, 'storeReport']);
         Route::get('/biomarker-reports', [BiomarkerReportController::class, 'index']);
         Route::get('/get-reports', [BiomarkerReportController::class, 'getReports']);
+
+        //Labs 
+        Route::get('/labs', [LabController::class, 'index']);
+        Route::post('/labs/store', [LabController::class, 'store']);
 
         // Subscription Plan Management
         Route::post('/plans/store-or-update', [SubscriptionPlanController::class, 'storeOrUpdatePlan']);

@@ -31,7 +31,7 @@ return new class extends Migration
             $table->boolean('terms_accepted')->default(false);
             $table->string('fcm_token')->nullable();
             $table->integer('update_plan_id')->nullable();
-
+            $table->foreignId('lab_id')->nullable()->constrained('labs')->onDelete('cascade');
             $table->boolean('two_factor_auth')->default(false);
             $table->rememberToken();
             $table->timestamps();

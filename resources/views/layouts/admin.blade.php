@@ -1,37 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>@yield('title', 'Massimotrava Admin')</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="stylesheet" href="{{ asset('css/admin.css') }}"/>
-  @stack('styles')
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@yield('title', 'Massimotrava Admin')</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    
+    <!-- Styles -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}"/>
+    
+    <style>
+        /* Global Modal Styling */
+        .modal-content {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: white;
+        }
+        .modal-header { border-bottom: 1px solid #334155; }
+        .modal-footer { border-top: 1px solid #334155; }
+        .form-control, .form-select {
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: white;
+        }
+        .form-control:focus, .form-select:focus {
+            background: #0f172a;
+            color: white;
+            border-color: #6366f1;
+            box-shadow: none;
+        }
+    </style>
+    @stack('styles')
 </head>
 <body>
 
-{{-- Mobile Overlay --}}
 <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 
-{{-- Sidebar --}}
 @include('components.sidebar')
 
-{{-- Main Wrapper --}}
 <div class="main-wrapper" id="mainWrapper">
+    @include('components.topbar')
 
-  {{-- Top Navbar --}}
-  @include('components.topbar')
-
-  {{-- Page Content --}}
-  <main class="content">
-    @yield('content')
-  </main>
-
+    <main class="content">
+        @yield('content')
+    </main>
 </div>
 
-<script src="{{ asset('js/admin.js') }}"></script>
+@stack('modals')
 
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('js/admin.js') }}"></script>
 @stack('scripts')
+
 </body>
 </html>
