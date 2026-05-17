@@ -38,6 +38,46 @@ class BiomarkerReportController extends Controller
         return view('admin.reports.index', compact('reports', 'specificUser'));
     }
 
+    public function getUserReports(Request $request)
+    {
+       if (!auth()->check()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized access.'
+            ], 401);
+        }
+
+        $userId = auth()->id();
+
+        $allReports = BiomarkerReport::with([
+                'kit', 
+                'biomarkerSubcategory.category',
+                'biomarkerSubcategory',
+                'user'
+            ])
+            ->where('user_id', $userId)
+            ->latest()
+            ->paginate(10);
+
+        $lastReport = BiomarkerReport::with([
+                'kit', 
+                'biomarkerSubcategory.category',
+                'biomarkerSubcategory',
+                'user'
+            ])
+            ->where('user_id', $userId)
+            ->latest()
+            ->first();
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'User reports retrieved successfully.',
+            'data'    => [
+                'last_report' => $lastReport ?? null, 
+                'all_reports' => $allReports
+            ]
+        ], 200);
+    }
     public function create()
     {
         $users = User::all();
@@ -150,16 +190,16 @@ class BiomarkerReportController extends Controller
 
     public function downloadPdf(Request $request)
     {
-    $query = BiomarkerReport::with(['user', 'biomarkerSubcategory']);
+        $query = BiomarkerReport::with(['user', 'biomarkerSubcategory']);
 
-    if ($request->user_id) {
-        $query->where('user_id', $request->user_id);
+        if ($request->user_id) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        $reports = $query->get();
+
+        $pdf = Pdf::loadView('admin.reports.pdf', compact('reports'));
+
+        return $pdf->download('biomarker-reports.pdf');
     }
-
-    $reports = $query->get();
-
-    $pdf = Pdf::loadView('admin.reports.pdf', compact('reports'));
-
-    return $pdf->download('biomarker-reports.pdf');
-}
 }

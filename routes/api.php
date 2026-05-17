@@ -104,6 +104,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/biomarker-report/store', [BiomarkerReportController::class, 'storeReport']);
         Route::get('/biomarker-reports', [BiomarkerReportController::class, 'index']);
         Route::get('/get-reports', [BiomarkerReportController::class, 'getReports']);
+        Route::get('/user/reports', [BiomarkerReportController::class, 'getUserReports']);
 
         // Subscription Plan Management
         Route::post('/plans/store-or-update', [SubscriptionPlanController::class, 'storeOrUpdatePlan']);
