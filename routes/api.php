@@ -59,11 +59,9 @@ Route::prefix('v1')->group(function () {
     // ----------------------------
     Route::middleware('auth:sanctum')->group(function () {
 
-        
-
         //Profile
         Route::get('/profile', [UserProfileController::class, 'show']);
-        Route::post('/profile', [UserController::class, 'updateProfile']);
+        Route::post('/profile', [UserProfileController::class, 'updateProfile']);
 
         Route::post('logout', [LoginController::class, 'logout']);
 
@@ -107,6 +105,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/biomarker-report/store', [BiomarkerReportController::class, 'storeReport']);
         Route::get('/biomarker-reports', [BiomarkerReportController::class, 'index']);
         Route::get('/get-reports', [BiomarkerReportController::class, 'getReports']);
+        Route::get('/user/reports', [BiomarkerReportController::class, 'getUserReports']);
 
         //Labs 
         Route::get('/labs', [LabController::class, 'index']);

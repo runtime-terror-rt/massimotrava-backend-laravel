@@ -41,6 +41,46 @@ class BiomarkerReportController extends Controller
         return view('admin.reports.index', compact('reports', 'specificUser'));
     }
 
+    public function getUserReports(Request $request)
+    {
+       if (!auth()->check()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized access.'
+            ], 401);
+        }
+
+        $userId = auth()->id();
+
+        $allReports = BiomarkerReport::with([
+                'kit', 
+                'biomarkerSubcategory.category',
+                'biomarkerSubcategory',
+                'user'
+            ])
+            ->where('user_id', $userId)
+            ->latest()
+            ->paginate(10);
+
+        $lastReport = BiomarkerReport::with([
+                'kit', 
+                'biomarkerSubcategory.category',
+                'biomarkerSubcategory',
+                'user'
+            ])
+            ->where('user_id', $userId)
+            ->latest()
+            ->first();
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'User reports retrieved successfully.',
+            'data'    => [
+                'last_report' => $lastReport ?? null, 
+                'all_reports' => $allReports
+            ]
+        ], 200);
+    }
     public function create()
     {
         $users = User::all();
@@ -51,56 +91,62 @@ class BiomarkerReportController extends Controller
         return view('admin.reports.create', compact('users', 'kits', 'categories', 'subcategories'));
     }
 
+
     public function storeReport(Request $request)
     {
         $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'kit_id' => 'required|exists:kits,id',
-            'categories' => 'required|array|min:1',
-            'categories.*.id' => 'required|exists:biomarker_categories,id',
-            'categories.*.reports' => 'required|array|min:1',
-            'categories.*.reports.*.subcategory_id' => 'required|exists:biomarker_subcategories,id',
-            'categories.*.reports.*.value' => 'required|numeric',
+            'inv_code'                 => 'nullable|string|exists:biomarker_reports,inv_code', // Update er jonno lagbe
+            'user_id'                  => 'required|exists:users,id',
+            'kit_id'                   => 'required|exists:kits,id',
+            'biomarker_category_id'    => 'required|exists:biomarker_categories,id',
+            'reports'                  => 'required|array',
+            'reports.*.subcategory_id' => 'required|exists:biomarker_subcategories,id',
+            'reports.*.value'          => 'required|numeric',
         ]);
 
         $savedReports = [];
-        $inv_code = $request->inv_code ?? 'INV-' . strtoupper(Str::random(10));
-
-        foreach ($request->categories as $categoryData) {
-            $categoryId = $categoryData['id'];
-
-            foreach ($categoryData['reports'] as $reportData) {
-                $subcategory = BiomarkerSubcategory::find($reportData['subcategory_id']);
-
-                $report = BiomarkerReport::updateOrCreate(
-                    [
-                        'user_id' => $request->user_id,
-                        'kit_id' => $request->kit_id,
-                        'biomarker_subcategory_id' => $reportData['subcategory_id'],
-                        'inv_code' => $inv_code 
-                    ],
-                    [
-                        'biomarker_category_id' => $categoryId, 
-                        'value' => $reportData['value'],
-                        'unit' => $subcategory->unit ?? null,
-                        'status' => 1,
-                    ]
-                );
-                
-                $savedReports[] = $report->load(['biomarkerCategory', 'biomarkerSubcategory']);
-            }
+        
+        if ($request->filled('inv_code')) {
+            $inv_code = $request->inv_code;
+            
+            BiomarkerReport::where('inv_code', $inv_code)->delete();
+            $message = 'Reports updated successfully';
+        } else {
+            $inv_code = 'INV-' . strtoupper(Str::random(10));
+            $message = 'Reports saved successfully';
         }
 
+        foreach ($request->reports as $reportData) {
+            $subcategory = BiomarkerSubcategory::find($reportData['subcategory_id']);
+
+            $report = BiomarkerReport::create([
+                'user_id'                  => $request->user_id,
+                'kit_id'                   => $request->kit_id,
+                'biomarker_category_id'    => $request->biomarker_category_id, 
+                'biomarker_subcategory_id' => $reportData['subcategory_id'],
+                'value'                    => $reportData['value'],
+                'unit'                     => $subcategory->unit ?? null,
+                'status'                   => 1,
+                'inv_code'                 => $inv_code
+            ]);
+
+            $savedReports[] = $report->load(['biomarkerCategory', 'biomarkerSubcategory']);
+        }
+
+        // API Response
         if ($request->expectsJson()) {
             return response()->json([
-                'status' => 'success', 
-                'message' => 'All category reports saved successfully', 
-                'inv_code' => $inv_code,
-                'data' => $savedReports
+                'status'  => 'success', 
+                'message' => $message, 
+                'data'    => [
+                    'inv_code' => $inv_code,
+                    'reports'  => $savedReports
+                ]
             ]);
         }
 
-        return back()->with('success', 'Reports saved successfully with Invoice: ' . $inv_code);
+        // Web Response
+        return back()->with('success', $message);
     }
 
     public function getReports(Request $request)
@@ -176,6 +222,7 @@ class BiomarkerReportController extends Controller
 
     public function downloadPdf(Request $request)
     {
+<<<<<<< HEAD
         $query = BiomarkerReport::with(['user', 'kit', 'biomarkerCategory', 'biomarkerSubcategory']);
 
         if ($request->has('user_id') && $request->user_id != null) {
@@ -240,4 +287,18 @@ class BiomarkerReportController extends Controller
             return back()->with('error', 'Failed to send email. Error: ' . $e->getMessage());
         }
     }
+=======
+        $query = BiomarkerReport::with(['user', 'biomarkerSubcategory']);
+
+        if ($request->user_id) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        $reports = $query->get();
+
+        $pdf = Pdf::loadView('admin.reports.pdf', compact('reports'));
+
+        return $pdf->download('biomarker-reports.pdf');
+    }
+>>>>>>> 360d112091f148740643b8c31e15d73461dd6a1e
 }
