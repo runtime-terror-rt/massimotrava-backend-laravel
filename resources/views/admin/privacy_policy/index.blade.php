@@ -41,7 +41,6 @@
 
                 <div id="policy-items-container">
                     @php
-                        // Correctly handling content array
                         $items = old('items', $selectedPolicy->content ?? [['heading' => '', 'content' => '']]);
                     @endphp
 
@@ -90,7 +89,7 @@
                         {{ $policy->is_active ? 'Active' : 'Inactive' }}
                     </span>
                 </td>
-                <td>{{ $policy->created_at->format('d M, Y') }}</td>
+                <td>{{ $policy->created_at ? $policy->created_at->format('d M, Y') : '' }}</td>
                 <td style="text-align: center;">
                     <a href="{{ route('admin.privacy-policy.index', ['id' => $policy->id]) }}" class="action-btn edit">
                         <i class="fa-solid fa-pen-to-square"></i>
@@ -101,4 +100,37 @@
         </tbody>
     </table>
 </div>
+
+<script>
+    // Existing database field lengths thread block trace call
+    let itemIndex = {{ count((array)$items) }};
+
+    function addItem() {
+        const container = document.getElementById('policy-items-container');
+        const html = `
+            <div class="policy-item-row" style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border); position: relative;">
+                <button type="button" class="btn-close btn-close-white" style="position: absolute; top: 10px; right: 10px; font-size: 12px;" onclick="removeItem(this)"></button>
+                <div class="mb-3">
+                    <label class="form-label" style="font-size: 13px; color: #94a3b8;">Section Heading</label>
+                    <input type="text" name="items[${itemIndex}][heading]" class="form-control" placeholder="e.g. Information We Collect" required>
+                </div>
+                <div>
+                    <label class="form-label" style="font-size: 13px; color: #94a3b8;">Section Content</label>
+                    <textarea name="items[${itemIndex}][content]" class="form-control" rows="4" placeholder="Detailed description..." required></textarea>
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', html);
+        itemIndex++;
+    }
+
+    function removeItem(btn) {
+        const rows = document.querySelectorAll('.policy-item-row');
+        if (rows.length > 1) {
+            btn.closest('.policy-item-row').remove();
+        } else {
+            alert('At least one section is required.');
+        }
+    }
+</script>
 @endsection

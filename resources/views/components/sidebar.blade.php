@@ -2,10 +2,12 @@
 <aside class="sidebar" id="sidebar">
 
   {{-- Brand --}}
-  <div class="sidebar-brand">
-    <div class="brand-icon"><i class="fa-solid fa-bolt"></i></div>
-    <span class="brand-name">Massimo</span>
-  </div>
+<div class="sidebar-brand" style="position: relative; height: 60px; display: block;">
+    <img src="{{ asset('images/logo.avif') }}" alt="Massimo Logo" 
+         style="position: absolute !important; top: 15px !important; left: 40% !important; transform: translateX(-50%) !important; height: 38px !important; width: auto !important; object-fit: contain !important; max-width: 85% !important;">
+    {{-- <div class="brand-icon"><i class="fa-solid fa-bolt"></i></div>
+    <span class="brand-name">Massimo</span> --}}
+</div>
 
   {{-- Navigation --}}
   <nav class="sidebar-nav">
@@ -17,12 +19,12 @@
       <span>Dashboard</span>
     </a>
     <a href="{{route('admin.labs.index')}}" class="nav-item {{ request()->routeIs('admin.labs.index') ? 'active' : '' }}" data-tooltip="Labs">
-      <i class="fa-solid fa-chart-line"></i>
+      <i class="fa-solid fa-building"></i>
       <span>Lab</span>
       {{-- <span class="nav-badge">New</span> --}}
     </a>
     <a href="{{route('admin.get.lab.users')}}" class="nav-item {{ request()->routeIs('admin.get.lab.users') ? 'active' : '' }}" data-tooltip="Laboratorian">
-      <i class="fa-solid fa-chart-line"></i>
+      <i class="fa-solid fa-users"></i>
       <span>Laboratorian</span>
       {{-- <span class="nav-badge">New</span> --}}
     </a>
@@ -55,15 +57,15 @@
     <div class="nav-section-label">System</div>
 
     <a href="{{route('admin.privacy-policy.index')}}" class="nav-item" data-tooltip="Privecy Policy">
-      <i class="fa-solid fa-bell"></i>
+      <i class="fa-solid fa-building-lock"></i>
       <span>Privecy Policy</span>
     </a>
-    <a href="#" class="nav-item" data-tooltip="FAQ">
-      <i class="fa-solid fa-bell"></i>
+    <a href="{{route('admin.faq.index')}}" class="nav-item" data-tooltip="FAQ">
+      <i class="fa-solid fa-circle-question"></i>
       <span>FAQ</span>
     </a>
     <a href="#" class="nav-item" data-tooltip="Courier">
-      <i class="fa-solid fa-bell"></i>
+      <i class="fa-solid fa-cart-shopping"></i>
       <span>Courier</span>
     </a>
     <a href="#" class="nav-item" data-tooltip="Notifications">

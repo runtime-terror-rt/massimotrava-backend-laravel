@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BiomarkerCategoryController;
 use App\Http\Controllers\BiomarkerReportController;
 use App\Http\Controllers\BiomarkerSubcategoryController;
+use App\Http\Controllers\FaqController;
 use App\Http\Controllers\KitController;
 use App\Http\Controllers\LabController;
 use App\Http\Controllers\PrivacyPolicyController;
@@ -59,7 +60,7 @@ Route::prefix('admin')
 
             // Sub Category
             Route::get('/biomarker-subcategories', [BiomarkerSubcategoryController::class, 'index'])->name('biomarker-subcategories.index');
-            Route::get('/biomarker-subcategories/{categoryId}', [BiomarkerSubcategoryController::class, 'getSubcategories'])->name('biomarker-subcategories.index');
+            Route::get('/biomarker-subcategories/{categoryId}', [BiomarkerSubcategoryController::class, 'getSubcategories'])->name('biomarker-subcategorie');
             Route::post('/biomarker-subcategory/store', [BiomarkerSubcategoryController::class, 'storeSubcategory'])->name('biomarker-subcategory.store');
             Route::delete('/biomarker-subcategory/{id}', [BiomarkerSubcategoryController::class, 'destroy'])->name('biomarker-subcategory.delete');
 
@@ -72,4 +73,10 @@ Route::prefix('admin')
             Route::get('/privacy-policy', [PrivacyPolicyController::class, 'index'])->name('privacy-policy.index');
             Route::post('/privacy-policy/save', [PrivacyPolicyController::class, 'save'])->name('privacy-policy.save');
             Route::delete('/privacy-policy/{id}', [PrivacyPolicyController::class, 'destroy'])->name('privacy-policy.destroy');
+
+            Route::get('faq/', [FaqController::class, 'adminIndex'])->name('faq.index');
+            Route::post('faq/store', [FaqController::class, 'storeOrUpdate'])->name('faq.store');
+            Route::get('faq/{id}', [FaqController::class, 'show'])->name('faq.show');
+            Route::post('faq/{id}/toggle', [FaqController::class, 'toggleActive'])->name('faq.toggle');
+            Route::delete('faq/{id}', [FaqController::class, 'destroy'])->name('faq.destroy');
     });

@@ -41,7 +41,7 @@ Route::prefix('v1')->group(function () {
     //apple login
     Route::post('/auth/apple', [AppleAuthController::class, 'tokenLogin']);
 
-    Route::get('privacy-policy', [PrivacyPolicyController::class, 'show']);
+    Route::get('privacy-policy', [PrivacyPolicyController::class, 'index']);
     Route::post('/contact', [ContactsController::class, 'store']);
     Route::get('/faqs', [FaqController::class, 'index']);
 
