@@ -222,7 +222,6 @@ class BiomarkerReportController extends Controller
 
     public function downloadPdf(Request $request)
     {
-<<<<<<< HEAD
         $query = BiomarkerReport::with(['user', 'kit', 'biomarkerCategory', 'biomarkerSubcategory']);
 
         if ($request->has('user_id') && $request->user_id != null) {
@@ -287,18 +286,4 @@ class BiomarkerReportController extends Controller
             return back()->with('error', 'Failed to send email. Error: ' . $e->getMessage());
         }
     }
-=======
-        $query = BiomarkerReport::with(['user', 'biomarkerSubcategory']);
-
-        if ($request->user_id) {
-            $query->where('user_id', $request->user_id);
-        }
-
-        $reports = $query->get();
-
-        $pdf = Pdf::loadView('admin.reports.pdf', compact('reports'));
-
-        return $pdf->download('biomarker-reports.pdf');
-    }
->>>>>>> 360d112091f148740643b8c31e15d73461dd6a1e
 }
