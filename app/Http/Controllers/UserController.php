@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Lab;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -23,6 +24,7 @@ class UserController extends Controller
 
     public function getLabUsers(Request $request)
     {
+        $labs = Lab::get('id', 'name');
         $labUsers = User::role('lab')->latest()->paginate(10);
 
         if ($request->expectsJson()) {
@@ -32,7 +34,7 @@ class UserController extends Controller
             ], 200);
         }
 
-        return view('admin.laboratorian.index', compact('labUsers'));
+        return view('admin.laboratorian.index', compact('labUsers','labs'));
     }
 
     public function getUsers(Request $request)

@@ -130,4 +130,49 @@ class AdminController extends Controller
             ], 500);
         }
     }
+
+    public function storeLabUser(Request $request)
+    {
+        $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email',
+            'phone'    => 'nullable|string',
+            'password' => 'required|string|min:8|confirmed',
+            'lab_id'   => 'required|exists:labs,id',
+            'gender'   => 'nullable|string',
+            'age'      => 'nullable|integer',
+        ]);
+
+        try {
+            $user = User::create([
+                'name'           => $request->name,
+                'email'          => $request->email,
+                'phone'          => $request->phone,
+                'password'       => Hash::make($request->password),
+                'lab_id'         => $request->lab_id,
+                'age'            => $request->age,
+                'gender'         => $request->gender,
+                'status'         => true,
+                'email_verified_at' => now(), 
+            ]);
+
+            $message = 'Lab user created successfully for ' . $user->name;
+
+            if ($request->wantsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'status'  => 'success',
+                    'message' => $message,
+                    'data'    => $user
+                ], 201);
+            }
+
+            return redirect()->back()->with('success', $message);
+
+        } catch (\Exception $e) {
+            if ($request->wantsJson() || $request->is('api/*')) {
+                return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+            }
+            return back()->with('error', 'Failed to create lab user.');
+        }
+    }
 }

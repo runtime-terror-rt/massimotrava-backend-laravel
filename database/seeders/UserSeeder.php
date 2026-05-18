@@ -14,6 +14,17 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@gmail.com'],
+            [
+                'name' => 'Admin User',
+                'password' => Hash::make('Password123!'),
+                'email_verified_at' => now(),
+                'status' => true,
+            ]
+        );
+        $admin->assignRole('admin');
+        
         // Create users
         $user = User::updateOrCreate(
             ['email' => 'user@example.com'],
@@ -25,17 +36,6 @@ class UserSeeder extends Seeder
             ]
         );
         $user->assignRole('user');
-
-        $admin = User::updateOrCreate(
-            ['email' => 'admin@gmail.com'],
-            [
-                'name' => 'Admin User',
-                'password' => Hash::make('Password123!'),
-                'email_verified_at' => now(),
-                'status' => true,
-            ]
-        );
-        $admin->assignRole('admin');
 
         $lab = User::updateOrCreate(
             ['email' => 'lab@example.com'],

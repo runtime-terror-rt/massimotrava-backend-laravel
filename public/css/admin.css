@@ -52,6 +52,67 @@ body {
   overflow-x: hidden;
 }
 
+/* Table-er background dark korar jonno */
+.table-wrap {
+    background: #1e293b; /* Sidebar ba card background-er sathe mil rekhe */
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #334155;
+    overflow: hidden;
+}
+
+.table {
+    --bs-table-bg: transparent !important; /* Bootstrap-er shada background remove korbe */
+    --bs-table-color: #f8fafc !important; /* Text color shada/light korbe */
+    margin-bottom: 0;
+}
+
+/* Header text style */
+.table thead th {
+    background: #0f172a; 
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #334155;
+    padding: 15px;
+}
+
+/* Row border ebong text style */
+.table tbody td {
+    padding: 15px;
+    vertical-align: middle;
+    border-bottom: 1px solid #334155;
+    color: #cbd5e1;
+}
+
+/* Row-te hover effect add korle table aro professional lagbe */
+.table tbody tr:hover {
+    background-color: rgba(99, 102, 241, 0.05) !important;
+}
+
+/* Sob placeholder-er color change korar jonno */
+::placeholder {
+    color: #94a3b8 !important; /* Light grey/blueish color jate dark theme-e bright thake */
+    opacity: 1; /* Firefox-er jonno */
+}
+
+/* Chrome, Safari, Edge-er jonno */
+::-webkit-input-placeholder {
+    color: #94a3b8 !important;
+}
+
+/* Firefox 19+ */
+::-moz-placeholder {
+    color: #94a3b8 !important;
+}
+
+/* IE 10-11 */
+:-ms-input-placeholder {
+    color: #94a3b8 !important;
+}
+
 /* Background noise texture */
 body::before {
   content: '';

@@ -11,6 +11,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
+ use App\Mail\BiomarkerReportMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class BiomarkerReportController extends Controller
 {
@@ -191,32 +194,96 @@ class BiomarkerReportController extends Controller
     public function destroy(Request $request, $id)
     {
         $report = BiomarkerReport::find($id);
+
         if (!$report) {
-            return $request->expectsJson() 
-                ? response()->json(['message' => 'Report not found'], 404) 
-                : back()->with('error', 'Report not found');
+            if ($request->wantsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Report not found'
+                ], 404);
+            }
+            return back()->with('error', 'Report not found');
         }
 
         $report->delete();
 
-        return $request->expectsJson() 
-            ? response()->json(['message' => 'Report deleted successfully']) 
-            : back()->with('success', 'Report deleted successfully');
+        $message = 'Report deleted successfully';
+
+        if ($request->wantsJson() || $request->is('api/*')) {
+            return response()->json([
+                'status' => 'success',
+                'message' => $message
+            ], 200);
+        }
+
+        return back()->with('success', $message);
     }
 
 
     public function downloadPdf(Request $request)
     {
-        $query = BiomarkerReport::with(['user', 'biomarkerSubcategory']);
+        $query = BiomarkerReport::with(['user', 'kit', 'biomarkerCategory', 'biomarkerSubcategory']);
 
-        if ($request->user_id) {
+        if ($request->has('user_id') && $request->user_id != null) {
             $query->where('user_id', $request->user_id);
+        }
+
+        if ($request->has('inv_code') && $request->inv_code != null) {
+            $query->where('inv_code', $request->inv_code);
+        }
+
+        if ($request->has('date') && $request->date != null) {
+            $query->whereDate('created_at', $request->date);
         }
 
         $reports = $query->get();
 
+        if ($reports->isEmpty()) {
+            return back()->with('error', 'No reports found for the selected criteria.');
+        }
+
         $pdf = Pdf::loadView('admin.reports.pdf', compact('reports'));
 
-        return $pdf->download('biomarker-reports.pdf');
+        $fileName = 'report-' . ($request->inv_code ?? date('d-m-Y')) . '.pdf';
+
+        return $pdf->download($fileName);
+    }
+
+    public function sendEmail(Request $request)
+    {
+        $request->validate([
+            'inv_code' => 'required'
+        ]);
+
+        $reports = BiomarkerReport::with(['user', 'kit', 'biomarkerCategory', 'biomarkerSubcategory'])
+                    ->where('inv_code', $request->inv_code)
+                    ->get();
+
+        if ($reports->isEmpty()) {
+            return back()->with('error', 'Report not found for invoice: ' . $request->inv_code);
+        }
+
+        $user = $reports->first()->user;
+
+        if (!$user || !$user->email) {
+            return back()->with('error', 'User or user email address is missing.');
+        }
+
+        try {
+            $data = [
+                'reports' => $reports,
+                'specificUser' => $user
+            ];
+            
+            $pdf = Pdf::loadView('admin.reports.pdf', $data);
+
+            Mail::to($user->email)->send(new BiomarkerReportMail($reports, $user, $pdf));
+
+            return back()->with('success', 'Medical report successfully sent to ' . $user->email);
+
+        } catch (\Exception $e) {
+            Log::error('Email Sending Failed: ' . $e->getMessage());
+            return back()->with('error', 'Failed to send email. Error: ' . $e->getMessage());
+        }
     }
 }

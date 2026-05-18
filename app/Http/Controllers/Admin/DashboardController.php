@@ -193,16 +193,16 @@ class DashboardController extends Controller
     {
         $fillPath = $path . ' L120,36 L0,36Z';
         return <<<SVG
-<svg viewBox="0 0 120 36" preserveAspectRatio="none">
-  <defs>
-    <linearGradient id="{$gradientId}" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="{$color}" stop-opacity="0.3"/>
-      <stop offset="100%" stop-color="{$color}" stop-opacity="0"/>
-    </linearGradient>
-  </defs>
-  <path d="{$path}" fill="none" stroke="{$color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="{$fillPath}" fill="url(#{$gradientId})"/>
-</svg>
-SVG;
+            <svg viewBox="0 0 120 36" preserveAspectRatio="none">
+                <defs>
+                    <linearGradient id="{$gradientId}" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="{$color}" stop-opacity="0.3"/>
+                    <stop offset="100%" stop-color="{$color}" stop-opacity="0"/>
+                    </linearGradient>
+                </defs>
+                <path d="{$path}" fill="none" stroke="{$color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="{$fillPath}" fill="url(#{$gradientId})"/>
+            </svg>
+        SVG;
     }
 }
