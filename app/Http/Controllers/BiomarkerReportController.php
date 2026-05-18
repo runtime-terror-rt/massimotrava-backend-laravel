@@ -95,58 +95,76 @@ class BiomarkerReportController extends Controller
     public function storeReport(Request $request)
     {
         $request->validate([
-            'inv_code'                 => 'nullable|string|exists:biomarker_reports,inv_code', // Update er jonno lagbe
-            'user_id'                  => 'required|exists:users,id',
-            'kit_id'                   => 'required|exists:kits,id',
-            'biomarker_category_id'    => 'required|exists:biomarker_categories,id',
-            'reports'                  => 'required|array',
-            'reports.*.subcategory_id' => 'required|exists:biomarker_subcategories,id',
-            'reports.*.value'          => 'required|numeric',
+            'inv_code'              => 'nullable|string|exists:biomarker_reports,inv_code',
+            'user_id'               => 'required|exists:users,id',
+            'kit_id'                => 'required|exists:kits,id',
+            'categories'            => 'required|array|min:1',
+            'categories.*.id'       => 'required|exists:biomarker_categories,id',
+            'categories.*.reports'  => 'required|array|min:1',
+            'categories.*.reports.*.subcategory_id' => 'required|exists:biomarker_subcategories,id',
+            'categories.*.reports.*.value'          => 'required|numeric',
         ]);
 
         $savedReports = [];
         
         if ($request->filled('inv_code')) {
             $inv_code = $request->inv_code;
-            
             BiomarkerReport::where('inv_code', $inv_code)->delete();
             $message = 'Reports updated successfully';
         } else {
-            $inv_code = 'INV-' . strtoupper(Str::random(10));
+            $inv_code = 'INV-' . strtoupper(\Str::random(10));
             $message = 'Reports saved successfully';
         }
 
-        foreach ($request->reports as $reportData) {
-            $subcategory = BiomarkerSubcategory::find($reportData['subcategory_id']);
+        try {
+            \DB::transaction(function () use ($request, $inv_code, &$savedReports) {
+                foreach ($request->categories as $categoryData) {
+                    $categoryId = $categoryData['id'];
 
-            $report = BiomarkerReport::create([
-                'user_id'                  => $request->user_id,
-                'kit_id'                   => $request->kit_id,
-                'biomarker_category_id'    => $request->biomarker_category_id, 
-                'biomarker_subcategory_id' => $reportData['subcategory_id'],
-                'value'                    => $reportData['value'],
-                'unit'                     => $subcategory->unit ?? null,
-                'status'                   => 1,
-                'inv_code'                 => $inv_code
-            ]);
+                    foreach ($categoryData['reports'] as $reportData) {
+                        $subcategory = BiomarkerSubcategory::find($reportData['subcategory_id']);
 
-            $savedReports[] = $report->load(['biomarkerCategory', 'biomarkerSubcategory']);
+                        $report = BiomarkerReport::create([
+                            'user_id'                  => $request->user_id,
+                            'kit_id'                   => $request->kit_id,
+                            'biomarker_category_id'    => $categoryId,
+                            'biomarker_subcategory_id' => $reportData['subcategory_id'],
+                            'value'                    => $reportData['value'],
+                            'unit'                     => $subcategory->unit ?? null,
+                            'status'                   => 1,
+                            'inv_code'                 => $inv_code
+                        ]);
+
+                        $savedReports[] = $report->load(['biomarkerCategory', 'biomarkerSubcategory']);
+                    }
+                }
+            });
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'status'  => 'success', 
+                    'message' => $message, 
+                    'data'    => [
+                        'inv_code' => $inv_code,
+                        'reports'  => $savedReports
+                    ]
+                ]);
+            }
+
+            return redirect()->route('admin.reports.index')->with('success', $message);
+
+        } catch (\Exception $e) {
+            \Log::error('Biomarker Store Failed Error Trace: ' . $e->getMessage());
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Failed to save reports data bundle structure: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return back()->withInput()->with('error', 'Something went wrong while saving records values matrix!');
         }
-
-        // API Response
-        if ($request->expectsJson()) {
-            return response()->json([
-                'status'  => 'success', 
-                'message' => $message, 
-                'data'    => [
-                    'inv_code' => $inv_code,
-                    'reports'  => $savedReports
-                ]
-            ]);
-        }
-
-        // Web Response
-        return back()->with('success', $message);
     }
 
     public function getReports(Request $request)
