@@ -43,7 +43,7 @@ class BiomarkerReportController extends Controller
 
     public function getUserReports(Request $request)
     {
-       if (!auth()->check()) {
+        if (!auth()->check()) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Unauthorized access.'
@@ -52,35 +52,65 @@ class BiomarkerReportController extends Controller
 
         $userId = auth()->id();
 
-        $allReports = BiomarkerReport::with([
+        $rawReports = BiomarkerReport::with([
                 'kit', 
+                'biomarkerCategory',
                 'biomarkerSubcategory.category',
                 'biomarkerSubcategory',
                 'user'
             ])
             ->where('user_id', $userId)
             ->latest()
-            ->paginate(10);
+            ->get();
 
-        $lastReport = BiomarkerReport::with([
-                'kit', 
-                'biomarkerSubcategory.category',
-                'biomarkerSubcategory',
-                'user'
-            ])
-            ->where('user_id', $userId)
-            ->latest()
-            ->first();
+       $groupedCollection = $rawReports->groupBy('inv_code')->map(function ($reports, $invCode) {
+            $firstReport = $reports->first();
+            
+            return [
+                'inv_code'   => $invCode,
+                'created_at' => $firstReport->created_at,
+                'user'       => $firstReport->user,
+                'kit'        => $firstReport->kit,
+                'metrics'    => $reports->map(function($row) {
+                    return [
+                        'id'                     => $row->id,
+                        'biomarker_category_id'  => $row->biomarker_category_id,
+                        'category_title'         => $row->biomarkerCategory->title ?? null,
+                        'subcategory_id'         => $row->biomarker_subcategory_id,
+                        'subcategory_title'      => $row->biomarkerSubcategory->title ?? null,
+                        'value'                  => $row->value,
+                        'unit'                   => $row->unit,
+                        'test_status'            => "Good",
+                        'status'                 => $row->status,
+                    ];
+                })
+            ];
+        })->values();
+
+        $lastReportBundle = $groupedCollection->first();
+
+        $currentPage = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPage();
+        $perPage = 10;
+        $currentItems = $groupedCollection->slice(($currentPage - 1) * $perPage, $perPage)->all();
+
+        $paginatedReports = new \Illuminate\Pagination\LengthAwarePaginator(
+            $currentItems, 
+            $groupedCollection->count(), 
+            $perPage, 
+            $currentPage, 
+            ['path' => \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPath()]
+        );
 
         return response()->json([
             'status'  => 'success',
-            'message' => 'User reports retrieved successfully.',
+            'message' => 'User reports bundle packages retrieved successfully.',
             'data'    => [
-                'last_report' => $lastReport ?? null, 
-                'all_reports' => $allReports
+                'last_report' => $lastReportBundle ?? null, 
+                'all_reports' => $paginatedReports
             ]
         ], 200);
     }
+
     public function create()
     {
         $users = User::all();
