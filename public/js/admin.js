@@ -31,19 +31,22 @@ document.querySelectorAll('.nav-item').forEach(item => {
   });
 });
 
-// ===== PROFILE DROPDOWN =====
+// ===== FIXED PROFILE DROPDOWN =====
 const profileBtn    = document.getElementById('profileBtn');
 const dropdownMenu  = document.getElementById('dropdownMenu');
 
 function toggleDropdown() {
-  profileBtn.classList.toggle('open');
-  dropdownMenu.classList.toggle('open');
+  if (profileBtn && dropdownMenu) {
+    profileBtn.classList.toggle('open');
+    dropdownMenu.classList.toggle('show-menu'); // <-- FIXED: Synced with your layout layout style sheet class
+  }
 }
 
+// Close dropdown when clicking outside
 document.addEventListener('click', e => {
   if (!e.target.closest('.profile-dropdown')) {
     profileBtn?.classList.remove('open');
-    dropdownMenu?.classList.remove('open');
+    dropdownMenu?.classList.remove('show-menu'); // <-- FIXED
   }
 });
 

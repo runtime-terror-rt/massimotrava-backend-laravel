@@ -14,6 +14,16 @@
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}"/>
     
     <style>
+    .profile-dropdown .dropdown-menu {
+    display: none !important;
+    position: absolute !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    visibility: visible !important;
+}
+.profile-dropdown .dropdown-menu.show-menu {
+    display: block !important;
+}
         /* Global Modal Styling */
         .modal-content {
             background: #1e293b;

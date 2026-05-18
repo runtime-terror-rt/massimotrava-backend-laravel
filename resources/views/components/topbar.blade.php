@@ -33,11 +33,11 @@
       <span class="notif-dot"></span>
     </button>
 
-    {{-- Profile Dropdown --}}
-    <div class="profile-dropdown">
+    {{-- Profile Dropdown Wrapper (Explicitly Z-indexed Layer) --}}
+    <div class="profile-dropdown" style="position: relative; z-index: 99999 !important;">
       <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()" style="display: flex; align-items: center; gap: 10px; background: transparent; border: none; cursor: pointer; padding: 5px 10px; border-radius: 12px; transition: 0.3s;">
         <div class="profile-avatar" style="position: relative; width: 35px; height: 35px;">
-            @if(Auth::user()->image)
+            @if(Auth::user() && Auth::user()->image)
                 <img src="{{ Storage::url(Auth::user()->image) }}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 1.5px solid #6366f1;">
             @else
                 <div style="width: 100%; height: 100%; border-radius: 50%; background: #334155; display: flex; align-items: center; justify-content: center; border: 1.5px solid #475569;">
@@ -52,15 +52,16 @@
         </span>
         
         <i class="fa-solid fa-chevron-down" style="font-size: 12px; color: #94a3b8; margin-left: 5px;"></i>
-    </button>
+      </button>
 
-      <div class="dropdown-menu" id="dropdownMenu">
+      {{-- Dropdown Card Context Custom Fixed Look Overriding Bootstrap Flow --}}
+      <div class="dropdown-menu" id="dropdownMenu" style="right: 0 !important; left: auto !important; top: calc(100% + 10px) !important; width: 220px !important; background: #161b27 !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 12px !important; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5) !important; padding: 6px !important; margin: 0 !important;">
         <a class="dropdown-item" href="{{ route('admin.profile.edit') }}">
             <i class="fa-regular fa-user"></i> My Profile
         </a>
         <div class="dropdown-item"><i class="fa-regular fa-credit-card"></i> Billing</div>
         <div class="dropdown-item"><i class="fa-solid fa-gear"></i> Settings</div>
-        <div class="dropdown-divider"></div>
+        <div class="dropdown-divider" style="height: 1px; background: rgba(255,255,255,0.06); margin: 6px 0;"></div>
         <a href="{{ route('admin.logout') }}"
            class="dropdown-item"
            style="color:#ef4444; text-decoration:none"

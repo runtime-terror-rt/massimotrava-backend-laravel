@@ -1,5 +1,13 @@
 @extends('layouts.admin')
-
+@if ($errors->any())
+    <div style="background: rgba(239, 68, 68, 0.1); color: #f87171; padding: 15px; border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.2); margin-bottom: 25px;">
+        <ul style="margin: 0; padding-left: 20px;">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 @section('content')
 <div style="margin-bottom: 20px;">
     <a href="{{ route('admin.reports.index') }}" 
@@ -88,7 +96,7 @@
                 </div>
 
                 <div class="subcategories-container" style="margin-left: 20px; border-left: 2px solid #334155; padding-left: 20px;">
-                    <!-- সাবক্যাটাগরি রো এখানে আসবে -->
+                
                 </div>
 
                 <button type="button" class="add-sub-btn" style="margin-top: 10px; background: #38bdf8; color: #0f172a; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; display:none;">
