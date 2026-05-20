@@ -41,7 +41,10 @@ class BiomarkerReportController extends Controller
         return view('admin.reports.index', compact('reports', 'specificUser'));
     }
 
-    public function getUserReports(Request $request)
+    /**
+    * Get all paginated reports with optional kit_id filtering
+    */
+    public function getAllReports(Request $request)
     {
         if (!auth()->check()) {
             return response()->json([
@@ -52,42 +55,43 @@ class BiomarkerReportController extends Controller
 
         $userId = auth()->id();
 
-        $rawReports = BiomarkerReport::with([
+        $query = BiomarkerReport::with([
                 'kit', 
                 'biomarkerCategory',
-                'biomarkerSubcategory.category',
-                'biomarkerSubcategory',
-                'user'
+                'biomarkerSubcategory'
             ])
-            ->where('user_id', $userId)
-            ->latest()
-            ->get();
+            ->where('user_id', $userId);
 
-       $groupedCollection = $rawReports->groupBy('inv_code')->map(function ($reports, $invCode) {
+        if ($request->has('kit_id') && !empty($request->kit_id)) {
+            $query->where('kit_id', $request->kit_id);
+        }
+
+        $rawReports = $query->latest()->get();
+
+        $groupedCollection = $rawReports->groupBy('inv_code')->map(function ($reports, $invCode) {
             $firstReport = $reports->first();
             
             return [
-                'inv_code'   => $invCode,
-                'created_at' => $firstReport->created_at,
-                'user'       => $firstReport->user,
-                'kit'        => $firstReport->kit,
-                'metrics'    => $reports->map(function($row) {
+                'inv_code'          => $invCode,
+                'created_at'        => $firstReport->created_at,
+                'user'              => auth()->user(),
+                'longevity_score'   => "84",
+                'kit'               => $firstReport->kit,
+                'metrics'           => $reports->map(function($row) {
                     return [
-                        'id'                     => $row->id,
-                        'biomarker_category_id'  => $row->biomarker_category_id,
-                        'category_title'         => $row->biomarkerCategory->title ?? null,
-                        'subcategory_id'         => $row->biomarker_subcategory_id,
-                        'subcategory_title'      => $row->biomarkerSubcategory->title ?? null,
-                        'value'                  => $row->value,
-                        'unit'                   => $row->unit,
-                        'test_status'            => "Good",
-                        'status'                 => $row->status,
+                        'id'                    => $row->id,
+                        'biomarker_category_id' => $row->biomarker_category_id,
+                        'category_title'        => $row->biomarkerCategory->title ?? null,
+                        'subcategory_id'        => $row->biomarker_subcategory_id,
+                        'subcategory_title'     => $row->biomarkerSubcategory->title ?? null,
+                        'value'                 => $row->value,
+                        'unit'                  => $row->unit,
+                        'test_status'           => "Good",
+                        'status'                => $row->status,
                     ];
                 })
             ];
         })->values();
-
-        $lastReportBundle = $groupedCollection->first();
 
         $currentPage = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPage();
         $perPage = 10;
@@ -103,14 +107,131 @@ class BiomarkerReportController extends Controller
 
         return response()->json([
             'status'  => 'success',
+            'message' => 'All user reports packages retrieved successfully.',
+            'data'    => $paginatedReports
+        ], 200);
+    }
+
+    public function getUserReports(Request $request)
+    {
+        if (!auth()->check()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized access.'
+            ], 401);
+        }
+
+        $userId = auth()->id();
+
+        // Pull only recent package records to optimize execution queries speeds
+        $rawReports = BiomarkerReport::with(['kit', 'biomarkerCategory', 'biomarkerSubcategory'])
+            ->where('user_id', $userId)
+            ->latest()
+            ->get();
+
+        $groupedCollection = $rawReports->groupBy('inv_code')->map(function ($reports, $invCode) {
+            $firstReport = $reports->first();
+            
+            return [
+                'inv_code'   => $invCode,
+                'created_at' => $firstReport->created_at,
+                'user'       => auth()->user(),
+                'kit'        => $firstReport->kit,
+                'metrics'    => $reports->map(function($row) {
+                    return [
+                        'id'                    => $row->id,
+                        'biomarker_category_id' => $row->biomarker_category_id,
+                        'category_title'        => $row->biomarkerCategory->title ?? null,
+                        'subcategory_id'        => $row->biomarker_subcategory_id,
+                        'subcategory_title'     => $row->biomarkerSubcategory->title ?? null,
+                        'value'                 => $row->value,
+                        'unit'                  => $row->unit,
+                        'test_status'           => "Good",
+                        'status'                => $row->status,
+                    ];
+                })
+            ];
+        })->values();
+
+        // Pull the top/most recent report bundle package out
+        $lastReportBundle = $groupedCollection->first();
+
+        return response()->json([
+            'status'  => 'success',
             'message' => 'User reports bundle packages retrieved successfully.',
             'data'    => [
                 'last_report' => $lastReportBundle ?? null, 
-                'all_reports' => $paginatedReports
             ]
         ], 200);
     }
 
+    /**
+    * Get a specific report bundle package by inv_code
+    */
+    public function getReportByInvoice(Request $request, $invCode = null)
+    {
+        if (!auth()->check()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized access.'
+            ], 401);
+        }
+        $invoiceReference = $invCode ?? $request->query('inv_code');
+
+        if (empty($invoiceReference)) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Invoice code parameter is required.'
+            ], 400);
+        }
+
+        $userId = auth()->id();
+
+        $rawReports = BiomarkerReport::with([
+                'kit', 
+                'biomarkerCategory',
+                'biomarkerSubcategory'
+            ])
+            ->where('user_id', $userId)
+            ->where('inv_code', $invoiceReference)
+            ->get();
+
+        if ($rawReports->isEmpty()) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'No biomarker report package found matching the provided invoice code.'
+            ], 404);
+        }
+
+        $firstReport = $rawReports->first();
+        
+        $structuredBundle = [
+            'inv_code'   => $invoiceReference,
+            'created_at' => $firstReport->created_at,
+            'user'       => auth()->user(), 
+            'kit'        => $firstReport->kit,
+            'metrics'    => $rawReports->map(function($row) {
+                return [
+                    'id'                    => $row->id,
+                    'biomarker_category_id' => $row->biomarker_category_id,
+                    'category_title'        => $row->biomarkerCategory->title ?? null,
+                    'subcategory_id'        => $row->biomarker_subcategory_id,
+                    'subcategory_title'     => $row->biomarkerSubcategory->title ?? null,
+                    'value'                 => $row->value,
+                    'unit'                  => $row->unit,
+                    'test_status'           => "Good",
+                    'status'                => $row->status,
+                ];
+            })
+        ];
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Target biomarker invoice report package retrieved successfully.',
+            'data'    => $structuredBundle
+        ], 200);
+    }
+    
     public function create()
     {
         $users = User::all();

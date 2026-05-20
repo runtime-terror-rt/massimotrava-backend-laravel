@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\ScheduleRetestController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\SignUpController;
@@ -18,6 +19,8 @@ use App\Http\Controllers\SubscriptionPlanController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\AppleAuthController;
+use App\Http\Controllers\CampaignController;
+use App\Http\Controllers\ContentController;
 use App\Http\Controllers\LabController;
 use App\Http\Controllers\UserController;
 
@@ -106,6 +109,8 @@ Route::prefix('v1')->group(function () {
         Route::get('/biomarker-reports', [BiomarkerReportController::class, 'index']);
         Route::get('/get-reports', [BiomarkerReportController::class, 'getReports']);
         Route::get('/user/reports', [BiomarkerReportController::class, 'getUserReports']);
+        Route::get('/user/reports/all', [BiomarkerReportController::class, 'getAllReports']);
+        Route::get('/user/reports/details/{inv_code?}', [BiomarkerReportController::class, 'getReportByInvoice']);
 
         //Labs 
         Route::get('/labs', [LabController::class, 'index']);
@@ -116,5 +121,14 @@ Route::prefix('v1')->group(function () {
         Route::delete('/plans/{id}', [SubscriptionPlanController::class, 'destroy']);
         Route::post('/plans/toggle-status/{id}', [SubscriptionPlanController::class, 'toggleStatus']);
 
+        // Schedule Retest
+        Route::post('/retest/schedule', [ScheduleRetestController::class, 'storeSchedule']);
+        Route::get('/retest/my-schedules', [ScheduleRetestController::class, 'myRetestSchedules']);
+
+
+        Route::get('/contents', [ContentController::class, 'index']);
+        Route::post('/contents', [ContentController::class, 'store']);
+
+        Route::get('/campaigns', [CampaignController::class, 'index']);
     });
 });
