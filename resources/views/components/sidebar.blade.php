@@ -99,7 +99,7 @@
       <span>Notifications</span>
     </a>
     <a href="#" class="nav-item" data-tooltip="Notifications">
-      <i class="fa-brands fa-supportnow"></i>
+      <i class="fa-solid fa-handshake-angle"></i>
       <span>Support Tickets</span>
     </a>
     <a href="#" class="nav-item" data-tooltip="Notifications">
