@@ -6,7 +6,10 @@
 <div class="auth-wrapper">
     <div class="auth-card">
         <div class="auth-header">
-            <div class="auth-logo"><i class="fas fa-bolt"></i></div>
+            <div class="sidebar-brand" style="position: relative; height: 60px; display: block;">
+                <img src="{{ asset('images/logo.avif') }}" alt="Massimo Logo" 
+                    style="position: absolute !important; top: 15px !important; left: 50% !important; transform: translateX(-50%) !important; height: 38px !important; width: auto !important; object-fit: contain !important; max-width: 85% !important;">
+            </div>
             <h1 class="auth-title">Welcome Back</h1>
             <p class="auth-subtitle">Please enter your details to sign in</p>
         </div>
