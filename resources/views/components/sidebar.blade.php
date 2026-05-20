@@ -49,12 +49,29 @@
       <span>Sub Category</span>
     </a>
     
+    
     <a href="{{ route('admin.kits.index') }}" class="nav-item {{ request()->routeIs('admin.kits.index*') ? 'active' : '' }}" data-tooltip="Kit Manager">
       <i class="fa-solid fa-arrows-left-right"></i>
       <span>Kit Manager</span>
     </a>
 
+    <a href="#" class="nav-item {{ request()->routeIs('admin.biomarker-subcategories.index*') ? 'active' : '' }}" data-tooltip="Sub Category">
+      <i class="fa-solid fa-dollar-sign"></i>
+      <span>Payments</span>
+    </a>
+
     <div class="nav-section-label">System</div>
+
+    <a href="{{ route('admin.contents.index') }}" class="nav-item {{ request()->routeIs('admin.contents.index.index*') ? 'active' : '' }}" data-tooltip="Contents">
+      <i class="fa-solid fa-building-lock"></i>
+      <span>Contents</span>
+    </a>
+    
+    <a href="{{ route('admin.campaigns.index') }}" class="nav-item {{ request()->routeIs('admin.campaigns.index*') ? 'active' : '' }}" data-tooltip="Campaigns">
+      <i class="fa-solid fa-building-lock"></i>
+      <span>Campaigns</span>
+    </a>
+
 
     <a href="{{ route('admin.privacy-policy.index') }}" class="nav-item {{ request()->routeIs('admin.privacy-policy.index*') ? 'active' : '' }}" data-tooltip="Privacy Policy">
       <i class="fa-solid fa-building-lock"></i>
@@ -80,6 +97,14 @@
     <a href="#" class="nav-item" data-tooltip="Notifications">
       <i class="fa-solid fa-bell"></i>
       <span>Notifications</span>
+    </a>
+    <a href="#" class="nav-item" data-tooltip="Notifications">
+      <i class="fa-brands fa-supportnow"></i>
+      <span>Support Tickets</span>
+    </a>
+    <a href="#" class="nav-item" data-tooltip="Notifications">
+      <i class="fa-solid fa-arrow-up-right-dots"></i>
+      <span>Security & Audit Log</span>
     </a>
     
     <a href="#" class="nav-item" data-tooltip="Settings">

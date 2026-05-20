@@ -6,6 +6,8 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BiomarkerCategoryController;
 use App\Http\Controllers\BiomarkerReportController;
 use App\Http\Controllers\BiomarkerSubcategoryController;
+use App\Http\Controllers\CampaignController;
+use App\Http\Controllers\ContentController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\KitController;
 use App\Http\Controllers\LabController;
@@ -89,4 +91,12 @@ Route::prefix('admin')
             Route::get('role-permission/', [RolePermissionController::class, 'index'])->name('role-permission.index');
             Route::post('role-permission/save', [RolePermissionController::class, 'storeOrUpdate'])->name('role-permission.save');
             Route::delete('role-permission/{id}/delete', [RolePermissionController::class, 'destroy'])->name('role-permission.destroy');
+
+            Route::get('/contents/create', [ContentController::class, 'create'])->name('contents.create');
+            Route::get('/contents', [ContentController::class, 'index'])->name('contents.index');
+            Route::post('/contents', [ContentController::class, 'store'])->name('contents.store');
+
+            Route::get('/campaigns/create', [CampaignController::class, 'create'])->name('campaigns.create');
+            Route::get('/campaigns', [CampaignController::class, 'index'])->name('campaigns.index');
+            Route::post('/campaigns', [CampaignController::class, 'store'])->name('campaigns.store');
     });
