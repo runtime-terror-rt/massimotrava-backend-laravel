@@ -13,15 +13,21 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         
-        $middleware->statefulApi(); 
+        $middleware->web(append: [
+            \App\Http\Middleware\SetLocale::class,
+        ]);
 
+        $middleware->api(append: [
+            \App\Http\Middleware\SetLocale::class,
+        ]);
+
+        $middleware->statefulApi(); 
         $middleware->trustProxies(at: '*');
 
         $middleware->validateCsrfTokens(except: [
             'api/v1/*', 
         ]);
-    })
-    ->withMiddleware(function (Middleware $middleware) {
+
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
         ]);

@@ -1,4 +1,6 @@
 @extends('layouts.admin')
+@section('title', __('messages.rep_meta_title'))
+
 @if ($errors->any())
     <div style="background: rgba(239, 68, 68, 0.1); color: #f87171; padding: 15px; border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.2); margin-bottom: 25px;">
         <ul style="margin: 0; padding-left: 20px;">
@@ -8,28 +10,31 @@
         </ul>
     </div>
 @endif
+
 @section('content')
+{{-- Action Navigation Header --}}
 <div style="margin-bottom: 20px;">
     <a href="{{ route('admin.reports.index') }}" 
        style="display: inline-flex; align-items: center; gap: 8px; color: #94a3b8; text-decoration: none; font-size: 14px; background: #0f172a; padding: 10px 18px; border-radius: 8px; border: 1px solid #334155; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);"
        onmouseover="this.style.color='#f8fafc'; this.style.borderColor='#6366f1'; this.style.background='#1e293b';" 
        onmouseout="this.style.color='#94a3b8'; this.style.borderColor='#334155'; this.style.background='#0f172a';">
         <i class="fa-solid fa-arrow-left-long"></i> 
-        <span style="font-weight: 500;">Back to Report Lists</span>
+        <span style="font-weight: 500;">{{ __('messages.btn_back_to_list') }}</span>
     </a>
 </div>
+
+{{-- Main Form Container --}}
 <div class="report-container" style="max-width: 1100px; margin: 30px auto; padding: 30px; background: #1e293b; border-radius: 12px; color: white; font-family: sans-serif;">
-    <h2 style="margin-bottom: 25px; font-size: 24px;">Add Biomarker Report</h2>
+    <h2 style="margin-bottom: 25px; font-size: 24px;">{{ __('messages.rep_header_add') }}</h2>
 
     <form action="{{ route('admin.reports.store') }}" method="POST">
         @csrf
 
-        <!-- User & Kit Selection -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 20px;">
             <div>
-                <label style="color: #94a3b8; display: block; margin-bottom: 8px; font-size: 14px;">Select User</label>
+                <label style="color: #94a3b8; display: block; margin-bottom: 8px; font-size: 14px;">{{ __('messages.lbl_select_user') }} <span class="text-danger">*</span></label>
                 <select name="user_id" id="user_id_select" style="width: 100%; background: #0f172a; color: white; border: 1px solid #334155; padding: 12px; border-radius: 8px;" required>
-                    <option value="">-- Select User --</option>
+                    <option value="">-- {{ __('messages.opt_select_user') }} --</option>
                     @foreach($users as $user)
                         <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
                     @endforeach
@@ -37,26 +42,26 @@
             </div>
 
             <div>
-                <label style="color: #94a3b8; display: block; margin-bottom: 8px; font-size: 14px;">Select Kit</label>
+                <label style="color: #94a3b8; display: block; margin-bottom: 8px; font-size: 14px;">{{ __('messages.lbl_select_kit') }} <span class="text-danger">*</span></label>
                 <select name="kit_id" id="kit_id_select" style="width: 100%; background: #0f172a; color: white; border: 1px solid #334155; padding: 12px; border-radius: 8px;" required>
-                    <option value="">-- First Select a User --</option>
+                    <option value="">-- {{ __('messages.opt_first_select_user') }} --</option>
                 </select>
             </div>
         </div>
 
         <hr style="border: 0; border-top: 1px solid #334155; margin: 30px 0;">
 
-        <div id="categories-master-container">
-        </div>
+        {{-- Dynamic Repeater Target Target Injection Point --}}
+        <div id="categories-master-container"></div>
 
         <div style="margin-top: 20px; display: flex; gap: 10px;">
-            <button type="button" id="add-category-btn" style="background: #6366f1; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                <i class="fa fa-plus"></i> Add New Category Block
+            <button type="button" id="add-category-btn" style="background: #6366f1; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                <i class="fa fa-plus me-1"></i> {{ __('messages.btn_add_category_block') }}
             </button>
         </div>
 
-        <button type="submit" style="width: 100%; background: #22c55e; color: white; border: none; padding: 15px; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 30px;">
-            Save All Categories & Reports
+        <button type="submit" style="width: 100%; background: #22c55e; color: white; border: none; padding: 15px; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 30px; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+            {{ __('messages.btn_save_all_reports') }}
         </button>
     </form>
 </div>
@@ -66,41 +71,60 @@
     $(document).ready(function() {
         let catIdx = 0;
 
+        // JS Localization Translation Node Matrix
+        const localeMatrix = {
+            searchingKits: "{{ __('messages.js_searching_kits') }}",
+            selectKitDefault: "{{ __('messages.opt_select_kit') }}",
+            lblSelectCategory: "{{ __('messages.lbl_select_biomarker_category') }}",
+            optSelectCategory: "{{ __('messages.opt_select_category') }}",
+            btnRemove: "{{ __('messages.btn_remove') }}",
+            btnAddSubValue: "{{ __('messages.btn_add_subcategory_value') }}",
+            phValue: "{{ __('messages.ph_biomarker_value') }}",
+            alertNoSubs: "{{ __('messages.js_alert_no_subcategories') }}"
+        };
+
+        // Populate Categories options into JS memory for safe inline injection
+        const categoryOptionsHtml = `
+            <option value="">-- ${localeMatrix.optSelectCategory} --</option>
+            @foreach($categories as $category)
+                <option value="{{ $category->id }}">{{ addslashes($category->title) }}</option>
+            @endforeach
+        `;
+
+        // Realtime Kit Fetch Triggers via Ajax
         $('#user_id_select').on('change', function() {
             let userId = $(this).val();
             let $kitSelect = $('#kit_id_select');
-            $kitSelect.html('<option value="">Searching kits...</option>');
+            $kitSelect.html(`<option value="">${localeMatrix.searchingKits}</option>`);
             if(userId) {
                 $.get("{{ route('admin.get-user-kits') }}", { user_id: userId }, function(data) {
-                    $kitSelect.empty().append('<option value="">-- Select Kit --</option>');
+                    $kitSelect.empty().append(`<option value="">-- ${localeMatrix.selectKitDefault} --</option>`);
                     data.forEach(kit => {
                         $kitSelect.append(`<option value="${kit.id}">${kit.activation_code} [${kit.inv_code}]</option>`);
                     });
                 });
+            } else {
+                $kitSelect.html(`<option value="">-- {{ __('messages.opt_first_select_user') }} --</option>`);
             }
         });
 
+        // Add Category Block Layer
         $('#add-category-btn').on('click', function() {
             let categoryHtml = `
             <div class="category-block" data-cat-id="${catIdx}" style="background: #1e293b; border: 1px solid #475569; padding: 20px; border-radius: 12px; margin-bottom: 25px; position: relative;">
-                <button type="button" class="remove-category-btn" style="position: absolute; right: 15px; top: 50px; background: #ef4444; color: white; border: none; border-radius: 5px; cursor: pointer; padding: 5px 10px;">Remove</button>
+                <button type="button" class="remove-category-btn" style="position: absolute; right: 15px; top: 55px; background: #ef4444; color: white; border: none; border-radius: 5px; cursor: pointer; padding: 5px 12px; font-size: 13px;">${localeMatrix.btnRemove}</button>
                 
                 <div style="margin-bottom: 20px; width: 80%;">
-                    <label style="color: #94a3b8; display: block; margin-bottom: 8px; font-size: 14px;">Select Biomarker Category</label>
+                    <label style="color: #94a3b8; display: block; margin-bottom: 8px; font-size: 14px;">${localeMatrix.lblSelectCategory} <span class="text-danger">*</span></label>
                     <select name="categories[${catIdx}][id]" class="category-select" style="width: 100%; background: #0f172a; color: white; border: 1px solid #334155; padding: 12px; border-radius: 8px;" required>
-                        <option value="">-- Select Category --</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category->id }}">{{ $category->title }}</option>
-                        @endforeach
+                        ${categoryOptionsHtml}
                     </select>
                 </div>
 
-                <div class="subcategories-container" style="margin-left: 20px; border-left: 2px solid #334155; padding-left: 20px;">
-                
-                </div>
+                <div class="subcategories-container" style="margin-left: 20px; border-left: 2px solid #334155; padding-left: 20px;"></div>
 
                 <button type="button" class="add-sub-btn" style="margin-top: 10px; background: #38bdf8; color: #0f172a; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; display:none;">
-                    + Add Subcategory Value
+                    + ${localeMatrix.btnAddSubValue}
                 </button>
             </div>`;
             
@@ -108,6 +132,7 @@
             catIdx++;
         });
 
+        // Category Selection Update Callback Pipeline
         $(document).on('change', '.category-select', function() {
             let $select = $(this);
             let categoryId = $select.val();
@@ -126,7 +151,7 @@
                         addSubRow(currentCatIdx, $subContainer, data);
                     } else {
                         $addBtn.hide();
-                        alert('No subcategories found.');
+                        alert(localeMatrix.alertNoSubs);
                     }
                 });
             } else {
@@ -134,6 +159,7 @@
             }
         });
 
+        // Add Subcategory Metric Fields Row
         $(document).on('click', '.add-sub-btn', function() {
             let $block = $(this).closest('.category-block');
             let currentCatIdx = $block.data('cat-id');
@@ -154,9 +180,9 @@
                     </select>
                 </div>
                 <div>
-                    <input type="number" step="0.01" name="categories[${cIdx}][reports][${subIdx}][value]" style="width: 100%; background: #1e293b; color: white; border: 1px solid #334155; padding: 10px; border-radius: 6px;" placeholder="Value" required>
+                    <input type="number" step="0.01" name="categories[${cIdx}][reports][${subIdx}][value]" style="width: 100%; background: #1e293b; color: white; border: 1px solid #334155; padding: 10px; border-radius: 6px;" placeholder="${localeMatrix.phValue}" required>
                 </div>
-                <button type="button" class="remove-sub-btn" style="background: transparent; color: #ef4444; border: none; cursor: pointer; font-size: 18px;">
+                <button type="button" class="remove-sub-btn" style="background: transparent; color: #ef4444; border: none; cursor: pointer; font-size: 18px;" title="${localeMatrix.btnRemove}">
                     <i class="fa fa-times-circle"></i>
                 </button>
             </div>`;
@@ -164,6 +190,7 @@
             container.append(html);
         }
 
+        // Element Removal Implementations
         $(document).on('click', '.remove-category-btn', function() {
             $(this).closest('.category-block').remove();
         });

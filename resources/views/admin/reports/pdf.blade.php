@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Biomarker Medical Report</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>{{ __('messages.pdf_title') }}</title>
     <style>
         @page { margin: 40px; }
         body {
@@ -52,7 +53,7 @@
         .label {
             color: #64748b;
             font-weight: bold;
-            width: 100px;
+            width: 110px; /* Slight buffer for translated text lengths */
         }
 
         /* REPORT TABLES */
@@ -124,58 +125,58 @@
 
 <body>
 
-    {{-- HEADER --}}
+    {{-- HEADER MODULE --}}
     <table class="header-table">
         <tr>
             <td style="border:none;">
                 <div class="header-title">Massimotrava Hospital Limited</div>
-                <div style="color: #6366f1; font-weight: bold;">Biomarker Analysis Report</div>
+                <div style="color: #6366f1; font-weight: bold;">{{ __('messages.pdf_subtitle') }}</div>
             </td>
             <td class="header-meta" style="border:none;">
-                <strong>Date:</strong> {{ date('d M Y') }}<br>
-                <strong>Time:</strong> {{ date('h:i A') }}<br>
-                <strong>Report ID:</strong> {{ $reports->first()->inv_code ?? 'N/A' }}
+                <strong>{{ __('messages.pdf_lbl_date') }}:</strong> {{ date('d M Y') }}<br>
+                <strong>{{ __('messages.pdf_lbl_time') }}:</strong> {{ date('h:i A') }}<br>
+                <strong>{{ __('messages.pdf_lbl_report_id') }}:</strong> {{ $reports->first()->inv_code ?? __('messages.lbl_not_available') }}
             </td>
         </tr>
     </table>
 
-    {{-- PATIENT INFO --}}
+    {{-- PATIENT DATA COORDINATES --}}
     <div class="info-section">
         <table class="info-table">
             <tr>
-                <td class="label">Patient Name:</td>
-                <td style="font-weight: bold; font-size: 14px;">{{ $specificUser->name ?? ($reports->first()->user->name ?? 'N/A') }}</td>
-                <td class="label">Kit ID:</td>
-                <td>{{ $reports->first()->kit->activation_code ?? 'N/A' }}</td>
+                <td class="label">{{ __('messages.pdf_lbl_patient_name') }}:</td>
+                <td style="font-weight: bold; font-size: 14px;">{{ $specificUser->name ?? ($reports->first()->user->name ?? __('messages.lbl_not_available')) }}</td>
+                <td class="label">{{ __('messages.lbl_select_kit') }} ID:</td>
+                <td>{{ $reports->first()->kit->activation_code ?? __('messages.lbl_not_available') }}</td>
             </tr>
             <tr>
-                <td class="label">Email:</td>
-                <td>{{ $specificUser->email ?? ($reports->first()->user->email ?? 'N/A') }}</td>
-                <td class="label">Invoice:</td>
-                <td><span class="inv-badge">{{ $reports->first()->inv_code ?? 'N/A' }}</span></td>
+                <td class="label">{{ __('messages.th_user_info') }} (Email):</td>
+                <td>{{ $specificUser->email ?? ($reports->first()->user->email ?? __('messages.lbl_not_available')) }}</td>
+                <td class="label">{{ __('messages.th_date_invoice') }}:</td>
+                <td><span class="inv-badge">{{ $reports->first()->inv_code ?? __('messages.lbl_not_available') }}</span></td>
             </tr>
         </table>
     </div>
 
-    {{-- RESULTS GROUPED BY CATEGORY --}}
+    {{-- RESULTS SEGMENTED BY CATEGORY NODES --}}
     @forelse($reports->groupBy('biomarker_category_id') as $categoryId => $group)
         <div class="category-title">
-            {{ $group->first()->biomarkerCategory->title ?? 'General Category' }}
+            {{ $group->first()->biomarkerCategory->title ?? __('messages.opt_select_category') }}
         </div>
         <table>
             <thead>
                 <tr>
-                    <th style="width: 45%;">Test Name</th>
-                    <th style="width: 20%; text-align: center;">Result</th>
-                    <th style="width: 15%; text-align: center;">Unit</th>
-                    <th style="width: 20%; text-align: center;">Status</th>
+                    <th style="width: 45%;">{{ __('messages.pdf_th_test_name') }}</th>
+                    <th style="width: 20%; text-align: center;">{{ __('messages.th_result') }}</th>
+                    <th style="width: 15%; text-align: center;">{{ __('messages.pdf_th_unit') }}</th>
+                    <th style="width: 20%; text-align: center;">{{ __('messages.th_status') }}</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($group as $report)
                 <tr>
                     <td style="color: #1e293b; font-weight: 500;">
-                        {{ optional($report->biomarkerSubcategory)->title ?? 'N/A' }}
+                        {{ optional($report->biomarkerSubcategory)->title ?? __('messages.lbl_not_available') }}
                     </td>
                     <td style="text-align: center; font-weight: bold; font-size: 13px;">
                         {{ $report->value }}
@@ -185,9 +186,9 @@
                     </td>
                     <td style="text-align: center;">
                         @if($report->status)
-                            <span class="status normal">NORMAL</span>
+                            <span class="status normal">{{ __('messages.pdf_badge_normal') }}</span>
                         @else
-                            <span class="status abnormal">ABNORMAL</span>
+                            <span class="status abnormal">{{ __('messages.pdf_badge_abnormal') }}</span>
                         @endif
                     </td>
                 </tr>
@@ -196,21 +197,20 @@
         </table>
     @empty
         <div style="text-align:center; padding: 50px; color: #94a3b8;">
-            No records found for this report.
+            {{ __('messages.lbl_no_reports_found') }}
         </div>
     @endforelse
 
-    {{-- FOOTER --}}
+    {{-- FOOTER LAYER --}}
     <div class="footer">
         <div style="margin-bottom: 5px; color: #475569; font-weight: bold;">
-            Confidential Health Document - For Professional Use Only
+            {{ __('messages.pdf_footer_confidential') }}
         </div>
         <div>
-            This is a computer-generated report and does not require a physical signature. 
-            The results are based on the biomarker data provided at the time of testing.
+            {{ __('messages.pdf_footer_disclaimer') }}
         </div>
         <div style="margin-top: 5px;">
-            Page 1 of 1
+            {{ __('messages.pdf_page_numbering', ['current' => 1, 'total' => 1]) }}
         </div>
     </div>
 

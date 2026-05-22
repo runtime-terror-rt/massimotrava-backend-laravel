@@ -1,69 +1,104 @@
 @extends('layouts.admin')
 
+@section('title', __('messages.kit_management') . ' - Massimotrava')
+
 @section('content')
-<div class="table-warp" style="padding: 20px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-        <h2 style="color: white; margin: 0;">Kit Management</h2>
+<div class="container-fluid px-4 py-4" style="background-color: #0f172a; min-h: 100vh; color: #f1f5f9;">
+    
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-2">
+        <div>
+            <h1 class="h3 font-weight-bold text-white mb-1" style="font-family: 'Syne', sans-serif;">
+                {{ __('messages.kit_management') }}
+            </h1>
+            <p class="text-sm mb-0" style="color: #94a3b8; font-family: 'DM Sans', sans-serif;">
+                {{ __('messages.kit_subtitle') }}
+            </p>
+        </div>
         
-        {{-- কিট অ্যাক্টিভেট করার ছোট ফর্ম --}}
-        <form action="{{ route('admin.kits.activate') }}" method="POST" style="display: flex; gap: 10px;">
+        <form action="{{ route('admin.kits.activate') }}" method="POST" class="d-flex gap-2">
             @csrf
-            <input type="text" name="activation_code" placeholder="Enter Activation Code" required 
-                   style="background: #0f172a; border: 1px solid #334155; color: white; padding: 8px 15px; border-radius: 6px;">
-            <button type="submit" style="background: #6366f1; color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer;">
-                Activate Kit
+            <input type="text" name="activation_code" placeholder="{{ __('messages.enter_activation_code') }}" required 
+                   class="form-control px-3 py-2 text-sm" style="min-width: 220px; background: #0f172a; border: 1px solid #334155; color: white;">
+            
+            <button type="submit" class="btn text-white font-weight-bold text-sm px-4" style="background: #6366f1; border: none; border-radius: 6px;">
+                <i class="fa-solid fa-key me-1"></i> {{ __('messages.activate_kit') }}
             </button>
         </form>
     </div>
 
     @if(session('success'))
-        <div style="background: rgba(34, 197, 94, 0.2); color: #4ade80; padding: 12px; border-radius: 6px; margin-bottom: 20px;">
-            {{ session('success') }}
+        <div class="alert text-emerald-400 border-0 mb-4" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2) !important;">
+            <i class="fa-regular fa-circle-check me-2"></i> {{ session('success') }}
         </div>
     @endif
 
-    <table class="admin-table" style="width: 100%; border-collapse: collapse;">
-        <thead>
-            <tr style="text-align: left; border-bottom: 2px solid #334155;">
-                <th style="padding: 12px;">Activation Code</th>
-                <th>Invoice Code</th>
-                <th>User</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($kits as $kit)
-            <tr style="border-bottom: 1px solid #1e293b;">
-                <td style="padding: 15px; color: #6366f1; font-weight: bold;">{{ $kit->activation_code }}</td>
-                <td><code style="color: #94a3b8;">{{ $kit->inv_code }}</code></td>
-                <td>
-                    <div style="display: flex; flex-direction: column;">
-                        <span style="color: white;">{{ $kit->user->name ?? 'N/A' }}</span>
-                        <small style="color: #64748b;">{{ $kit->user->email ?? '' }}</small>
-                    </div>
-                </td>
-                <td>
-                    <span style="padding: 4px 10px; border-radius: 20px; font-size: 11px; background: {{ $kit->status ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)' }}; color: {{ $kit->status ? '#4ade80' : '#f87171' }}; border: 1px solid {{ $kit->status ? '#22c55e' : '#ef4444' }};">
-                        {{ $kit->status ? 'Active' : 'Inactive' }}
-                    </span>
-                </td>
-                <td>
-                    <form action="{{ route('admin.kits.destroy', $kit->id) }}" method="POST" onsubmit="return confirm('Delete this kit?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" style="background: none; border: none; color: #ef4444; cursor: pointer;">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+    <div class="card border-0 overflow-hidden shadow-lg" style="background: #1e293b; border-radius: 12px; border: 1px solid #334155 !important; font-family: 'DM Sans', sans-serif;">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle" style="color: #cbd5e1;">
+                <thead style="background: rgba(15, 23, 42, 0.4);">
+                    <tr style="color: #94a3b8; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #334155;">
+                        <th class="px-4 py-3 border-0">{{ __('messages.activation_code') }}</th>
+                        <th class="px-4 py-3 border-0">{{ __('messages.invoice_code') }}</th>
+                        <th class="px-4 py-3 border-0">{{ __('messages.user') }}</th>
+                        <th class="px-4 py-3 border-0">{{ __('messages.status') }}</th>
+                        <th class="px-4 py-3 border-0 text-center">{{ __('messages.action') }}</th>
+                    </tr>
+                </thead>
+                <tbody style="border-top: none;">
+                    @forelse($kits as $kit)
+                        <tr style="border-bottom: 1px solid rgba(51, 65, 85, 0.4);">
+                            <td class="px-4 py-3 font-weight-bold" style="color: #6366f1;">
+                                {{ $kit->activation_code }}
+                            </td>
+                            
+                            <td class="px-4 py-3">
+                                <code style="color: #94a3b8; font-family: monospace;">{{ $kit->inv_code }}</code>
+                            </td>
+                            
+                            <td class="px-4 py-3">
+                                <div class="d-flex flex-column">
+                                    <span class="text-white font-weight-medium mb-0">{{ $kit->user->name ?? __('messages.not_available') }}</span>
+                                    <small style="color: #64748b; font-size: 11px;">{{ $kit->user->email ?? '' }}</small>
+                                </div>
+                            </td>
+                            
+                            <td class="px-4 py-3">
+                                @if($kit->status)
+                                    <span class="badge px-2.5 py-1.5" style="background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 20px;">
+                                        ● {{ __('messages.status_active') }}
+                                    </span>
+                                @else
+                                    <span class="badge px-2.5 py-1.5" style="background: rgba(244, 63, 94, 0.1); color: #f43f5e; border: 1px solid rgba(244, 63, 94, 0.2); border-radius: 20px;">
+                                        ● {{ __('messages.status_inactive') }}
+                                    </span>
+                                @endif
+                            </td>
+                            
+                            <td class="px-4 py-3 text-center">
+                                <form action="{{ route('admin.kits.destroy', $kit->id) }}" method="POST" onsubmit="return confirm('{{ __('messages.delete_confirm') }}')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn p-0 border-0 bg-transparent" style="color: #f43f5e; transition: color 0.2s;">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="px-4 py-5 text-center text-muted" style="font-size: 14px;">
+                                <i class="fa-solid fa-box-open d-block mb-2 fs-3 style-color: #64748b;"></i> 
+                                {{ __('messages.no_kits_found') }}
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    <div style="margin-top: 20px;">
-        {{ $kits->links() }}
+    <div class="mt-4 d-flex justify-content-end">
+        {{ $kits->appends(request()->query())->links() }}
     </div>
 </div>
 @endsection

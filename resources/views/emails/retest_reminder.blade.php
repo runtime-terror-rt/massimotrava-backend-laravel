@@ -9,7 +9,7 @@
         <h2 style="color: #f59e0b; border-bottom: 1px solid #334155; padding-bottom: 15px; margin-top: 0;">⏰ Retest Reminder!</h2>
         
         <p style="font-size: 15px; line-height: 1.6; color: #94a3b8;">
-            Hello {{ $schedule->user->name ?? 'User' }}, eiti ekti gentle reminder je apnar biomarker retest session-ti **agamikal** onusthito hote jachche.
+            Hello {{ $schedule->user->name ?? 'User' }}, this is a gentle reminder that your biomarker retest session is scheduled for **tomorrow**.
         </p>
 
         <div style="background: #0f172a; border-radius: 8px; padding: 20px; margin: 25px 0; border-left: 4px solid #f59e0b;">
