@@ -26,7 +26,7 @@ Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 
 
 Route::get('/lang/{locale}', function ($locale) {
-    if (in_array($locale, ['en', 'it'])) {
+    if (in_array($locale, ['en', 'it', 'de'])) {
         Session::put('locale', $locale);
     }
     return redirect()->back();
@@ -51,6 +51,7 @@ Route::prefix('admin')
             Route::get('get/lab/users', [UserController::class, 'getLabUsers'])->name('get.lab.users');
             Route::delete('/users/delete/{id}', [UserController::class, 'destroy'])->name('users.delete');
             Route::post('/lab-users/store', [AdminController::class, 'storeLabUser'])->name('lab-users.store');
+            Route::delete('/lab-users/{id}', [AdminController::class, 'labUsersDestroy'])->name('lab-users.destroy');
 
             // Central Analytics Dashboard
             Route::get('/', [DashboardController::class, 'index'])->name('dashboard');

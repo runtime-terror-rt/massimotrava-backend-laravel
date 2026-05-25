@@ -27,35 +27,56 @@
     {{-- 🌐 DYNAMIC LANGUAGE SWITCHER WITH SVG FLAGS --}}
     <div class="lang-dropdown" style="position: relative; z-index: 999999 !important;">
       <button class="lang-btn" onclick="toggleLangMenu(event)" 
-              style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); color: #f1f5f9; padding: 6px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; transition: 0.2s;">
+        style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); color: #f1f5f9; padding: 6px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; transition: 0.2s;">
+        
         @if(App::getLocale() === 'it')
-          <img src="https://flagcdn.com/16x12/it.png" width="16" height="12" alt="Italy Flag" style="border-radius: 2px; object-fit: cover;">
-          <span>IT</span>
+            <img src="https://flagcdn.com/16x12/it.png" width="16" height="12" alt="Italy Flag" style="border-radius: 2px; object-fit: cover;">
+            <span>IT</span>
+        @elseif(App::getLocale() === 'de')
+            <img src="https://flagcdn.com/16x12/de.png" width="16" height="12" alt="Germany Flag" style="border-radius: 2px; object-fit: cover;">
+            <span>DE</span>
         @else
-          <img src="https://flagcdn.com/16x12/gb.png" width="16" height="12" alt="UK Flag" style="border-radius: 2px; object-fit: cover;">
-          <span>EN</span>
+            <img src="https://flagcdn.com/16x12/gb.png" width="16" height="12" alt="UK Flag" style="border-radius: 2px; object-fit: cover;">
+            <span>EN</span>
         @endif
+        
         <i class="fa-solid fa-chevron-down" style="font-size: 10px; color: #94a3b8; transition: transform 0.2s;" id="langChevron"></i>
       </button>
       
       <ul class="custom-lang-menu" id="customLangMenu" 
-          style="display: none; position: absolute; right: 0; top: calc(100% + 6px); min-width: 140px; background: #161b27; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); padding: 4px; list-style: none; margin: 0;">
-        <li>
-          <a href="{{ route('lang.switch', 'en') }}" 
-             style="color: {{ App::getLocale() === 'en' ? '#6366f1' : '#cbd5e1' }}; font-size: 13px; padding: 8px 12px; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; background: {{ App::getLocale() === 'en' ? 'rgba(99, 102, 241, 0.08)' : 'transparent' }}; font-weight: {{ App::getLocale() === 'en' ? '600' : 'normal' }};">
-            <img src="https://flagcdn.com/16x12/gb.png" width="16" height="12" alt="English">
-            English
-          </a>
-        </li>
+        style="display: none; position: absolute; right: 0; top: calc(100% + 6px); min-width: 140px; background: #161b27; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); padding: 4px; list-style: none; margin: 0; z-index: 999;">
+        
         <li>
           <a href="{{ route('lang.switch', 'it') }}" 
-             style="color: {{ App::getLocale() === 'it' ? '#6366f1' : '#cbd5e1' }}; font-size: 13px; padding: 8px 12px; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; background: {{ App::getLocale() === 'it' ? 'rgba(99, 102, 241, 0.08)' : 'transparent' }}; font-weight: {{ App::getLocale() === 'it' ? '600' : 'normal' }};">
-            <img src="https://flagcdn.com/16x12/it.png" width="16" height="12" alt="Italiano">
+            style="color: {{ App::getLocale() === 'it' ? '#6366f1' : '#cbd5e1' }}; font-size: 13px; padding: 8px 12px; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; background: {{ App::getLocale() === 'it' ? 'rgba(99, 102, 241, 0.08)' : 'transparent' }}; font-weight: {{ App::getLocale() === 'it' ? '600' : 'normal' }}; transition: background 0.2s, color 0.2s;"
+            onmouseover="this.style.background='{{ App::getLocale() === 'it' ? 'rgba(99, 102, 241, 0.12)' : 'rgba(255,255,255,0.04)' }}'"
+            onmouseout="this.style.background='{{ App::getLocale() === 'it' ? 'rgba(99, 102, 241, 0.08)' : 'transparent' }}'">
+            <img src="https://flagcdn.com/16x12/it.png" width="16" height="12" alt="Italiano" style="border-radius: 1px; object-fit: cover;">
             Italiano
           </a>
         </li>
-      </ul>
-    </div>
+        <li>
+          <a href="{{ route('lang.switch', 'en') }}" 
+            style="color: {{ App::getLocale() === 'en' ? '#6366f1' : '#cbd5e1' }}; font-size: 13px; padding: 8px 12px; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; background: {{ App::getLocale() === 'en' ? 'rgba(99, 102, 241, 0.08)' : 'transparent' }}; font-weight: {{ App::getLocale() === 'en' ? '600' : 'normal' }}; transition: background 0.2s, color 0.2s;"
+            onmouseover="this.style.background='{{ App::getLocale() === 'en' ? 'rgba(99, 102, 241, 0.12)' : 'rgba(255,255,255,0.04)' }}'"
+            onmouseout="this.style.background='{{ App::getLocale() === 'en' ? 'rgba(99, 102, 241, 0.08)' : 'transparent' }}'">
+            <img src="https://flagcdn.com/16x12/gb.png" width="16" height="12" alt="English" style="border-radius: 1px; object-fit: cover;">
+            English
+          </a>
+        </li>
+        
+
+        <li>
+          <a href="{{ route('lang.switch', 'de') }}" 
+            style="color: {{ App::getLocale() === 'de' ? '#6366f1' : '#cbd5e1' }}; font-size: 13px; padding: 8px 12px; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; background: {{ App::getLocale() === 'de' ? 'rgba(99, 102, 241, 0.08)' : 'transparent' }}; font-weight: {{ App::getLocale() === 'de' ? '600' : 'normal' }}; transition: background 0.2s, color 0.2s;"
+            onmouseover="this.style.background='{{ App::getLocale() === 'de' ? 'rgba(99, 102, 241, 0.12)' : 'rgba(255,255,255,0.04)' }}'"
+            onmouseout="this.style.background='{{ App::getLocale() === 'de' ? 'rgba(99, 102, 241, 0.08)' : 'transparent' }}'">
+            <img src="https://flagcdn.com/16x12/de.png" width="16" height="12" alt="Deutsch" style="border-radius: 1px; object-fit: cover;">
+            Deutsch
+          </a>
+        </li>
+    </ul>
+  </div>
 
     {{-- Notifications --}}
     <button class="icon-btn" title="Notifications">

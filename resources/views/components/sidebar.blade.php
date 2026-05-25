@@ -17,62 +17,81 @@
       <span>Dashboard</span>
     </a>
     
+    @can('manage-labs')
     <a href="{{ route('admin.labs.index') }}" class="nav-item {{ request()->routeIs('admin.labs.index*') ? 'active' : '' }}" data-tooltip="Labs">
       <i class="fa-solid fa-building"></i>
       <span>Lab</span>
     </a>
+    @endcan
     
+    @can('manage-laboratorians')
     <a href="{{ route('admin.get.lab.users') }}" class="nav-item {{ request()->routeIs('admin.get.lab.users*') ? 'active' : '' }}" data-tooltip="Laboratorian">
       <i class="fa-solid fa-users-gear"></i>
       <span>Laboratorian</span>
     </a>
+    @endcan
     
+    @can('view-reports')
     <a href="{{ route('admin.reports.index') }}" class="nav-item {{ request()->routeIs('admin.reports*') ? 'active' : '' }}" data-tooltip="Reports">
       <i class="fa-solid fa-chart-bar"></i>
       <span>Reports</span>
     </a>
+    @endcan
 
     <div class="nav-section-label">Management</div>
 
+    @can('manage-users')
     <a href="{{ route('admin.get.users') }}" class="nav-item {{ request()->routeIs('admin.get.users*') ? 'active' : '' }}" data-tooltip="Users">
       <i class="fa-solid fa-users"></i>
       <span>Users</span>
     </a>
+    @endcan
     
+    @can('manage-categories')
     <a href="{{ route('admin.category.index') }}" class="nav-item {{ request()->routeIs('admin.category.index*') ? 'active' : '' }}" data-tooltip="Category">
       <i class="fa-solid fa-table-cells-large"></i>
       <span>Category</span>
     </a>
+    @endcan
     
+    @can('manage-subcategories')
     <a href="{{ route('admin.biomarker-subcategories.index') }}" class="nav-item {{ request()->routeIs('admin.biomarker-subcategories.index*') ? 'active' : '' }}" data-tooltip="Sub Category">
       <i class="fa-solid fa-table-list"></i>
       <span>Sub Category</span>
     </a>
+    @endcan
     
-    
+    @can('manage-kits')
     <a href="{{ route('admin.kits.index') }}" class="nav-item {{ request()->routeIs('admin.kits.index*') ? 'active' : '' }}" data-tooltip="Kit Manager">
       <i class="fa-solid fa-arrows-left-right"></i>
       <span>Kit Manager</span>
     </a>
+    @endcan
 
-    <a href="#" class="nav-item {{ request()->routeIs('admin.biomarker-subcategories.index*') ? 'active' : '' }}" data-tooltip="Sub Category">
+    @can('view-payments')
+    <a href="#" class="nav-item" data-tooltip="Payments">
       <i class="fa-solid fa-dollar-sign"></i>
       <span>Payments</span>
     </a>
+    @endcan
 
     <div class="nav-section-label">System</div>
 
+    @can('manage-contents')
     <a href="{{ route('admin.contents.index') }}" class="nav-item {{ request()->routeIs('admin.contents.index.index*') ? 'active' : '' }}" data-tooltip="Contents">
       <i class="fa-solid fa-building-lock"></i>
       <span>Contents</span>
     </a>
+    @endcan
     
+    @can('manage-campaigns')
     <a href="{{ route('admin.campaigns.index') }}" class="nav-item {{ request()->routeIs('admin.campaigns.index*') ? 'active' : '' }}" data-tooltip="Campaigns">
       <i class="fa-solid fa-building-lock"></i>
       <span>Campaigns</span>
     </a>
+    @endcan
 
-
+    @can('manage-settings')
     <a href="{{ route('admin.privacy-policy.index') }}" class="nav-item {{ request()->routeIs('admin.privacy-policy.index*') ? 'active' : '' }}" data-tooltip="Privacy Policy">
       <i class="fa-solid fa-building-lock"></i>
       <span>Privacy Policy</span>
@@ -82,39 +101,32 @@
       <i class="fa-solid fa-circle-question"></i>
       <span>FAQ</span>
     </a>
+    @endcan
     
+    @can('manage-courier')
     <a href="#" class="nav-item" data-tooltip="Courier">
       <i class="fa-solid fa-cart-shopping"></i>
       <span>Courier</span>
     </a>
+    @endcan
     
-    {{-- Fixed Icon and Active State Route matching --}}
+    @can('manage-roles-permissions')
     <a href="{{ route('admin.role-permission.index') }}" class="nav-item {{ request()->routeIs('admin.role-permission.index*') ? 'active' : '' }}" data-tooltip="Role & Permission">
       <i class="fa-solid fa-shield-halved"></i>
       <span>Role & Permission</span>
     </a>
+    @endcan
     
-    <a href="#" class="nav-item" data-tooltip="Notifications">
-      <i class="fa-solid fa-bell"></i>
-      <span>Notifications</span>
-    </a>
-    <a href="#" class="nav-item" data-tooltip="Notifications">
-      <i class="fa-solid fa-handshake-angle"></i>
-      <span>Support Tickets</span>
-    </a>
-    <a href="#" class="nav-item" data-tooltip="Notifications">
+    @can('view-audit-logs')
+    <a href="#" class="nav-item" data-tooltip="Security & Audit Log">
       <i class="fa-solid fa-arrow-up-right-dots"></i>
       <span>Security & Audit Log</span>
     </a>
-    
-    <a href="#" class="nav-item" data-tooltip="Settings">
-      <i class="fa-solid fa-gear"></i>
-      <span>Settings</span>
-    </a>
+    @endcan
 
   </nav>
 
-  {{-- Sidebar Footer: Auth User --}}
+  {{-- Sidebar Footer --}}
   <div class="sidebar-footer" style="padding: 15px 20px; border-top: 1px solid var(--border, #1e293b); text-align: center;">
     <div class="footer-content" style="display: flex; flex-direction: column; gap: 2px;">
         <span style="font-size: 12px; color: #64748b; font-weight: 500; letter-spacing: 0.3px;">
@@ -125,5 +137,4 @@
         </span>
     </div>
   </div>
-
 </aside>

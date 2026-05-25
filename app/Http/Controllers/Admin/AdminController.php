@@ -146,16 +146,18 @@ class AdminController extends Controller
 
         try {
             $user = User::create([
-                'name'           => $request->name,
-                'email'          => $request->email,
-                'phone'          => $request->phone,
-                'password'       => Hash::make($request->password),
-                'lab_id'         => $request->lab_id,
-                'age'            => $request->age,
-                'gender'         => $request->gender,
-                'status'         => true,
+                'name'              => $request->name,
+                'email'             => $request->email,
+                'phone'             => $request->phone,
+                'password'          => \Hash::make($request->password),
+                'lab_id'            => $request->lab_id,
+                'age'               => $request->age,
+                'gender'            => $request->gender,
+                'status'            => true,
                 'email_verified_at' => now(), 
             ]);
+
+            $user->assignRole('lab'); 
 
             $message = 'Lab user created successfully for ' . $user->name;
 
@@ -163,7 +165,7 @@ class AdminController extends Controller
                 return response()->json([
                     'status'  => 'success',
                     'message' => $message,
-                    'data'    => $user
+                    'data'    => $user->load('lab') 
                 ], 201);
             }
 
@@ -173,7 +175,43 @@ class AdminController extends Controller
             if ($request->wantsJson() || $request->is('api/*')) {
                 return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
             }
-            return back()->with('error', 'Failed to create lab user.');
+            return back()->with('error', 'Failed to create lab user: ' . $e->getMessage());
+        }
+    }
+
+    public function labUsersDestroy(Request $request, $id)
+    {
+        try {
+            if (!$request->user()->hasRole('admin')) {
+                if ($request->wantsJson() || $request->is('api/*')) {
+                    return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+                }
+                return back()->with('error', 'Unauthorized action.');
+            }
+
+            $user = User::find($id);
+            if (!$user) {
+                if ($request->wantsJson() || $request->is('api/*')) {
+                    return response()->json(['success' => false, 'message' => 'User not found'], 404);
+                }
+                return back()->with('error', 'User not found.');
+            }
+
+            $user->delete();
+
+            $message = 'Lab user deleted successfully.';
+
+            if ($request->wantsJson() || $request->is('api/*')) {
+                return response()->json(['success' => true, 'message' => $message], 200);
+            }
+
+            return redirect()->back()->with('success', $message);
+
+        } catch (\Exception $e) {
+            if ($request->wantsJson() || $request->is('api/*')) {
+                return response()->json(['success' => false, 'message' => 'Internal Server Error', 'error' => $e->getMessage()], 500);
+            }
+            return back()->with('error', 'Failed to delete lab user: ' . $e->getMessage());
         }
     }
 }
