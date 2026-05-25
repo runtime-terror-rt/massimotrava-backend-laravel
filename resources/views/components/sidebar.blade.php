@@ -118,7 +118,7 @@
     @endcan
     
     @can('view-audit-logs')
-    <a href="#" class="nav-item" data-tooltip="Security & Audit Log">
+    <a href="{{route('admin.audit-logs.index')}}" class="nav-item" data-tooltip="Security & Audit Log">
       <i class="fa-solid fa-arrow-up-right-dots"></i>
       <span>Security & Audit Log</span>
     </a>
