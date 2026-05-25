@@ -15,12 +15,22 @@ use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\App;
 
 // Authentication Routes
 Route::get('/login', [DashboardController::class, 'login'])->name('login');
 Route::get('/register', [DashboardController::class, 'register'])->name('register');
 Route::get('/forgot-password', [DashboardController::class, 'forgotPassword'])->name('password.request');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+
+
+Route::get('/lang/{locale}', function ($locale) {
+    if (in_array($locale, ['en', 'it', 'de'])) {
+        Session::put('locale', $locale);
+    }
+    return redirect()->back();
+})->name('lang.switch');
 
 // Protected Admin Dashboard Domain Matrix
 Route::prefix('admin')
@@ -41,6 +51,7 @@ Route::prefix('admin')
             Route::get('get/lab/users', [UserController::class, 'getLabUsers'])->name('get.lab.users');
             Route::delete('/users/delete/{id}', [UserController::class, 'destroy'])->name('users.delete');
             Route::post('/lab-users/store', [AdminController::class, 'storeLabUser'])->name('lab-users.store');
+            Route::delete('/lab-users/{id}', [AdminController::class, 'labUsersDestroy'])->name('lab-users.destroy');
 
             // Central Analytics Dashboard
             Route::get('/', [DashboardController::class, 'index'])->name('dashboard');

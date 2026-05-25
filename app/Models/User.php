@@ -32,8 +32,8 @@ class User extends Authenticatable
         'image',
         'status',
         'fcm_token',
-
-        // ✅ ADD THIS
+        'lab_id',
+        'role',
         'otp',
         'otp_expire_at' ];
 
@@ -63,5 +63,10 @@ class User extends Authenticatable
     public function kits()
     {
         return $this->hasMany(Kit::class);
+    }
+
+    public function lab()
+    {
+        return $this->belongsTo(Lab::class, 'lab_id');
     }
 }

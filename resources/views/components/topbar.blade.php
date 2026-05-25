@@ -24,16 +24,67 @@
   {{-- Action Buttons --}}
   <div class="topbar-actions">
 
-    <button class="icon-btn" title="Messages">
-      <i class="fa-regular fa-comment-dots"></i>
-    </button>
+    {{-- 🌐 DYNAMIC LANGUAGE SWITCHER WITH SVG FLAGS --}}
+    <div class="lang-dropdown" style="position: relative; z-index: 999999 !important;">
+      <button class="lang-btn" onclick="toggleLangMenu(event)" 
+        style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); color: #f1f5f9; padding: 6px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; transition: 0.2s;">
+        
+        @if(App::getLocale() === 'it')
+            <img src="https://flagcdn.com/16x12/it.png" width="16" height="12" alt="Italy Flag" style="border-radius: 2px; object-fit: cover;">
+            <span>IT</span>
+        @elseif(App::getLocale() === 'de')
+            <img src="https://flagcdn.com/16x12/de.png" width="16" height="12" alt="Germany Flag" style="border-radius: 2px; object-fit: cover;">
+            <span>DE</span>
+        @else
+            <img src="https://flagcdn.com/16x12/gb.png" width="16" height="12" alt="UK Flag" style="border-radius: 2px; object-fit: cover;">
+            <span>EN</span>
+        @endif
+        
+        <i class="fa-solid fa-chevron-down" style="font-size: 10px; color: #94a3b8; transition: transform 0.2s;" id="langChevron"></i>
+      </button>
+      
+      <ul class="custom-lang-menu" id="customLangMenu" 
+        style="display: none; position: absolute; right: 0; top: calc(100% + 6px); min-width: 140px; background: #161b27; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); padding: 4px; list-style: none; margin: 0; z-index: 999;">
+        
+        <li>
+          <a href="{{ route('lang.switch', 'it') }}" 
+            style="color: {{ App::getLocale() === 'it' ? '#6366f1' : '#cbd5e1' }}; font-size: 13px; padding: 8px 12px; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; background: {{ App::getLocale() === 'it' ? 'rgba(99, 102, 241, 0.08)' : 'transparent' }}; font-weight: {{ App::getLocale() === 'it' ? '600' : 'normal' }}; transition: background 0.2s, color 0.2s;"
+            onmouseover="this.style.background='{{ App::getLocale() === 'it' ? 'rgba(99, 102, 241, 0.12)' : 'rgba(255,255,255,0.04)' }}'"
+            onmouseout="this.style.background='{{ App::getLocale() === 'it' ? 'rgba(99, 102, 241, 0.08)' : 'transparent' }}'">
+            <img src="https://flagcdn.com/16x12/it.png" width="16" height="12" alt="Italiano" style="border-radius: 1px; object-fit: cover;">
+            Italiano
+          </a>
+        </li>
+        <li>
+          <a href="{{ route('lang.switch', 'en') }}" 
+            style="color: {{ App::getLocale() === 'en' ? '#6366f1' : '#cbd5e1' }}; font-size: 13px; padding: 8px 12px; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; background: {{ App::getLocale() === 'en' ? 'rgba(99, 102, 241, 0.08)' : 'transparent' }}; font-weight: {{ App::getLocale() === 'en' ? '600' : 'normal' }}; transition: background 0.2s, color 0.2s;"
+            onmouseover="this.style.background='{{ App::getLocale() === 'en' ? 'rgba(99, 102, 241, 0.12)' : 'rgba(255,255,255,0.04)' }}'"
+            onmouseout="this.style.background='{{ App::getLocale() === 'en' ? 'rgba(99, 102, 241, 0.08)' : 'transparent' }}'">
+            <img src="https://flagcdn.com/16x12/gb.png" width="16" height="12" alt="English" style="border-radius: 1px; object-fit: cover;">
+            English
+          </a>
+        </li>
+        
 
+        <li>
+          <a href="{{ route('lang.switch', 'de') }}" 
+            style="color: {{ App::getLocale() === 'de' ? '#6366f1' : '#cbd5e1' }}; font-size: 13px; padding: 8px 12px; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; background: {{ App::getLocale() === 'de' ? 'rgba(99, 102, 241, 0.08)' : 'transparent' }}; font-weight: {{ App::getLocale() === 'de' ? '600' : 'normal' }}; transition: background 0.2s, color 0.2s;"
+            onmouseover="this.style.background='{{ App::getLocale() === 'de' ? 'rgba(99, 102, 241, 0.12)' : 'rgba(255,255,255,0.04)' }}'"
+            onmouseout="this.style.background='{{ App::getLocale() === 'de' ? 'rgba(99, 102, 241, 0.08)' : 'transparent' }}'">
+            <img src="https://flagcdn.com/16x12/de.png" width="16" height="12" alt="Deutsch" style="border-radius: 1px; object-fit: cover;">
+            Deutsch
+          </a>
+        </li>
+    </ul>
+  </div>
+
+    {{-- Notifications --}}
     <button class="icon-btn" title="Notifications">
       <i class="fa-regular fa-bell"></i>
       <span class="notif-dot"></span>
     </button>
 
-    {{-- Profile Dropdown Wrapper (Explicitly Z-indexed Layer) --}}
+    {{-- Profile Dropdown Wrapper --}}
     <div class="profile-dropdown" style="position: relative; z-index: 99999 !important;">
       <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()" style="display: flex; align-items: center; gap: 10px; background: transparent; border: none; cursor: pointer; padding: 5px 10px; border-radius: 12px; transition: 0.3s;">
         <div class="profile-avatar" style="position: relative; width: 35px; height: 35px;">
@@ -54,7 +105,6 @@
         <i class="fa-solid fa-chevron-down" style="font-size: 12px; color: #94a3b8; margin-left: 5px;"></i>
       </button>
 
-      {{-- Dropdown Card Context Custom Fixed Look Overriding Bootstrap Flow --}}
       <div class="dropdown-menu" id="dropdownMenu" style="right: 0 !important; left: auto !important; top: calc(100% + 10px) !important; width: 220px !important; background: #161b27 !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 12px !important; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5) !important; padding: 6px !important; margin: 0 !important;">
         <a class="dropdown-item" href="{{ route('admin.profile.edit') }}">
             <i class="fa-regular fa-user"></i> My Profile
@@ -62,9 +112,7 @@
         <div class="dropdown-item"><i class="fa-regular fa-credit-card"></i> Billing</div>
         <div class="dropdown-item"><i class="fa-solid fa-gear"></i> Settings</div>
         <div class="dropdown-divider" style="height: 1px; background: rgba(255,255,255,0.06); margin: 6px 0;"></div>
-        <a href="{{ route('admin.logout') }}"
-           class="dropdown-item"
-           style="color:#ef4444; text-decoration:none"
+        <a href="{{ route('admin.logout') }}" class="dropdown-item" style="color:#ef4444; text-decoration:none"
            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
           <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out
         </a>
@@ -74,7 +122,8 @@
   </div>
 </header>
 
-{{-- Logout Form (hidden) --}}
 <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display:none">
   @csrf
 </form>
+
+{{-- JS for Language Dropdown --}}

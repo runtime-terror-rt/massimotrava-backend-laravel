@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Role & Permission Matrix')
+@section('title', __('messages.role_meta_title'))
 
 @push('styles')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -14,8 +14,8 @@
 @section('content')
 <div class="header-action" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
     <div>
-        <h2 style="color: white; font-weight: 600; margin-bottom: 5px;">Role & Permission Manager</h2>
-        <p style="color: #94a3b8; margin: 0; font-size: 14px;">Establish system hierarchies and control resource access maps.</p>
+        <h2 style="color: white; font-weight: 600; margin-bottom: 5px;">{{ __('messages.role_header_title') }}</h2>
+        <p style="color: #94a3b8; margin: 0; font-size: 14px;">{{ __('messages.role_header_subtitle') }}</p>
     </div>
 </div>
 
@@ -23,7 +23,11 @@
     <div class="col-md-4">
         <div class="card" style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; position: sticky; top: 20px;">
             <h4 style="color: white; margin-bottom: 20px; font-weight: 600;">
-                {{ $selectedRole ? 'Edit Role: '.ucwords(str_replace('-', ' ', $selectedRole->name)) : 'Establish New Role' }}
+                @if($selectedRole)
+                    {{ __('messages.role_form_edit') }}: {{ ucwords(str_replace('-', ' ', $selectedRole->name)) }}
+                @else
+                    {{ __('messages.role_form_create') }}
+                @endif
             </h4>
             
             <form action="{{ route('admin.role-permission.save') }}" method="POST">
@@ -33,13 +37,13 @@
                 @endif
 
                 <div class="mb-3">
-                    <label class="form-label" style="color: #cbd5e1; font-size: 14px;">Role Technical Slug / Title</label>
+                    <label class="form-label" style="color: #cbd5e1; font-size: 14px;">{{ __('messages.role_label_slug') }}</label>
                     <input type="text" name="name" class="form-control" value="{{ old('name', $selectedRole->name ?? '') }}" placeholder="e.g. lab-manager" {{ $selectedRole && $selectedRole->name === 'admin' ? 'readonly' : '' }} required>
                 </div>
 
                 <div class="mb-4">
                     <label class="form-label" style="color: #cbd5e1; font-size: 14px; display: block; margin-bottom: 10px; font-weight: 500;">
-                        Bind Capabilities (Permissions)
+                        {{ __('messages.role_label_capabilities') }}
                     </label>
                     <div class="permission-scroll-container" style="max-height: 250px; overflow-y: auto; background: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #1e293b;">
                         <div style="display: grid; grid-template-columns: repeat(1, 1fr); gap: 10px;">
@@ -57,9 +61,13 @@
                 </div>
 
                 <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary w-100">{{ $selectedRole ? 'Update Configuration' : 'Deploy Role' }}</button>
+                    <button type="submit" class="btn btn-primary w-100">
+                        {{ $selectedRole ? __('messages.role_btn_update') : __('messages.role_btn_deploy') }}
+                    </button>
                     @if($selectedRole)
-                        <a href="{{ route('admin.role-permission.index') }}" class="btn btn-outline-secondary">Cancel</a>
+                        <a href="{{ route('admin.role-permission.index') }}" class="btn btn-outline-secondary">
+                            {{ __('messages.btn_cancel') }}
+                        </a>
                     @endif
                 </div>
             </form>
@@ -71,9 +79,9 @@
             <table class="table align-middle" style="margin: 0;">
                 <thead>
                     <tr>
-                        <th style="width: 25%;">Role Entity</th>
-                        <th style="width: 60%;">Allowed Privileges</th>
-                        <th style="width: 15%; text-align: center;">Actions</th>
+                        <th style="width: 25%;">{{ __('messages.role_th_entity') }}</th>
+                        <th style="width: 60%;">{{ __('messages.role_th_privileges') }}</th>
+                        <th style="width: 15%; text-align: center;">{{ __('messages.th_actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -83,7 +91,7 @@
                             <strong style="color: white; font-weight: 600; text-transform: capitalize;">
                                 {{ str_replace(['-', '_'], ' ', $role->name) }}
                             </strong>
-                            <div style="font-size: 11px; color: #64748b; margin-top: 2px;">slug: {{ $role->name }}</div>
+                            <div style="font-size: 11px; color: #64748b; margin-top: 2px;">{{ __('messages.role_lbl_slug_prefix') }}: {{ $role->name }}</div>
                         </td>
                         <td>
                             @forelse($role->permissions as $perm)
@@ -91,16 +99,18 @@
                                     {{ ucwords(str_replace(['-', '_'], ' ', $perm->name)) }}
                                 </span>
                             @empty
-                                <span class="text-muted small" style="font-style: italic; color:#475569 !important;">No permissions assigned yet.</span>
+                                <span class="text-muted small" style="font-style: italic; color:#475569 !important;">
+                                    {{ __('messages.role_lbl_no_permissions') }}
+                                </span>
                             @endforelse
                         </td>
                         <td style="text-align: center;">
                             <div class="d-flex justify-content-center gap-2">
-                                <a href="{{ route('admin.role-permission.index', ['id' => $role->id]) }}" class="btn btn-sm btn-outline-info">
+                                <a href="{{ route('admin.role-permission.index', ['id' => $role->id]) }}" class="btn btn-sm btn-outline-info" title="{{ __('messages.btn_edit') }}">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </a>
                                 @if($role->name !== 'admin')
-                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete({{ $role->id }})">
+                                    <button type="button" class="btn btn-sm btn-outline-danger" title="{{ __('messages.btn_remove') }}" onclick="confirmDelete({{ $role->id }})">
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                     <form id="delete-form-{{ $role->id }}" action="{{ route('admin.role-permission.destroy', $role->id) }}" method="POST" style="display:none;">
@@ -121,21 +131,31 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         @if(session('success'))
-            Swal.fire({ icon: 'success', title: 'Action Registered', text: "{{ session('success') }}", showConfirmButton: false, timer: 2000, timerProgressBar: true });
+            Swal.fire({ 
+                icon: 'success', 
+                title: "{{ __('messages.swal_title_action_registered') }}", 
+                text: "{{ session('success') }}", 
+                showConfirmButton: false, 
+                timer: 2000, 
+                timerProgressBar: true 
+            });
         @endif
     });
 
     function confirmDelete(id) {
         Swal.fire({
-            title: 'Revoke Role?',
-            text: "All relationships linked with this entity will face total removal!",
+            title: "{{ __('messages.swal_title_revoke_role') }}",
+            text: "{{ __('messages.swal_text_revoke_warning') }}",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#ef4444',
             cancelButtonColor: '#64748b',
-            confirmButtonText: 'Yes, drop role!'
+            confirmButtonText: "{{ __('messages.swal_btn_confirm_drop') }}",
+            cancelButtonText: "{{ __('messages.btn_cancel') }}"
         }).then((result) => {
-            if (result.isConfirmed) { document.getElementById('delete-form-' + id).submit(); }
+            if (result.isConfirmed) { 
+                document.getElementById('delete-form-' + id).submit(); 
+            }
         });
     }
 </script>

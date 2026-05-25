@@ -24,8 +24,9 @@ class UserController extends Controller
 
     public function getLabUsers(Request $request)
     {
-        $labs = Lab::get('id', 'name');
-        $labUsers = User::role('lab')->latest()->paginate(10);
+        $labs = Lab::select('id', 'name')->where('status', true)->get();
+        
+        $labUsers = User::role('lab')->latest()->with('lab')->paginate(10);
 
         if ($request->expectsJson()) {
             return response()->json([
@@ -34,7 +35,7 @@ class UserController extends Controller
             ], 200);
         }
 
-        return view('admin.laboratorian.index', compact('labUsers','labs'));
+        return view('admin.laboratorian.index', compact('labUsers', 'labs'));
     }
 
     public function getUsers(Request $request)

@@ -54,7 +54,7 @@
 
 <div class="main-wrapper" id="mainWrapper">
     @include('components.topbar')
-
+    
     <main class="content">
         @yield('content')
     </main>
@@ -65,6 +65,30 @@
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{ asset('js/admin.js') }}"></script>
+<script>
+  function toggleLangMenu(event) {
+    event.stopPropagation();
+    const menu = document.getElementById('customLangMenu');
+    const chevron = document.getElementById('langChevron');
+    
+    if (menu.style.display === 'none' || menu.style.display === '') {
+      menu.style.display = 'block';
+      chevron.style.transform = 'rotate(180deg)';
+    } else {
+      menu.style.display = 'none';
+      chevron.style.transform = 'rotate(0deg)';
+    }
+  }
+
+  document.addEventListener('click', function() {
+    const menu = document.getElementById('customLangMenu');
+    const chevron = document.getElementById('langChevron');
+    if (menu) {
+      menu.style.display = 'none';
+      if(chevron) chevron.style.transform = 'rotate(0deg)';
+    }
+  });
+</script>
 @stack('scripts')
 
 </body>
