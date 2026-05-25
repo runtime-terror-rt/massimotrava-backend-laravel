@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BiomarkerCategoryController;
 use App\Http\Controllers\BiomarkerReportController;
@@ -110,4 +111,5 @@ Route::prefix('admin')
             Route::get('/campaigns/create', [CampaignController::class, 'create'])->name('campaigns.create');
             Route::get('/campaigns', [CampaignController::class, 'index'])->name('campaigns.index');
             Route::post('/campaigns', [CampaignController::class, 'store'])->name('campaigns.store');
+            Route::get('/security-audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
     });

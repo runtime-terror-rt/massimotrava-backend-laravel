@@ -1,6 +1,47 @@
 @extends('layouts.admin')
 @section('title', __('messages.rep_meta_title'))
 
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+
+    .select2-container--default .select2-selection--single {
+        background-color: #0f172a !important;
+        border: 1px solid #334155 !important;
+        height: 48px !important;
+        border-radius: 8px !important;
+        display: flex;
+        align-items: center;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: white !important;
+        padding-left: 12px !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 46px !important;
+    }
+    .select2-dropdown {
+        background-color: #0f172a !important;
+        border: 1px solid #334155 !important;
+        color: white !important;
+    }
+    .select2-search__field {
+        background-color: #1e293b !important;
+        border: 1px solid #475569 !important;
+        color: white !important;
+        border-radius: 4px !important;
+    }
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #6366f1 !important;
+        color: white !important;
+    }
+    .select2-container--default .select2-results__option[aria-selected="true"] {
+        background-color: #334155 !important;
+        color: white !important;
+    }
+</style>
+@endpush
+
 @if ($errors->any())
     <div style="background: rgba(239, 68, 68, 0.1); color: #f87171; padding: 15px; border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.2); margin-bottom: 25px;">
         <ul style="margin: 0; padding-left: 20px;">
@@ -24,7 +65,7 @@
 </div>
 
 {{-- Main Form Container --}}
-<div class="report-container" style="max-width: 1100px; margin: 30px auto; padding: 30px; background: #1e293b; border-radius: 12px; color: white; font-family: sans-serif;">
+<div class="report-container" style="width: 80%; margin: 30px auto; padding: 30px; background: #1e293b; border-radius: 12px; color: white; font-family: sans-serif;">
     <h2 style="margin-bottom: 25px; font-size: 24px;">{{ __('messages.rep_header_add') }}</h2>
 
     <form action="{{ route('admin.reports.store') }}" method="POST">
@@ -33,7 +74,7 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 20px;">
             <div>
                 <label style="color: #94a3b8; display: block; margin-bottom: 8px; font-size: 14px;">{{ __('messages.lbl_select_user') }} <span class="text-danger">*</span></label>
-                <select name="user_id" id="user_id_select" style="width: 100%; background: #0f172a; color: white; border: 1px solid #334155; padding: 12px; border-radius: 8px;" required>
+                <select name="user_id" id="user_id_select" class="searchable-user-select" style="width: 100%;" required>
                     <option value="">-- {{ __('messages.opt_select_user') }} --</option>
                     @foreach($users as $user)
                         <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
@@ -67,8 +108,16 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <script>
     $(document).ready(function() {
+        $('.searchable-user-select').select2({
+            placeholder: "-- {{ __('messages.opt_select_user') }} --",
+            allowClear: true,
+            width: '100%'
+        });
+
         let catIdx = 0;
 
         // JS Localization Translation Node Matrix
@@ -91,7 +140,6 @@
             @endforeach
         `;
 
-        // Realtime Kit Fetch Triggers via Ajax
         $('#user_id_select').on('change', function() {
             let userId = $(this).val();
             let $kitSelect = $('#kit_id_select');
