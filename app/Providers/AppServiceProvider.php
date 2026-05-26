@@ -37,6 +37,6 @@ class AppServiceProvider extends ServiceProvider
             Lab::observe(AuditObserver::class);
         }
         
-        // \App\Models\YourModel::observe(AuditObserver::class);
+         \App\Models\BiomarkerReport::observe(AuditObserver::class);
     }
 }

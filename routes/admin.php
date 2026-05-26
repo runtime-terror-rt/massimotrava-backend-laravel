@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BiomarkerCategoryController;
@@ -53,7 +54,7 @@ Route::prefix('admin')
             Route::delete('/users/delete/{id}', [UserController::class, 'destroy'])->name('users.delete');
             Route::post('/lab-users/store', [AdminController::class, 'storeLabUser'])->name('lab-users.store');
             Route::delete('/lab-users/{id}', [AdminController::class, 'labUsersDestroy'])->name('lab-users.destroy');
-
+            
             // Central Analytics Dashboard
             Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
             Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
@@ -112,4 +113,11 @@ Route::prefix('admin')
             Route::get('/campaigns', [CampaignController::class, 'index'])->name('campaigns.index');
             Route::post('/campaigns', [CampaignController::class, 'store'])->name('campaigns.store');
             Route::get('/security-audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+
+            Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+            Route::post('/payments', [PaymentController::class, 'store'])->name('plans.store');
+
+            Route::get('plan/{id}', [PaymentController::class, 'show'])->name('plans.show');
+            Route::get('plan/{id}/edit', [PaymentController::class, 'edit'])->name('plans.edit');
+            Route::delete('plan/{id}', [PaymentController::class, 'destroy'])->name('plans.destroy');
     });

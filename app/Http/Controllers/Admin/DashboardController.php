@@ -35,7 +35,7 @@ class DashboardController extends Controller
         $totalLabs = Lab::count();
         $totalGeneratedReports = BiomarkerReport::count();
         
-        $totalTransactions = '$84,291'; 
+        $totalTransactions = '$0'; 
 
         $recentReports = BiomarkerReport::with(['user', 'kit'])
             ->latest()
@@ -51,10 +51,6 @@ class DashboardController extends Controller
         ));
     }
 
-    // =========================================================
-    //  PRIVATE HELPERS (dummy data — replace with DB queries)
-    // =========================================================
-
     /**
      * Stat cards data
      * Replace with: User::count(), Order::sum('total'), etc.
@@ -64,7 +60,7 @@ class DashboardController extends Controller
         return [
             [
                 'icon'      => 'fa-solid fa-dollar-sign',
-                'value'     => '$84,291',
+                'value'     => '$0',
                 'label'     => 'Total Revenue',
                 'trend'     => 12.4,
                 'sparkline' => $this->sparkline(
