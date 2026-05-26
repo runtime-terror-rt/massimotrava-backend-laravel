@@ -69,7 +69,7 @@
     @endcan
 
     @can('view-payments')
-    <a href="#" class="nav-item" data-tooltip="{{ __('messages.sb_payments') }}">
+    <a href="{{route('admin.payments.index')}}" class="nav-item {{ request()->routeIs('admin.payments.index*') ? 'active' : ''}}" data-tooltip="{{ __('messages.sb_payments') }}">
       <i class="fa-solid fa-dollar-sign"></i>
       <span>{{ __('messages.sb_payments') }}</span>
     </a>

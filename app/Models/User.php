@@ -69,4 +69,19 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Lab::class, 'lab_id');
     }
+
+    public function plan()
+    {
+        return $this->belongsTo(SubscriptionPlan::class, 'plan_id');
+    }
+
+    public function activeSubscription()
+    {
+        return $this->hasOne(Subscription::class)->where('status', 'active')->latest();
+    }
+
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class)->latest();
+    }
 }
