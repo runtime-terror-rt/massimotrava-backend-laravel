@@ -27,7 +27,7 @@
         </div>
         <div class="content">
             <p>Hi {{ $user->name }},</p>
-            <p>You requested to reset your password for <strong>Massimotrava</strong>. Your OTP code is:</p>
+            <p>You requested to reset your password for <strong>Vyralabs</strong>. Your OTP code is:</p>
             
             <div class="otp-box">{{ $otp }}</div>
 
@@ -35,10 +35,10 @@
 
             <p>If you did not request a password reset, please ignore this email.</p>
 
-            <p>Thanks,<br><strong>Massimotrava Team</strong></p>
+            <p>Thanks,<br><strong>Vyralabs Team</strong></p>
         </div>
         <div class="footer">
-            &copy; {{ date('Y') }} Massimotrava. All rights reserved.
+            &copy; {{ date('Y') }} Vyralabs. All rights reserved.
         </div>
     </div>
 </body>

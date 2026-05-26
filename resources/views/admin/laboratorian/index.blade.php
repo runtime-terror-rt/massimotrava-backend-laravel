@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('title', __('messages.lab_users_meta_title'))
-
+@section('page_title_key', 'sb_laboratorian')
 @section('content')
 {{-- Action Header Block --}}
 <div class="header-action" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">

@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('title', __('messages.faq_meta_title'))
-
+@section('page_title_key', 'sb_faq')
 @push('styles')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>

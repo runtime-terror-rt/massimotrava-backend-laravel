@@ -1,5 +1,6 @@
 @extends('layouts.admin')
 @section('title', __('messages.labs_meta_title'))
+@section('page_title_key', 'sb_lab')
 
 @section('content')
 {{-- Action Header Block --}}

@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('title', __('messages.rep_meta_list_title'))
-
+@section('page_title_key', 'sb_reports')
 @section('content')
 <div class="table-warp" style="padding: 20px;">
 
@@ -124,7 +124,7 @@
 
                                 {{-- Single Sheet PDF Generation Print --}}
                                 <a href="{{ route('admin.reports.download.pdf', ['inv_code' => $invCode]) }}" title="{{ __('messages.tip_download_pdf') }}" style="color: #fbbf24; display: flex; align-items: center;">
-                                    <i class="fa-solid fa-print style="font-size: 18px;"></i>
+                                    <i class="fa-solid fa-print" style="font-size: 18px;"></i>
                                 </a>
                                 
                                 {{-- Destructive Delete Sequence Control --}}

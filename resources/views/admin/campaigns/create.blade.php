@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('title', __('messages.create_campaign_meta_title'))
-
+@section('page_title_key', 'sb_campaigns')
 @section('content')
 <div class="container-fluid px-4 py-4 d-flex justify-content-center" style="background-color: #0f172a; min-h: 100vh; color: #f1f5f9;">
     <div class="w-100 card border-0 p-4 shadow-lg mb-5" style="max-width: 800px; background: #1e293b; border-radius: 12px; border: 1px solid #334155 !important; font-family: 'DM Sans', sans-serif;">
@@ -42,7 +42,7 @@
                     {{ __('messages.lbl_action_url') }}
                 </label>
                 <input type="url" name="action_url" id="action_url" value="{{ old('action_url') }}" 
-                       placeholder="https://massimotrava.com/promo" class="form-control py-2.5">
+                       placeholder="https://vyralabs.health/promo" class="form-control py-2.5">
                 @error('action_url') <span class="text-danger text-xs mt-1 d-block">{{ $message }}</span> @enderror
             </div>
 

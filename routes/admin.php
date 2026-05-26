@@ -40,7 +40,7 @@ Route::prefix('admin')
       ->group(function () {
             
             Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-            
+            Route::get('/dashboard',[DashboardController::class, 'index'])->name('dashboard.index');
             // Profile Matrix Registry
             Route::get('/edit/profile', [UserController::class, 'editProfile'])->name('profile.edit');
             Route::post('/profile', [UserController::class, 'updateProfile'])->name('update.profile');

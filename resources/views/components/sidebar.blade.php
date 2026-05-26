@@ -10,117 +10,117 @@
   {{-- Navigation --}}
   <nav class="sidebar-nav">
 
-    <div class="nav-section-label">Main</div>
+    <div class="nav-section-label">{{ __('messages.sb_sec_main') }}</div>
 
-    <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard*') || request()->routeIs('admin.dashboard.index') ? 'active' : '' }}" data-tooltip="Dashboard">
+    <a href="{{ route('admin.dashboard.index') }}" class="nav-item {{ request()->routeIs('admin.dashboard.index*') ? 'active' : '' }}" data-tooltip="{{ __('messages.sb_dashboard') }}">
       <i class="fa-solid fa-house-chimney"></i>
-      <span>Dashboard</span>
+      <span>{{ __('messages.sb_dashboard') }}</span>
     </a>
     
     @can('manage-labs')
-    <a href="{{ route('admin.labs.index') }}" class="nav-item {{ request()->routeIs('admin.labs.index*') ? 'active' : '' }}" data-tooltip="Labs">
+    <a href="{{ route('admin.labs.index') }}" class="nav-item {{ request()->routeIs('admin.labs.index*') ? 'active' : '' }}" data-tooltip="{{ __('messages.sb_lab') }}">
       <i class="fa-solid fa-building"></i>
-      <span>Lab</span>
+      <span>{{ __('messages.sb_lab') }}</span>
     </a>
     @endcan
     
     @can('manage-laboratorians')
-    <a href="{{ route('admin.get.lab.users') }}" class="nav-item {{ request()->routeIs('admin.get.lab.users*') ? 'active' : '' }}" data-tooltip="Laboratorian">
+    <a href="{{ route('admin.get.lab.users') }}" class="nav-item {{ request()->routeIs('admin.get.lab.users*') ? 'active' : '' }}" data-tooltip="{{ __('messages.sb_laboratorian') }}">
       <i class="fa-solid fa-users-gear"></i>
-      <span>Laboratorian</span>
+      <span>{{ __('messages.sb_laboratorian') }}</span>
     </a>
     @endcan
     
     @can('view-reports')
-    <a href="{{ route('admin.reports.index') }}" class="nav-item {{ request()->routeIs('admin.reports*') ? 'active' : '' }}" data-tooltip="Reports">
+    <a href="{{ route('admin.reports.index') }}" class="nav-item {{ request()->routeIs('admin.reports*') ? 'active' : '' }}" data-tooltip="{{ __('messages.sb_reports') }}">
       <i class="fa-solid fa-chart-bar"></i>
-      <span>Reports</span>
+      <span>{{ __('messages.sb_reports') }}</span>
     </a>
     @endcan
 
-    <div class="nav-section-label">Management</div>
+    <div class="nav-section-label">{{ __('messages.sb_sec_management') }}</div>
 
     @can('manage-users')
-    <a href="{{ route('admin.get.users') }}" class="nav-item {{ request()->routeIs('admin.get.users*') ? 'active' : '' }}" data-tooltip="Users">
+    <a href="{{ route('admin.get.users') }}" class="nav-item {{ request()->routeIs('admin.get.users*') ? 'active' : '' }}" data-tooltip="{{ __('messages.sb_users') }}">
       <i class="fa-solid fa-users"></i>
-      <span>Users</span>
+      <span>{{ __('messages.sb_users') }}</span>
     </a>
     @endcan
     
     @can('manage-categories')
-    <a href="{{ route('admin.category.index') }}" class="nav-item {{ request()->routeIs('admin.category.index*') ? 'active' : '' }}" data-tooltip="Category">
+    <a href="{{ route('admin.category.index') }}" class="nav-item {{ request()->routeIs('admin.category.index*') ? 'active' : '' }}" data-tooltip="{{ __('messages.sb_category') }}">
       <i class="fa-solid fa-table-cells-large"></i>
-      <span>Category</span>
+      <span>{{ __('messages.sb_category') }}</span>
     </a>
     @endcan
     
     @can('manage-subcategories')
-    <a href="{{ route('admin.biomarker-subcategories.index') }}" class="nav-item {{ request()->routeIs('admin.biomarker-subcategories.index*') ? 'active' : '' }}" data-tooltip="Sub Category">
+    <a href="{{ route('admin.biomarker-subcategories.index') }}" class="nav-item {{ request()->routeIs('admin.biomarker-subcategories.index*') ? 'active' : '' }}" data-tooltip="{{ __('messages.sb_sub_category') }}">
       <i class="fa-solid fa-table-list"></i>
-      <span>Sub Category</span>
+      <span>{{ __('messages.sb_sub_category') }}</span>
     </a>
     @endcan
     
     @can('manage-kits')
-    <a href="{{ route('admin.kits.index') }}" class="nav-item {{ request()->routeIs('admin.kits.index*') ? 'active' : '' }}" data-tooltip="Kit Manager">
+    <a href="{{ route('admin.kits.index') }}" class="nav-item {{ request()->routeIs('admin.kits.index*') ? 'active' : '' }}" data-tooltip="{{ __('messages.sb_kit_manager') }}">
       <i class="fa-solid fa-arrows-left-right"></i>
-      <span>Kit Manager</span>
+      <span>{{ __('messages.sb_kit_manager') }}</span>
     </a>
     @endcan
 
     @can('view-payments')
-    <a href="#" class="nav-item" data-tooltip="Payments">
+    <a href="#" class="nav-item" data-tooltip="{{ __('messages.sb_payments') }}">
       <i class="fa-solid fa-dollar-sign"></i>
-      <span>Payments</span>
+      <span>{{ __('messages.sb_payments') }}</span>
     </a>
     @endcan
 
-    <div class="nav-section-label">System</div>
+    <div class="nav-section-label">{{ __('messages.sb_sec_system') }}</div>
 
     @can('manage-contents')
-    <a href="{{ route('admin.contents.index') }}" class="nav-item {{ request()->routeIs('admin.contents.index.index*') ? 'active' : '' }}" data-tooltip="Contents">
+    <a href="{{ route('admin.contents.index') }}" class="nav-item {{ request()->routeIs('admin.contents.index*') ? 'active' : '' }}" data-tooltip="{{ __('messages.sb_contents') }}">
       <i class="fa-solid fa-building-lock"></i>
-      <span>Contents</span>
+      <span>{{ __('messages.sb_contents') }}</span>
     </a>
     @endcan
     
     @can('manage-campaigns')
-    <a href="{{ route('admin.campaigns.index') }}" class="nav-item {{ request()->routeIs('admin.campaigns.index*') ? 'active' : '' }}" data-tooltip="Campaigns">
+    <a href="{{ route('admin.campaigns.index') }}" class="nav-item {{ request()->routeIs('admin.campaigns.index*') ? 'active' : '' }}" data-tooltip="{{ __('messages.sb_campaigns') }}">
       <i class="fa-solid fa-building-lock"></i>
-      <span>Campaigns</span>
+      <span>{{ __('messages.sb_campaigns') }}</span>
     </a>
     @endcan
 
     @can('manage-settings')
-    <a href="{{ route('admin.privacy-policy.index') }}" class="nav-item {{ request()->routeIs('admin.privacy-policy.index*') ? 'active' : '' }}" data-tooltip="Privacy Policy">
+    <a href="{{ route('admin.privacy-policy.index') }}" class="nav-item {{ request()->routeIs('admin.privacy-policy.index*') ? 'active' : '' }}" data-tooltip="{{ __('messages.sb_privacy_policy') }}">
       <i class="fa-solid fa-building-lock"></i>
-      <span>Privacy Policy</span>
+      <span>{{ __('messages.sb_privacy_policy') }}</span>
     </a>
     
-    <a href="{{ route('admin.faq.index') }}" class="nav-item {{ request()->routeIs('admin.faq.index*') ? 'active' : '' }}" data-tooltip="FAQ">
+    <a href="{{ route('admin.faq.index') }}" class="nav-item {{ request()->routeIs('admin.faq.index*') ? 'active' : '' }}" data-tooltip="{{ __('messages.sb_faq') }}">
       <i class="fa-solid fa-circle-question"></i>
-      <span>FAQ</span>
+      <span>{{ __('messages.sb_faq') }}</span>
     </a>
     @endcan
     
     @can('manage-courier')
-    <a href="#" class="nav-item" data-tooltip="Courier">
+    <a href="#" class="nav-item" data-tooltip="{{ __('messages.sb_courier') }}">
       <i class="fa-solid fa-cart-shopping"></i>
-      <span>Courier</span>
+      <span>{{ __('messages.sb_courier') }}</span>
     </a>
     @endcan
     
     @can('manage-roles-permissions')
-    <a href="{{ route('admin.role-permission.index') }}" class="nav-item {{ request()->routeIs('admin.role-permission.index*') ? 'active' : '' }}" data-tooltip="Role & Permission">
+    <a href="{{ route('admin.role-permission.index') }}" class="nav-item {{ request()->routeIs('admin.role-permission.index*') ? 'active' : '' }}" data-tooltip="{{ __('messages.sb_role_permission') }}">
       <i class="fa-solid fa-shield-halved"></i>
-      <span>Role & Permission</span>
+      <span>{{ __('messages.sb_role_permission') }}</span>
     </a>
     @endcan
     
     @can('view-audit-logs')
-    <a href="{{route('admin.audit-logs.index')}}" class="nav-item" data-tooltip="Security & Audit Log">
+    <a href="{{ route('admin.audit-logs.index') }}" class="nav-item {{ request()->routeIs('admin.audit-logs.index*') ? 'active' : '' }}" data-tooltip="{{ __('messages.sb_audit_log') }}">
       <i class="fa-solid fa-arrow-up-right-dots"></i>
-      <span>Security & Audit Log</span>
+      <span>{{ __('messages.sb_audit_log') }}</span>
     </a>
     @endcan
 

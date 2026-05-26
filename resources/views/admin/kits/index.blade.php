@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('title', __('messages.kit_management') . ' - Massimotrava')
-
+@section('page_title_key', 'sb_kit_manager')
 @section('content')
 <div class="container-fluid px-4 py-4" style="background-color: #0f172a; min-h: 100vh; color: #f1f5f9;">
     

@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('title', __('messages.settings_meta_title'))
-
+@section('page_title_key', 'sb_users')
 @section('content')
 <div class="auth-wrapper" style="padding: 40px 0;">
     <div class="auth-card" style="max-width: 900px; margin: 0 auto;"> 

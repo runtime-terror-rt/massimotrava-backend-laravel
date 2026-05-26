@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('title', __('messages.privacy_meta_title'))
-
+@section('page_title_key', 'sb_privacy_policy')
 @section('content')
 {{-- Header Grid Module --}}
 <div class="header-action" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
