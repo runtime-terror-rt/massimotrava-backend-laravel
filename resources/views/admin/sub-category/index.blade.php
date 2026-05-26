@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-
+@section('page_title_key', 'sb_sub_category')
 @section('content')
 <div style="padding: 20px;">
     @if(session('success'))

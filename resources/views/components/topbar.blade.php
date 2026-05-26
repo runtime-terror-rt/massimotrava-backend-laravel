@@ -8,9 +8,15 @@
 
   {{-- Breadcrumb --}}
   <div class="topbar-breadcrumb">
-    <span>Massimotrava</span>
-    <i class="fa-solid fa-chevron-right" style="font-size:9px"></i>
-    <span class="current">@yield('page_title', 'Dashboard')</span>
+      <span>Vyralabs</span>
+      <i class="fa-solid fa-chevron-right" style="font-size:9px"></i>
+      <span class="current">
+          @if(View::hasSection('page_title_key'))
+              {{ __('messages.' . View::getSection('page_title_key')) }}
+          @else
+              @yield('page_title', __('messages.sb_dashboard'))
+          @endif
+      </span>
   </div>
 
   <div class="topbar-spacer"></div>

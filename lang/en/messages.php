@@ -296,6 +296,24 @@ return [
     'swal_title_revoke_role'        => 'Revoke Role?',
     'swal_text_revoke_warning'      => 'All relationships linked with this entity will face total removal!',
     'swal_btn_confirm_drop'         => 'Yes, drop role!',
-    
+    'sb_sec_main' => 'Main',
+    'sb_sec_management' => 'Management',
+    'sb_sec_system' => 'System',
+    'sb_dashboard' => 'Dashboard',
+    'sb_lab' => 'Lab',
+    'sb_laboratorian' => 'Laboratorian',
+    'sb_reports' => 'Reports',
+    'sb_users' => 'Users',
+    'sb_category' => 'Category',
+    'sb_sub_category' => 'Sub Category',
+    'sb_kit_manager' => 'Kit Manager',
+    'sb_payments' => 'Payments',
+    'sb_contents' => 'Contents',
+    'sb_campaigns' => 'Campaigns',
+    'sb_privacy_policy' => 'Privacy Policy',
+    'sb_faq' => 'FAQ',
+    'sb_courier' => 'Courier',
+    'sb_role_permission' => 'Role & Permission',
+    'sb_audit_log' => 'Security & Audit Log',
 ];
-
+    

@@ -1,5 +1,5 @@
 @extends('layouts.admin') 
-
+@section('page_title_key', 'sb_users')
 @section('content')
     <div class="table-warp" style="padding: 20px;"> 
         @if(session('success'))

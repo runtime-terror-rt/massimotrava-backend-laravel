@@ -117,7 +117,7 @@
     <div class="email-wrapper">
         <div class="main-card">
             <div class="brand-header">
-                <div class="brand-logo">MASSIMOTRAVA</div>
+                <div class="brand-logo">Vyralabs</div>
             </div>
 
             <div class="body-content">

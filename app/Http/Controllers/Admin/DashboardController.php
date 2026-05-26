@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\BiomarkerReport;
+use App\Models\Lab;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -27,17 +29,26 @@ class DashboardController extends Controller
     /**
      * Admin Dashboard - Overview Page
      */
-    public function index(Request $request)
+    public function index()
     {
-        $user = auth()->user();
+        $totalUsers = User::count();
+        $totalLabs = Lab::count();
+        $totalGeneratedReports = BiomarkerReport::count();
+        
+        $totalTransactions = '$84,291'; 
 
-        return view('admin.dashboard.index', [
-            'stats'        => $this->getStats(),
-            'transactions' => $this->getTransactions($request),
-            'activities'   => $this->getActivities(),
-            'topProducts'  => $this->getTopProducts(),
-            'user'         => $user,
-        ]);
+        $recentReports = BiomarkerReport::with(['user', 'kit'])
+            ->latest()
+            ->take(8)
+            ->get();
+
+        return view('admin.dashboard', compact(
+            'totalUsers',
+            'totalLabs',
+            'totalGeneratedReports',
+            'totalTransactions',
+            'recentReports'
+        ));
     }
 
     // =========================================================
