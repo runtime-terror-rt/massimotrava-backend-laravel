@@ -67,6 +67,9 @@ Route::prefix('admin')
             Route::post('/reports/store', [BiomarkerReportController::class, 'storeReport'])->name('reports.store');
             Route::post('/reports/send-email', [BiomarkerReportController::class, 'sendEmail'])->name('reports.send.email');
             Route::get('/reports/download-pdf', [BiomarkerReportController::class, 'downloadPdf'])->name('reports.download.pdf');
+            Route::get('/reports/{id}/edit', [BiomarkerReportController::class, 'edit'])->name('reports.edit');
+            Route::put('/reports/{id}', [BiomarkerReportController::class, 'update'])->name('reports.update');
+            Route::get('/reports/{id}', [BiomarkerReportController::class, 'show'])->name('reports.show');
 
             // Kiosk & Medical Kits Dispatch Control
             Route::get('/kits', [KitController::class, 'index'])->name('kits.index');

@@ -127,12 +127,12 @@
   </nav>
 
   {{-- Sidebar Footer --}}
-  <div class="sidebar-footer" style="padding: 15px 20px; border-top: 1px solid var(--border, #1e293b); text-align: center;">
+  <div class="sidebar-footer" style="padding: 15px 20px; border-top: 1px solid var(--sb-border); text-align: center;">
     <div class="footer-content" style="display: flex; flex-direction: column; gap: 2px;">
-        <span style="font-size: 12px; color: #64748b; font-weight: 500; letter-spacing: 0.3px;">
-            © {{ date('Y') }} <span style="color: #cbd5e1;">Vyralabs</span>
+        <span style="font-size: 12px; color: var(--text-muted-dark); font-weight: 500; letter-spacing: 0.3px;">
+            © {{ date('Y') }} <span style="color: var(--text-muted);">Vyralabs</span>
         </span>
-        <span style="font-size: 11px; color: var(--primary, #6366f1); font-family: monospace; font-weight: 600; background: rgba(99, 102, 241, 0.1); padding: 2px 8px; border-radius: 4px; width: fit-content; margin: 4px auto 0 auto;">
+        <span style="font-size: 11px; color: var(--accent); font-family: monospace; font-weight: 600; background: rgba(99, 102, 241, 0.1); padding: 2px 8px; border-radius: 4px; width: fit-content; margin: 4px auto 0 auto;">
             v1.0.0
         </span>
     </div>

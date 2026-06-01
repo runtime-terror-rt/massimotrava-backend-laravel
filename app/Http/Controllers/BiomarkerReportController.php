@@ -455,4 +455,150 @@ class BiomarkerReportController extends Controller
             return back()->with('error', 'Failed to send email. Error: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Display the specified biomarker report batch dashboard layout view.
+     */
+    public function show($parameter)
+    {
+        if (is_numeric($parameter)) {
+            $referenceRow = BiomarkerReport::find($parameter);
+            $inv_code = $referenceRow ? $referenceRow->inv_code : null;
+        } else {
+            $inv_code = $parameter;
+        }
+
+        $reports = BiomarkerReport::with([
+            'user', 
+            'kit', 
+            'biomarkerCategory', 
+            'biomarkerSubcategory'
+        ])
+        ->where('inv_code', $inv_code)
+        ->get();
+
+        if ($reports->isEmpty()) {
+            abort(404, 'Biomarker report packet not found.');
+        }
+
+        $mainReport = $reports->first();
+
+        return view('admin.reports.show', compact('reports', 'mainReport'));
+    }
+
+    /**
+     * Show the form for editing the specified biomarker report batch grid matrix.
+     */
+    public function edit($inv_code)
+    {
+        $allRelatedReports = BiomarkerReport::with(['biomarkerSubcategory'])
+            ->where('inv_code', $inv_code)
+            ->get();
+
+        if ($allRelatedReports->isEmpty()) {
+            abort(404, 'Target biomarker dataset not found.');
+        }
+
+        $users = \App\Models\User::all();
+        $categories = \App\Models\BiomarkerCategory::all();
+        $reportDetails = [];
+        
+        $groupedByCategory = $allRelatedReports->groupBy('biomarker_category_id');
+
+        foreach ($groupedByCategory as $catId => $reportsCollection) {
+            $category = \App\Models\BiomarkerCategory::find($catId);
+            
+            $formattedSubcategories = $reportsCollection->map(function($rep) {
+                return (object)[
+                    'subcategory_id' => $rep->biomarker_subcategory_id,
+                    'value'          => $rep->value
+                ];
+            });
+
+            $reportDetails[] = [
+                'category_id'      => $catId,
+                'subcategories'    => $formattedSubcategories,
+                'all_subs_options' => $category ? $category->subcategories : []
+            ];
+        }
+
+        $report = $allRelatedReports->first();
+
+        return view('admin.reports.edit', compact('report', 'users', 'categories', 'reportDetails'));
+    }
+
+    public function update(Request $request, $inv_code)
+    {
+        // Validate request payloads and verify that the target inv_code exists
+        $request->validate([
+            'user_id'                               => 'required|exists:users,id',
+            'kit_id'                                => 'required|exists:kits,id',
+            'categories'                            => 'required|array|min:1',
+            'categories.*.id'                       => 'required|exists:biomarker_categories,id',
+            'categories.*.reports'                  => 'required|array|min:1',
+            'categories.*.reports.*.subcategory_id' => 'required|exists:biomarker_subcategories,id',
+            'categories.*.reports.*.value'          => 'required|numeric',
+        ]);
+
+        $savedReports = [];
+
+        try {
+            \DB::transaction(function () use ($request, $inv_code, &$savedReports) {
+                // Step 1: Wipe out existing entries belonging to this specific batch code safely
+                BiomarkerReport::where('inv_code', $inv_code)->delete();
+
+                // Step 2: Loop through dynamic entries and insert fresh data sets
+                foreach ($request->categories as $categoryData) {
+                    $categoryId = $categoryData['id'];
+
+                    if (!isset($categoryData['reports']) || !is_array($categoryData['reports'])) {
+                        continue;
+                    }
+
+                    foreach ($categoryData['reports'] as $reportData) {
+                        $subcategory = BiomarkerSubcategory::find($reportData['subcategory_id']);
+
+                        $report = BiomarkerReport::create([
+                            'user_id'                  => $request->user_id,
+                            'kit_id'                   => $request->kit_id,
+                            'biomarker_category_id'    => $categoryId,
+                            'biomarker_subcategory_id' => $reportData['subcategory_id'],
+                            'value'                    => $reportData['value'],
+                            'unit'                     => $subcategory->unit ?? null,
+                            'status'                   => 1,
+                            'inv_code'                 => $inv_code // Preserve the same batch identifier code
+                        ]);
+
+                        $savedReports[] = $report->load(['biomarkerCategory', 'biomarkerSubcategory']);
+                    }
+                }
+            });
+
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'status'  => 'success', 
+                    'message' => 'Reports updated successfully', 
+                    'data'    => [
+                        'inv_code' => $inv_code,
+                        'reports'  => $savedReports
+                    ]
+                ]);
+            }
+
+            return redirect()->route('admin.reports.index')->with('success', 'Reports updated successfully');
+
+        } catch (\Exception $e) {
+            \Log::error('Biomarker Update Method Failed: ' . $e->getMessage());
+
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Processing error: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return back()->withInput()->with('error', 'Something went wrong while managing biomarker row updates!');
+        }
+    }
+
 }
