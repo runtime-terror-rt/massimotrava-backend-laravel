@@ -1,6 +1,7 @@
 @extends('layouts.admin')
-@section('title', __('messages.rep_meta_title'))
+@section('title', isset($report) ? __('messages.rep_meta_title_edit', ['default' => 'Edit Report']) : __('messages.rep_meta_title', ['default' => 'Create Report']))
 @section('page_title_key', 'sb_reports')
+
 @push('styles')
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <style>
@@ -84,34 +85,93 @@
 
 {{-- Main Form Container --}}
 <div class="report-container" style="width: 80%; margin: 30px auto; padding: 30px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; color: var(--text-main); font-family: sans-serif;">
-    <h2 style="margin-bottom: 25px; font-size: 24px; color: var(--text-main);">{{ __('messages.rep_header_add') }}</h2>
+    <h2 style="margin-bottom: 25px; font-size: 24px; color: var(--text-main);">
+        {{ isset($report) ? __('messages.rep_header_edit', ['default' => 'Edit Biomarker Report']) : __('messages.rep_header_add') }}
+    </h2>
 
-    <form action="{{ route('admin.reports.store') }}" method="POST">
+    <form action="{{ isset($report) ? route('admin.reports.update', $report->id) : route('admin.reports.store') }}" method="POST">
         @csrf
+        @if(isset($report))
+            @method('PUT')
+        @endif
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 20px;">
             <div>
                 <label style="color: var(--text-muted); display: block; margin-bottom: 8px; font-size: 14px;">{{ __('messages.lbl_select_user') }} <span class="text-danger">*</span></label>
-                <select name="user_id" id="user_id_select" class="searchable-user-select" style="width: 100%;" required>
+                <select name="user_id" id="user_id_select" class="searchable-user-select" style="width: 100%;" required {{ isset($report) ? 'disabled' : '' }}>
                     <option value="">-- {{ __('messages.opt_select_user') }} --</option>
                     @foreach($users as $user)
-                        <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
+                        <option value="{{ $user->id }}" {{ (old('user_id', $report->user_id ?? '') == $user->id) ? 'selected' : '' }}>
+                            {{ $user->name }} ({{ $user->email }})
+                        </option>
                     @endforeach
                 </select>
+                @if(isset($report))
+                    <input type="hidden" name="user_id" value="{{ $report->user_id }}">
+                @endif
             </div>
 
             <div>
                 <label style="color: var(--text-muted); display: block; margin-bottom: 8px; font-size: 14px;">{{ __('messages.lbl_select_kit') }} <span class="text-danger">*</span></label>
-                <select name="kit_id" id="kit_id_select" style="width: 100%; background: var(--surface-input); color: var(--text-main); border: 1px solid var(--border); padding: 12px; border-radius: 8px;" required>
-                    <option value="">-- {{ __('messages.opt_first_select_user') }} --</option>
+                <select name="kit_id" id="kit_id_select" style="width: 100%; background: var(--surface-input); color: var(--text-main); border: 1px solid var(--border); padding: 12px; border-radius: 8px;" required {{ isset($report) ? 'disabled' : '' }}>
+                    @if(isset($report))
+                        <option value="{{ $report->kit_id }}" selected>{{ $report->kit->activation_code ?? 'Selected Kit' }} [{{ $report->kit->inv_code ?? 'N/A' }}]</option>
+                    @else
+                        <option value="">-- {{ __('messages.opt_first_select_user') }} --</option>
+                    @endif
                 </select>
+                @if(isset($report))
+                    <input type="hidden" name="kit_id" value="{{ $report->kit_id }}">
+                @endif
             </div>
         </div>
 
         <hr style="border: 0; border-top: 1px solid var(--border); margin: 30px 0;">
 
         {{-- Dynamic Repeater Target Injection Point --}}
-        <div id="categories-master-container"></div>
+        <div id="categories-master-container">
+            @if(isset($report) && isset($reportDetails))
+                @foreach($reportDetails as $catKey => $detailGroup)
+                    <div class="category-block" data-cat-id="{{ $catKey }}" style="border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-bottom: 25px; position: relative;">
+                        <button type="button" class="remove-category-btn" style="position: absolute; right: 15px; top: 55px; background: #ef4444; color: white; border: none; border-radius: 5px; cursor: pointer; padding: 5px 12px; font-size: 13px;">{{ __('messages.btn_remove') }}</button>
+                        
+                        <div style="margin-bottom: 20px; width: 80%;">
+                            <label style="color: var(--text-muted); display: block; margin-bottom: 8px; font-size: 14px;">{{ __('messages.lbl_select_biomarker_category') }} <span class="text-danger">*</span></label>
+                            <select name="categories[{{ $catKey }}][id]" class="category-select" style="width: 100%; background: var(--surface-input); color: var(--text-main); border: 1px solid var(--border); padding: 12px; border-radius: 8px;" required>
+                                <option value="">-- {{ __('messages.opt_select_category') }} --</option>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->id }}" {{ $category->id == $detailGroup['category_id'] ? 'selected' : '' }}>{{ $category->title }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="subcategories-container" style="margin-left: 20px; border-left: 2px solid var(--border); padding-left: 20px;">
+                            @foreach($detailGroup['subcategories'] as $subKey => $subDetail)
+                                <div class="subcategory-row" style="display: grid; grid-template-columns: 1fr 1fr 40px; gap: 15px; margin-bottom: 10px; align-items: center;">
+                                    <div>
+                                        <select name="categories[{{ $catKey }}][reports][{{ $subKey }}][subcategory_id]" style="width: 100%; background: var(--surface-input); color: var(--text-main); border: 1px solid var(--border); padding: 10px; border-radius: 6px;" required>
+                                            @foreach($detailGroup['all_subs_options'] as $optSub)
+                                                <option value="{{ $optSub->id }}" {{ $optSub->id == $subDetail->subcategory_id ? 'selected' : '' }}>{{ $optSub->title }} ({{ $optSub->unit }})</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <input type="number" step="0.01" name="categories[{{ $catKey }}][reports][{{ $subKey }}][value]" value="{{ $subDetail->value }}" style="width: 100%; background: var(--surface-input); color: var(--text-main); border: 1px solid var(--border); padding: 10px; border-radius: 6px;" placeholder="{{ __('messages.ph_biomarker_value') }}" required>
+                                    </div>
+                                    <button type="button" class="remove-sub-btn" style="background: transparent; color: #ef4444; border: none; cursor: pointer; font-size: 18px;" title="{{ __('messages.btn_remove') }}">
+                                        <i class="fa fa-times-circle"></i>
+                                    </button>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <button type="button" class="add-sub-btn" style="margin-top: 10px; background: #38bdf8; color: #0f172a; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold;">
+                            + {{ __('messages.btn_add_subcategory_value') }}
+                        </button>
+                    </div>
+                @endforeach
+            @endif
+        </div>
 
         <div style="margin-top: 20px; display: flex; gap: 10px;">
             <button type="button" id="add-category-btn" style="background: var(--accent); color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
@@ -120,7 +180,7 @@
         </div>
 
         <button type="submit" style="width: 100%; background: #22c55e; color: white; border: none; padding: 15px; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 30px; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-            {{ __('messages.btn_save_all_reports') }}
+            {{ isset($report) ? __('messages.btn_update_all_reports', ['default' => 'Update Report']) : __('messages.btn_save_all_reports') }}
         </button>
     </form>
 </div>
@@ -136,7 +196,8 @@
             width: '100%'
         });
 
-        let catIdx = 0;
+        // এডিট মোড ক্যাচ করার জন্য এক্সিস্টিং ব্লকের সংখ্যা ট্র্যাক করা
+        let catIdx = $('#categories-master-container .category-block').length;
 
         const localeMatrix = {
             searchingKits: "{{ __('messages.js_searching_kits') }}",
@@ -156,6 +217,7 @@
             @endforeach
         `;
 
+        // ইউজার চেঞ্জ ইভেন্ট (শুধুমাত্র ক্রিয়েট মোডে কাজ করবে)
         $('#user_id_select').on('change', function() {
             let userId = $(this).val();
             let $kitSelect = $('#kit_id_select');
@@ -172,7 +234,7 @@
             }
         });
 
-        // Add Category Block Layer (ইনলাইন কালার সরিয়ে ভ্যারিয়েবল দেওয়া হয়েছে)
+        // Add Category Block Layer
         $('#add-category-btn').on('click', function() {
             let categoryHtml = `
             <div class="category-block" data-cat-id="${catIdx}" style="border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-bottom: 25px; position: relative;">
@@ -196,6 +258,7 @@
             catIdx++;
         });
 
+        // ক্যাটাগরি চেঞ্জ ইভেন্ট
         $(document).on('change', '.category-select', function() {
             let $select = $(this);
             let categoryId = $select.val();
@@ -222,15 +285,25 @@
             }
         });
 
+        // সাবক্যাটাগরি বাটন ক্লিক হ্যান্ডলার
         $(document).on('click', '.add-sub-btn', function() {
             let $block = $(this).closest('.category-block');
             let currentCatIdx = $block.data('cat-id');
             let data = $block.data('sub-data');
             let $subContainer = $block.find('.subcategories-container');
-            addSubRow(currentCatIdx, $subContainer, data);
+            
+            if(data) {
+                addSubRow(currentCatIdx, $subContainer, data);
+            } else {
+                let categoryId = $block.find('.category-select').val();
+                $.get("{{ route('admin.get-subcategories') }}", { category_id: categoryId }, function(fetchedData) {
+                    $block.data('sub-data', fetchedData);
+                    addSubRow(currentCatIdx, $subContainer, fetchedData);
+                });
+            }
         });
 
-        // Dynamic Subcategory Row (ইনপুট এবং সিলেক্টে সিএসএস ভ্যারিয়েবল পুশ করা হয়েছে)
+        // ডাইনামিক সাবক্যাটাগরি রো জেনারেশন
         function addSubRow(cIdx, container, subData) {
             let subIdx = container.find('.subcategory-row').length;
             let options = subData.map(sub => `<option value="${sub.id}">${sub.title} (${sub.unit})</option>`).join('');

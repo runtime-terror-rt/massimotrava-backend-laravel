@@ -38,5 +38,17 @@ class AppServiceProvider extends ServiceProvider
         }
         
          \App\Models\BiomarkerReport::observe(AuditObserver::class);
+         \App\Models\BiomarkerCategory::observe(AuditObserver::class);
+         \App\Models\BiomarkerSubcategory::observe(AuditObserver::class);
+         \App\Models\Faq::observe(AuditObserver::class);
+         \App\Models\Content::observe(AuditObserver::class);
+         \App\Models\Campaign::observe(AuditObserver::class);
+         \App\Models\Role::observe(AuditObserver::class);
+         \App\Models\Permission::observe(AuditObserver::class);
+         \App\Models\ScheduleRetest::observe(AuditObserver::class);
+         \App\Models\SubscriptionPlan::observe(AuditObserver::class);
+         \App\Models\Subscription::observe(AuditObserver::class);
+         \App\Models\contacts::observe(AuditObserver::class);
+         \App\Models\PrivacyPolicy::observe(AuditObserver::class);
     }
 }

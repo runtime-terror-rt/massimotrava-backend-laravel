@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>@yield('title', 'Massimotrava Admin')</title>
-    
+    <title>@yield('title', 'Vyralabs Admin')</title>
+    <link rel="icon" type="image/jpeg" href="{{ asset('images/favicon.png') }}">
     <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght=0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
     
     <!-- Styles -->
@@ -14,35 +14,44 @@
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}"/>
     
     <style>
-    .profile-dropdown .dropdown-menu {
-    display: none !important;
-    position: absolute !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    visibility: visible !important;
-}
-.profile-dropdown .dropdown-menu.show-menu {
-    display: block !important;
-}
-        /* Global Modal Styling */
-        .modal-content {
-            background: #1e293b;
-            border: 1px solid #334155;
-            color: white;
-        }
-        .modal-header { border-bottom: 1px solid #334155; }
-        .modal-footer { border-top: 1px solid #334155; }
-        .form-control, .form-select {
-            background: #0f172a;
-            border: 1px solid #334155;
-            color: white;
-        }
-        .form-control:focus, .form-select:focus {
-            background: #0f172a;
-            color: white;
-            border-color: #6366f1;
-            box-shadow: none;
-        }
+      .profile-dropdown .dropdown-menu {
+          display: none !important;
+          position: absolute !important;
+          opacity: 1 !important;
+          pointer-events: auto !important;
+          visibility: visible !important;
+      }
+      .profile-dropdown .dropdown-menu.show-menu {
+          display: block !important;
+      }
+
+      /* Dynamic Theme Matched Modal Styling */
+      .modal-content {
+          background: var(--surface-modal) !important;
+          border: 1px solid var(--border) !important;
+          color: var(--text-main) !important;
+      }
+      .modal-header { border-bottom: 1px solid var(--border) !important; }
+      .modal-footer { border-top: 1px solid var(--border) !important; }
+      
+      .form-control, .form-select {
+          background: var(--surface-input) !important;
+          border: 1px solid var(--border) !important;
+          color: var(--text-main) !important;
+      }
+      .form-control:focus, .form-select:focus {
+          background: var(--surface-input) !important;
+          color: var(--text-main) !important;
+          border-color: var(--accent) !important;
+          box-shadow: 0 0 0 3px var(--sb-hover-bg) !important;
+      }
+
+      body {
+          background-color: var(--bg-main);
+          color: var(--text-main);
+          transition: background-color 0.3s ease, color 0.3s ease;
+          font-family: 'Inter', sans-serif;
+      }
     </style>
     @stack('styles')
 </head>
@@ -86,6 +95,36 @@
     if (menu) {
       menu.style.display = 'none';
       if(chevron) chevron.style.transform = 'rotate(0deg)';
+    }
+  });
+
+  // Theme Sync Handler
+  document.addEventListener('DOMContentLoaded', function () {
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    const body = document.body;
+
+    const currentTheme = localStorage.getItem('theme');
+    if (currentTheme === 'light') {
+        body.classList.add('light-mode');
+        if(themeIcon) themeIcon.classList.replace('fa-moon', 'fa-sun'); 
+    } else {
+        body.classList.remove('light-mode');
+        if(themeIcon) themeIcon.classList.replace('fa-sun', 'fa-moon'); 
+    }
+
+    if(themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', function () {
+            body.classList.toggle('light-mode');
+            
+            if (body.classList.contains('light-mode')) {
+                localStorage.setItem('theme', 'light');
+                if(themeIcon) themeIcon.classList.replace('fa-moon', 'fa-sun');
+            } else {
+                localStorage.setItem('theme', 'dark');
+                if(themeIcon) themeIcon.classList.replace('fa-sun', 'fa-moon');
+            }
+        });
     }
   });
 </script>

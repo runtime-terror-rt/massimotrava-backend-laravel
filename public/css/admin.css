@@ -1,4 +1,116 @@
 /* ===== CSS VARIABLES ===== */
+
+/* ===== CSS VARIABLES (DARK MODE DEFAULT) ===== */
+:root {
+  --sidebar-width: 260px;
+  --sidebar-collapsed: 72px;
+  --topbar-height: 68px;
+
+  /* Global Theme Elements */
+  --bg-main: #0b0f19;
+  --bg: #0e1117;
+  --surface: #111622;
+  --surface-2: #1c2333;
+  --surface-modal: #1e293b;
+  --surface-input: #0f172a;
+  --border: rgba(255, 255, 255, 0.05);
+  --border-dashed: rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(22, 27, 39, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+
+  /* Typography Colors */
+  --text-main: #ffffff;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-muted-dark: #64748b;
+
+  /* Accents */
+  --accent: #6366f1;
+  --accent-glow: rgba(99, 102, 241, 0.35);
+  --accent-2: #ec4899;
+  --accent-3: #10b981;
+  --accent-4: #f59e0b;
+
+  /* Sidebar Specific (Dark) */
+  --sb-bg: linear-gradient(180deg, #0b0f1a 0%, #0d1220 50%, #0b0f1a 100%);
+  --sb-border: rgba(255, 255, 255, 0.06);
+  --sb-text: #8892a4;
+  --sb-text-active: #ffffff;
+  --sb-hover-bg: rgba(99, 102, 241, 0.1);
+  --sb-active-bg: rgba(99, 102, 241, 0.18);
+
+  /* Typography Config */
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== LIGHT MODE OVERRIDES ===== */
+body.light-mode {
+  /* Global Theme Elements */
+  --bg-main: #f8fafc;        /* Slate 50 */
+  --bg: #f1f5f9;             /* Slate 100 */
+  --surface: #ffffff;        /* Pure White */
+  --surface-2: #e2e8f0;      /* Slate 200 */
+  --surface-modal: #ffffff;
+  --surface-input: #f8fafc;
+  --border: rgba(0, 0, 0, 0.06);
+  --border-dashed: rgba(0, 0, 0, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(0, 0, 0, 0.06);
+  --glass-shadow: 0 8px 32px rgba(15, 23, 42, 0.08);
+
+  /* Typography Colors */
+  --text-main: #0f172a;       /* Slate 900 */
+  --text: #1e293b;           /* Slate 800 */
+  --text-muted: #475569;      /* Slate 600 */
+  --text-muted-dark: #64748b; /* Slate 500 */
+
+  /* Sidebar Specific (Light) */
+  --sb-bg: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  --sb-border: rgba(0, 0, 0, 0.05);
+  --sb-text: #64748b;
+  --sb-text-active: #6366f1;
+  --sb-hover-bg: rgba(99, 102, 241, 0.06);
+  --sb-active-bg: rgba(99, 102, 241, 0.1);
+}
+
+/* ===== COMPONENTS BACKGROUND FIXES FOR THEMES ===== */
+
+/* Table Wrapper Fix */
+.table-wrap {
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+}
+.table {
+    --bs-table-bg: transparent !important;
+    --bs-table-color: var(--text) !important;
+}
+.table thead th {
+    background: var(--surface-2) !important;
+    color: var(--text-muted) !important;
+    border-bottom: 1px solid var(--border) !important;
+}
+.table tbody td {
+    border-bottom: 1px solid var(--border) !important;
+    color: var(--text) !important;
+}
+
+/* Global Input / Placeholder Fix */
+::placeholder, .form-control::placeholder, .form-select::placeholder {
+    color: var(--text-muted-dark) !important;
+}
+
+/* Sidebar Background Fix */
+.sidebar {
+    background: var(--sb-bg) !important;
+    border-right: 1px solid var(--sb-border) !important;
+}
+
+
 :root {
   --sidebar-width: 260px;
   --sidebar-collapsed: 72px;
@@ -414,7 +526,7 @@ body::before {
 .profile-avatar {
   width: 30px; height: 30px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #6366f1, #ec4899);
+  /* background: linear-gradient(135deg, #6366f1, #ec4899); */
   display: flex; align-items: center; justify-content: center;
   font-size: 12px; font-weight: 700; color: #fff;
   font-family: var(--font-display);
@@ -524,7 +636,7 @@ body::before {
 
 .stat-value {
   font-family: var(--font-display);
-  font-size: 30px; font-weight: 800;
+  font-size: 30px; font-weight: 300;
   color: var(--text);
   letter-spacing: -1px;
   line-height: 1;
