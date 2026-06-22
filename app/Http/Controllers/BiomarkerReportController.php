@@ -486,6 +486,28 @@ class BiomarkerReportController extends Controller
         return view('admin.reports.show', compact('reports', 'mainReport'));
     }
 
+    public function showUserReport($parameter)
+    {
+        if (is_numeric($parameter)) {
+            $referenceRow = BiomarkerReport::find($parameter);
+            $inv_code = $referenceRow ? $referenceRow->inv_code : null;
+        } else {
+            $inv_code = $parameter;
+        }
+
+        $reports = BiomarkerReport::with(['user', 'kit', 'biomarkerCategory', 'biomarkerSubcategory'])
+            ->where('inv_code', $inv_code)
+            ->where('user_id', auth()->id()) 
+            ->get();
+
+        if ($reports->isEmpty()) {
+            abort(403, 'Unauthorized action or report not found.');
+        }
+
+        $mainReport = $reports->first();
+        return view('user.reports.show', compact('reports', 'mainReport')); 
+    }
+
     /**
      * Show the form for editing the specified biomarker report batch grid matrix.
      */

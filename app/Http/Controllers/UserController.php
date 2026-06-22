@@ -11,6 +11,11 @@ use Spatie\Permission\Traits\HasRoles;
 
 class UserController extends Controller
 {
+    public function userHome()
+    {
+        return view('user.dashboard');
+    }
+    
     public function profile()
     {
         $user = Auth::user();

@@ -11,13 +11,34 @@ class KitController extends Controller
 {
     public function index(Request $request)
     {
-        $kits = Kit::with('user:id,name,email')->latest()->paginate(10);
+        $user = $request->user();
+
+        $isAdminOrLab = false;
+
+        if (method_exists($user, 'hasRole')) {
+            $isAdminOrLab = $user->hasRole(['admin', 'lab']);
+        } else if (method_exists($user, 'roles')) {
+            $isAdminOrLab = $user->roles()->whereIn('name', ['admin', 'lab'])->exists();
+        } else {
+            $isAdminOrLab = $user->can('manage-kits');
+        }
+
+        if ($isAdminOrLab) {
+            $query = Kit::with('user:id,name,email')->latest();
+        } else {
+            $query = Kit::where('user_id', $user->id)->latest();
+        }
+
+        $kits = $query->paginate(10);
 
         if ($request->expectsJson()) {
             return response()->json(['status' => 'success', 'data' => $kits]);
         }
 
-        return view('admin.kits.index', compact('kits'));
+        return view('admin.kits.index', [
+            'kits' => $kits,
+            'isAdmin' => $isAdminOrLab
+        ]);
     }
 
     public function activateKit(Request $request)
