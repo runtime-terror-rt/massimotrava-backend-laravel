@@ -38,18 +38,26 @@ class ContentController extends Controller
             'status'         => 'required|in:draft,published',
             'body'           => 'required_if:type,post|nullable|string',
             'video_url'      => 'required_if:type,video|nullable|url',
-            'featured_image' => 'nullable|string|max:255', 
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:15360', 
             'duration'       => 'nullable|integer|min:0',    
         ]);
 
         try {
+            $imagePath = null;
+            if ($request->hasFile('featured_image')) {
+                $file = $request->file('featured_image');
+                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/contents'), $filename);
+                $imagePath = 'uploads/contents/' . $filename;
+            }
+
             $contentData = [
                 'user_id'        => auth()->id() ?? 1, 
                 'type'           => $request->type,
                 'title'          => $request->title,
                 'slug'           => Str::slug($request->title) . '-' . time(),
                 'status'         => $request->status,
-                'featured_image' => $request->featured_image ?? null,
+                'featured_image' => $imagePath,
                 'published_at'   => $request->status == 'published' ? now() : null,
             ];
 

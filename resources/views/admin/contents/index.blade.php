@@ -139,7 +139,8 @@
 
             {{-- Modal Body Form --}}
             <div class="modal-body py-4">
-                <form action="{{ route('admin.contents.store') }}" method="POST" id="modal_content_form" class="row g-4">
+                {{-- FIXED: Added enctype attribute for handling file uploads --}}
+                <form action="{{ route('admin.contents.store') }}" method="POST" enctype="multipart/form-data" id="modal_content_form" class="row g-4">
                     @csrf
 
                     {{-- Asset Type Switcher --}}
@@ -162,6 +163,16 @@
                         <input type="text" name="title" id="title" value="{{ old('title') }}" 
                                placeholder="{{ __('messages.ph_headline_title') }}" class="form-control form-input py-2.5" style="background-color: var(--surface-2); border: 1px solid var(--border); color: var(--text); outline: none;">
                         @error('title') <span class="text-danger d-block text-xs mt-1">{{ $message }}</span> @enderror
+                    </div>
+
+                    {{-- FIXED & ADDED: Featured Image Input Field --}}
+                    <div class="col-12">
+                        <label for="featured_image" class="form-label font-weight-bold mb-2" style="font-size: 14px; color: var(--text);">
+                            Featured Image <small style="color: var(--text-muted);">({{ __('messages.lbl_optional') }})</small>
+                        </label>
+                        <input type="file" name="featured_image" id="featured_image" class="form-control form-input py-2" style="background-color: var(--surface-2); border: 1px solid var(--border); color: var(--text); outline: none;">
+                        <small class="text-muted d-block mt-1" style="font-size: 11px; color: var(--text-muted) !important;">Supported formats: JPG, JPEG, PNG, WEBP, GIF (Max size: 2MB)</small>
+                        @error('featured_image') <span class="text-danger d-block text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
 
                     {{-- Article Body Container (Conditional) --}}

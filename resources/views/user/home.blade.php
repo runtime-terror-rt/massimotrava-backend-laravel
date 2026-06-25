@@ -919,8 +919,8 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
 
 .bm-image-side {
   position: relative;
-  aspect-ratio: 1/1;
-  height: 420px;
+  height: 420px; 
+  width: 100%; 
 }
 .bm-main-img {
   width: 100%;
@@ -1050,6 +1050,381 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
     background: linear-gradient(180deg, transparent 40%, rgba(13, 17, 30, 0.95) 100%);
   }
 }
+
+/* ========= PREMIUM PRICING SECTION CSS ========= */
+.premium-pricing-section {
+  background: var(--bg);
+  padding: 100px 0;
+  position: relative;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+  margin-top: 60px;
+  align-items: stretch;
+}
+
+/* Card Structures */
+.pricing-card {
+  background: rgba(17, 22, 34, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 24px;
+  padding: 40px 30px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pricing-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* Featured/Popular Plan Highlights */
+.pricing-card.popular-plan {
+  background: rgba(17, 24, 39, 0.85);
+  border: 1px solid rgba(34, 211, 238, 0.25);
+  box-shadow: 0 15px 40px rgba(34, 211, 238, 0.03);
+}
+
+.pricing-card.popular-plan:hover {
+  border-color: var(--c);
+  box-shadow: 0 25px 50px rgba(34, 211, 238, 0.12);
+}
+
+/* Badge Styling */
+.card-badge-wrapper {
+  height: 25px;
+  margin-bottom: 10px;
+}
+
+.popular-badge {
+  background: linear-gradient(90deg, #10b981, var(--c));
+  color: #000;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 14px;
+  border-radius: 30px;
+  letter-spacing: 0.8px;
+  display: inline-block;
+}
+
+/* Typography Inside Cards */
+.plan-type {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--muted);
+  letter-spacing: 1.5px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, var(--c), #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.plan-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+/* Pricing Display */
+.plan-price-block {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 15px;
+}
+
+.plan-price-block .currency {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--muted);
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.plan-price-block .price {
+  font-size: 56px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+  font-family: var(--font);
+}
+
+.plan-price-block .period {
+  font-size: 14px;
+  color: var(--muted);
+  margin-left: 6px;
+}
+
+.plan-desc {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.plan-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 30px 0;
+}
+
+/* Features List */
+.plan-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 35px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.plan-features li {
+  font-size: 14px;
+  color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  line-height: 1.4;
+}
+
+.plan-features li i.fa-circle-check {
+  color: var(--c);
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.plan-features li.disabled {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.plan-features li i.fa-circle-xmark {
+  color: rgba(255, 255, 255, 0.15);
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+/* Buttons / Actions */
+.pricing-cta-wrap {
+  margin-top: auto;
+}
+
+.pricing-btn {
+  display: block;
+  text-align: center;
+  padding: 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.secondary-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.primary-glow-btn {
+  background: var(--c);
+  color: #000;
+  border: 1px solid var(--c);
+  box-shadow: 0 4px 20px rgba(34, 211, 238, 0.25);
+}
+
+.primary-glow-btn:hover {
+  background: #fff;
+  border-color: #fff;
+  box-shadow: 0 8px 30px rgba(255, 255, 255, 0.3);
+  transform: scale(1.01);
+}
+
+/* Bottom Footnote Info */
+.pricing-footnote {
+  text-align: center;
+  margin-top: 45px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+@media (max-width: 768px) {
+  .pricing-grid {
+    grid-template-columns: 1fr;
+  }
+  .pricing-card {
+    padding: 30px 20px;
+  }
+}
+
+/* ========= KNOWLEDGE STREAM SPECS & BUTTONS ========= */
+.vyr-text-modal-trigger-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+    font-weight: inherit;
+    font-family: inherit;
+    text-align: left;
+    color: #fff;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.vyr-text-modal-trigger-btn:hover {
+    color: #22d3ee !important;
+}
+.vyr-hyperlink-node-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    font-family: inherit;
+    transition: color 0.2s;
+}
+.vyr-hyperlink-node-btn:hover {
+    color: #fff !important;
+}
+
+/* Base Card Structural Grid & Hover Handles */
+.vyr-unified-card {
+    background: #111827; 
+    border: 1px solid rgba(255, 255, 255, 0.06); 
+    border-radius: 16px;
+    display: flex;
+    position: relative;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.vyr-unified-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(34, 211, 238, 0.25) !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(34, 211, 238, 0.04);
+}
+.vyr-unified-card:hover .vyr-node-media-box img {
+    transform: scale(1.03);
+}
+
+/* Linear Progress Tracking Lines */
+.vyr-mockup-bottom-indicator-bar {
+    height: 3.5px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.04);
+    position: relative;
+    overflow: hidden;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+}
+.vyr-mockup-bottom-indicator-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 35%;
+}
+.vyr-unified-card.type-post .vyr-mockup-bottom-indicator-bar::after { background: #22d3ee; }
+.vyr-unified-card.type-video .vyr-mockup-bottom-indicator-bar::after { background: #a78bfa; }
+
+/* Filter Controls Tabs Layout */
+.vyr-filter-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px 18px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.vyr-filter-btn.active {
+    background: #1a2235;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Modal Engine Shared Interface Rules */
+.vyr-embedded-overlay-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(7, 11, 18, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    padding: 20px;
+}
+.vyr-modal-viewport-container {
+    position: relative;
+    width: 100%;
+    max-width: 860px;
+    background: #1a2235;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.85);
+}
+.vyr-modal-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.vyr-modal-top-bar span {
+    font-size: 13px;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 0.5px;
+}
+.vyr-modal-top-bar button {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: all 0.2s ease;
+}
+.vyr-modal-top-bar button:hover {
+    opacity: 1;
+    color: #ef4444;
+}
+.vyr-modal-video-shell {
+    position: relative;
+    padding-top: 56.25%;
+}
+.vyr-modal-video-shell iframe {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%; border: none;
+}
+.vyr-node-collapsed-state { display: none !important; }
+
+/* Custom Scrollbar for Article Modal Content */
+#vyrEcosystemArticleModal div::-webkit-scrollbar { width: 6px; }
+#vyrEcosystemArticleModal div::-webkit-scrollbar-track { background: #111622; }
+#vyrEcosystemArticleModal div::-webkit-scrollbar-thumb { background: #1c2333; border-radius: 10px; }
 </style>
 </head>
 <body>
@@ -1058,6 +1433,55 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
 {{-- <div class="announce">
   LIMITED TIME ONLY &nbsp;<span class="pill">Save 20%</span>&nbsp; on your first Vyralabs kit — results in under 72 hours
 </div> --}}
+@php
+    $latestCampaign = $campaigns->where('status', 'active')->first();
+@endphp
+
+@if($latestCampaign)
+    <div class="vyr-announce-section" style="background: linear-gradient(90deg, #070b11 0%, #0f172a 50%, #070b11 100%); border-bottom: 1px solid rgba(255,255,255,0.08); width: 100%; position: relative; z-index: 1000; padding: 0 20px;">
+
+        <div style="max-width: 1400px; margin: 0 auto; height: 32px; display: flex; align-items: center; justify-content: center; gap: 8px; overflow: hidden;">
+
+            <span class="vyr-live-pulse" style="display:inline-block; width:5px; height:5px; background:#22d3ee; border-radius:50%; box-shadow:0 0 8px #22d3ee; flex-shrink:0;"></span>
+
+            <div style="display:flex; align-items:center; gap:4px; min-width:0; overflow:hidden; white-space:nowrap;">
+
+                <strong style="color:#22d3ee; font-family:'Plus Jakarta Sans',sans-serif; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; flex-shrink:0;">
+                    {{ $latestCampaign->title }}:
+                </strong>
+
+                <span style="color:#cbd5e1; font-family:'Plus Jakarta Sans',sans-serif; font-size:11.5px; font-weight:400; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                    {{ Str::limit(strip_tags($latestCampaign->description), 85, '...') }}
+                </span>
+
+                @if($latestCampaign->end_date)
+                    <span style="color:#64748b; font-family:'Plus Jakarta Sans',sans-serif; font-size:10.5px; font-weight:600; flex-shrink:0;">
+                        (Ends: {{ \Carbon\Carbon::parse($latestCampaign->end_date)->format('M d') }})
+                    </span>
+                @endif
+            </div>
+
+            @if($latestCampaign->action_url)
+                <a href="{{ $latestCampaign->action_url }}" target="_blank" class="vyr-announce-pill-btn"
+                   style="background:rgba(34,211,238,0.1); border:1px solid rgba(34,211,238,0.25); color:#22d3ee; padding:2px 9px; font-family:'Plus Jakarta Sans',sans-serif; font-size:10px; font-weight:700; text-decoration:none; border-radius:20px; text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap; flex-shrink:0; display:inline-flex; align-items:center; gap:3px; line-height:16px;">
+                    Claim <i class="fa-solid fa-arrow-right" style="font-size:7.5px;"></i>
+                </a>
+            @endif
+
+        </div>
+    </div>
+
+    <style>
+        .vyr-announce-pill-btn:hover { background:#22d3ee !important; color:#070b12 !important; }
+        .vyr-announce-pill-btn:hover i { transform:translateX(1px); }
+        @keyframes pulseGlow {
+            0%,100% { transform:scale(0.95); opacity:0.5; }
+            50%      { transform:scale(1.15); opacity:1; }
+        }
+        .vyr-live-pulse { animation:pulseGlow 2s infinite ease-in-out; }
+    </style>
+@endif
+    
 
 <!-- NAVBAR -->
 <nav class="navbar" id="navbar">
@@ -1369,6 +1793,183 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
 
   </div>
 </section>
+
+<section class="vyr-knowledge-stream-section" style="background: var(--bg, #070b12); padding: 90px 0; border-top: 1px solid var(--border); position: relative; z-index: 10; overflow: hidden; width: 100%;">
+    <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px; position: relative; width: 100%;">
+        
+        <div class="vyr-stream-header-wrapper" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 45px; flex-wrap: wrap; gap: 20px;">
+            <div class="vyr-header-left">
+                <div class="section-eyebrow" style="font-size: 11px; font-weight: 700; color: #22d3ee; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px;">INSIGHTS & GUIDES</div>
+                <h2 class="section-title" style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 32px; font-weight: 700; color: #fff; margin: 0; line-height: 1.2;">
+                    Optimize Your <strong>Performance Stream</strong>
+                </h2>
+            </div>
+            
+            <div class="vyr-slider-navigation" style="display: flex; gap: 10px; position: relative; z-index: 20;">
+                <button type="button" class="vyr-swiper-prev" style="background: rgba(13, 17, 23, 0.75); border: 1px solid var(--border); color: #fff; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;"><i class="fa-solid fa-chevron-left"></i></button>
+                <button type="button" class="vyr-swiper-next" style="background: rgba(13, 17, 23, 0.75); border: 1px solid var(--border); color: #fff; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <div style="width: 100%; min-width: 0; position: relative;">
+            <div class="swiper vyr-knowledge-swiper" style="overflow: hidden; width: 100%; padding: 4px 4px 15px 4px; margin: -4px -4px -15px -4px;">
+                <div class="swiper-wrapper">
+                    
+                    @forelse($contents as $content)
+                        <div class="swiper-slide vyr-unified-card stream-item-node type-{{ $content->type }}" data-type-node="{{ $content->type }}" style="display: flex; flex-direction: column; background: var(--surface, #111827); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; height: auto;">
+                            
+                            <div class="vyr-node-media-box" style="position: relative; aspect-ratio: 16/10; background: #080c14; overflow: hidden; display: flex; align-items: center; justify-content: center; isolation: isolate;">
+                                @if($content->type === 'video')
+                                    <div class="vyr-play-layer-mask" style="position: absolute; inset: 0; z-index: 1;">
+                                        @php
+                                            $videoId = '';
+                                            $rawUrl  = $content->video_url ?? '';
+                                            if (preg_match('/(?:v=|\/embed\/|\/shorts\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/', $rawUrl, $match)) {
+                                                $videoId = $match[1];
+                                            }
+                                        @endphp
+
+                                        @if($videoId)
+                                            <iframe
+                                                src="https://www.youtube.com/embed/{{ $videoId }}?autoplay=1&mute=1&loop=1&playlist={{ $videoId }}&controls=0&rel=0&playsinline=1&modestbranding=1"
+                                                style="width:100%;height:100%;position:absolute;top:0;left:0;border:none;z-index:1;"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                allowfullscreen>
+                                            </iframe>
+                                            <div class="vyr-iframe-click-shield" style="position:absolute;inset:0;z-index:2;background:transparent;cursor:pointer;"></div>
+                                        @else
+                                            <img src="{{ asset($content->featured_image) }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                        @endif
+                                    </div>
+                                @else
+                                    @if($content->featured_image)
+                                        <img src="{{ asset($content->featured_image) }}" alt="{{ $content->title }}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
+                                    @else
+                                        <div style="font-size: 40px; color: #64748b; opacity: 0.35;">
+                                            <i class="fa-solid fa-feather-pointed"></i>
+                                        </div>
+                                    @endif
+                                @endif
+
+                                <span class="vyr-badge-indicator" style="position: absolute; top: 14px; left: 14px; font-size: 9px; font-weight: 800; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; z-index: 3; background: rgba(7, 11, 18, 0.85); border: 1px solid var(--border); color: {{ $content->type === 'video' ? '#a78bfa' : '#22d3ee' }};">
+                                    {{ $content->type }}
+                                </span>
+                            </div>
+
+                            <div class="vyr-node-details-box" style="padding: 24px; display: flex; flex-direction: column; flex-grow: 1; position: relative;">
+                                <h3 style="font-size: 18px; font-weight: 700; line-height: 1.4; margin: 0 0 12px 0; font-family: 'Plus Jakarta Sans', sans-serif;">
+                                    @if($content->type === 'video')
+                                        <button type="button" class="vyr-text-modal-trigger-btn" data-video-trigger data-stream-url="{{ $content->video_url }}" style="background: none; border: none; padding: 0; font-size: inherit; font-weight: inherit; font-family: inherit; text-align: left; color: #fff; cursor: pointer;">
+                                            {{ $content->title }}
+                                        </button>
+                                    @else
+                                        <button type="button" class="vyr-text-modal-trigger-btn vyr-article-trigger" data-article-title="{{ $content->title }}" data-article-body="{{ $content->body }}" data-article-date="{{ $content->published_at ? \Carbon\Carbon::parse($content->published_at)->format('M d, Y') : $content->created_at->format('M d, Y') }}" style="background: none; border: none; padding: 0; font-size: inherit; font-weight: inherit; font-family: inherit; text-align: left; color: #fff; cursor: pointer;">
+                                            {{ $content->title }}
+                                        </button>
+                                    @endif
+                                </h3>
+
+                                @if($content->type === 'post' && $content->body)
+                                    <p style="font-size: 13.5px; color: #94a3b8; line-height: 1.6; margin: 0 0 24px 0; font-weight: 400;">
+                                        {{ Str::limit(strip_tags($content->body), 105, '...') }}
+                                    </p>
+                                @endif
+
+                                <div style="margin-top: auto; padding-top: 16px; display: flex; justify-content: space-between; align-items: center; font-size: 12.5px;">
+                                    <span style="color: #64748b; display: flex; align-items: center; gap: 6px;">
+                                        <i class="fa-regular fa-calendar-check"></i>
+                                        {{ $content->published_at ? \Carbon\Carbon::parse($content->published_at)->format('M d, Y') : $content->created_at->format('M d, Y') }}
+                                    </span>
+
+                                    @if($content->type === 'post')
+                                        <button type="button" class="vyr-hyperlink-node-btn vyr-article-trigger" style="color: #22d3ee; background: none; border: none; cursor: pointer;" data-article-title="{{ $content->title }}" data-article-body="{{ $content->body }}" data-article-date="{{ $content->published_at ? \Carbon\Carbon::parse($content->published_at)->format('M d, Y') : $content->created_at->format('M d, Y') }}">
+                                            Read Insights <i class="fa-solid fa-arrow-right" style="font-size: 11px;"></i>
+                                        </button>
+                                    @else
+                                        <button type="button" class="vyr-hyperlink-node-btn vyr-text-modal-trigger-btn" style="color: #a78bfa; background: none; border: none; cursor: pointer;" data-video-trigger data-stream-url="{{ $content->video_url }}">
+                                            Watch Stream <i class="fa-solid fa-circle-play" style="font-size: 12px;"></i>
+                                        </button>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="vyr-empty-state-fallback" style="width: 100%; text-align: center; padding: 60px; border: 1px dashed rgba(255,255,255,0.06); border-radius: 16px; color: #94a3b8;">
+                            <i class="fa-solid fa-cubes-stacked" style="font-size: 32px; margin-bottom: 12px; opacity: 0.3;"></i>
+                            <p style="margin: 0; font-size: 14px;">No resource packages deployed yet.</p>
+                        </div>
+                    @endforelse
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const knowledgeSwiper = new Swiper('.vyr-knowledge-swiper', {
+            slidesPerView: 1,
+            spaceBetween: 24,
+            loop: true,
+            autoplay: {
+                delay: 3500,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+            },
+            navigation: {
+                nextEl: '.vyr-swiper-next',
+                prevEl: '.vyr-swiper-prev',
+            },
+            breakpoints: {
+                640: { slidesPerView: 1.5 },
+                768: { slidesPerView: 2 },
+                1024: { slidesPerView: 3 }
+            }
+        });
+    });
+</script>
+
+<style>
+    .vyr-swiper-prev:hover, .vyr-swiper-next:hover {
+        background: #22d3ee !important;
+        color: #070b12 !important;
+        box-shadow: 0 0 12px rgba(34, 211, 238, 0.4);
+    }
+</style>
+
+<div id="vyrEcosystemVideoModal" class="vyr-embedded-overlay-modal">
+    <div class="vyr-modal-viewport-container">
+        <div class="vyr-modal-top-bar">
+            <span>Vyralabs Media Stream Hub</span>
+            <button id="vyrEcosystemCloseBtn" aria-label="Close Stream Player">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="vyr-modal-video-shell">
+            <iframe id="vyrEcosystemIframeTarget" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+    </div>
+</div>
+
+<div id="vyrEcosystemArticleModal" class="vyr-embedded-overlay-modal">
+    <div class="vyr-modal-viewport-container" style="max-width: 720px;">
+        <div class="vyr-modal-top-bar">
+            <span id="vyrArticleModalMetaDate" style="font-size: 11px; text-transform: uppercase; color: #22d3ee;">ARTICLE INSIGHT</span>
+            <button id="vyrArticleCloseBtn" aria-label="Close Article Reader">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div style="padding: 32px; max-height: 70vh; overflow-y: auto; background: #111622;">
+            <h2 id="vyrArticleModalTitle" style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 24px; font-weight: 700; color: #fff; margin: 0 0 16px 0; line-height: 1.3;"></h2>
+            <div id="vyrArticleModalBody" style="font-size: 15px; color: #e2e8f0; line-height: 1.7; font-weight: 400;"></div>
+        </div>
+    </div>
+</div>
 <!-- USE CASES -->
 <section id="about">
   <div class="container">
@@ -1535,6 +2136,116 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
   </div>
 </section>
 
+
+<section class="premium-pricing-section" id="pricing">
+  <div class="container">
+    
+    <div class="section-head center" data-reveal>
+      <div class="section-eyebrow">PRICING PLANS</div>
+      <h2 class="section-title">Invest in your <strong>Longevity</strong></h2>
+      <p class="section-sub">Choose a plan tailored to your health optimization goals. Cancel anytime.</p>
+    </div>
+
+    <div class="pricing-grid">
+      
+      <div class="pricing-card" data-reveal>
+        <div class="card-badge-wrapper"></div>
+        <div class="pricing-card-header">
+          <span class="plan-type">Foundation</span>
+          <h3 class="plan-title">Single Biomarker Kit</h3>
+          <div class="plan-price-block">
+            <span class="currency">$</span>
+            <span class="price">149</span>
+            <span class="period">/one-time</span>
+          </div>
+          <p class="plan-desc">Perfect for a baseline assessment of your essential health markers.</p>
+        </div>
+        
+        <div class="plan-divider"></div>
+        
+        <ul class="plan-features">
+          <li><i class="fa-solid fa-circle-check"></i> 15 Essential Biomarkers Tracked</li>
+          <li><i class="fa-solid fa-circle-check"></i> Certified In-House Lab Processing</li>
+          <li><i class="fa-solid fa-circle-check"></i> Basic AI Health Insights Dashboard</li>
+          <li><i class="fa-solid fa-circle-check"></i> Digital PDF Report Download</li>
+          <li class="disabled"><i class="fa-solid fa-circle-xmark"></i> Advanced Longevity Scoring</li>
+          <li class="disabled"><i class="fa-solid fa-circle-xmark"></i> 1-on-1 Expert Consultation</li>
+        </ul>
+
+        <div class="pricing-cta-wrap">
+          <a href="#" class="pricing-btn secondary-btn">Get Started Single Kit</a>
+        </div>
+      </div>
+
+      <div class="pricing-card popular-plan" data-reveal delay-1>
+        <div class="card-badge-wrapper">
+          <span class="popular-badge">MOST POPULAR</span>
+        </div>
+        <div class="pricing-card-header">
+          <span class="plan-type text-gradient">Optimization</span>
+          <h3 class="plan-title">Performance Membership</h3>
+          <div class="plan-price-block">
+            <span class="currency">$</span>
+            <span class="price">89</span>
+            <span class="period">/month</span>
+          </div>
+          <p class="plan-desc">Continuous monitoring with automated kits shipped right to your door.</p>
+        </div>
+        
+        <div class="plan-divider"></div>
+        
+        <ul class="plan-features">
+          <li><i class="fa-solid fa-circle-check"></i> <strong>25+ Advanced Biomarkers</strong> Included</li>
+          <li><i class="fa-solid fa-circle-check"></i> Automated Kit Replenishment (Every 90 Days)</li>
+          <li><i class="fa-solid fa-circle-check"></i> Full Real-time Moving Dashboard Access</li>
+          <li><i class="fa-solid fa-circle-check"></i> Multi-Tenant Cryptographic Data Privacy</li>
+          <li><i class="fa-solid fa-circle-check"></i> Personalized AI Smart Recommendations</li>
+          <li class="disabled"><i class="fa-solid fa-circle-xmark"></i> Priority Executive Lab Support</li>
+        </ul>
+
+        <div class="pricing-cta-wrap">
+          <a href="#" class="pricing-btn primary-glow-btn">Subscribe & Optimize</a>
+        </div>
+      </div>
+
+      <div class="pricing-card" data-reveal delay-2>
+        <div class="card-badge-wrapper"></div>
+        <div class="pricing-card-header">
+          <span class="plan-type">Ultimate</span>
+          <h3 class="plan-title">Longevity Suite</h3>
+          <div class="plan-price-block">
+            <span class="currency">$</span>
+            <span class="price">199</span>
+            <span class="period">/month</span>
+          </div>
+          <p class="plan-desc">The ultimate bio-hacking package designed for peak human data & feedback.</p>
+        </div>
+        
+        <div class="plan-divider"></div>
+        
+        <ul class="plan-features">
+          <li><i class="fa-solid fa-circle-check"></i> <strong>40+ Ultra-Advanced Biomarkers</strong></li>
+          <li><i class="fa-solid fa-circle-check"></i> Bi-Monthly Kit Shipments + DNA Insights</li>
+          <li><i class="fa-solid fa-circle-check"></i> Full Dashboard & Historical Trend Vectors</li>
+          <li><i class="fa-solid fa-circle-check"></i> 1-on-1 Monthly Medical Expert Review</li>
+          <li><i class="fa-solid fa-circle-check"></i> Early Access to New Lab Focus Panels</li>
+          <li><i class="fa-solid fa-circle-check"></i> 24/7 Priority Executive Support VIP</li>
+        </ul>
+
+        <div class="pricing-cta-wrap">
+          <a href="#" class="pricing-btn secondary-btn">Join Longevity Suite</a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="pricing-footnote" data-reveal>
+      <p><i class="fa-solid fa-shield-halved" style="color: var(--c);"></i> All options are HSA/FSA eligible. No hidden activation contracts. Cancel or pause anytime in one click.</p>
+    </div>
+
+  </div>
+</section>
+
 <!-- FAQ -->
 <section class="faq-section">
   <div class="container">
@@ -1542,31 +2253,54 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
       <div class="section-eyebrow">FAQ</div>
       <h2 class="section-title">Questions? We've got answers.</h2>
     </div>
+    
     <div class="faq-list">
-      <div class="faq-item">
-        <div class="faq-q">How is Vyralabs different? <i class="fa-solid fa-plus"></i></div>
-        <div class="faq-a"><div class="faq-a-inner">We run testing in-house with no third-party labs, giving you faster results, tighter privacy, and lower cost — all from a single drop of blood.</div></div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">Does Vyralabs help me improve? <i class="fa-solid fa-plus"></i></div>
-        <div class="faq-a"><div class="faq-a-inner">Yes. Every result comes with AI-powered, personalized insights and recommendations tailored to your goals and trends over time.</div></div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">Is Vyralabs HIPAA aligned? <i class="fa-solid fa-plus"></i></div>
-        <div class="faq-a"><div class="faq-a-inner">Yes, your data is encrypted and protected at every step, following HIPAA-aligned privacy and security practices.</div></div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">Can I cancel anytime without fees? <i class="fa-solid fa-plus"></i></div>
-        <div class="faq-a"><div class="faq-a-inner">Absolutely — your subscription is flexible. Skip a month or cancel anytime with no hidden fees.</div></div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">Does Vyralabs accept HSA/FSA payments? <i class="fa-solid fa-plus"></i></div>
-        <div class="faq-a"><div class="faq-a-inner">Yes, all Vyralabs kits and subscriptions are HSA/FSA eligible.</div></div>
-      </div>
-      <div class="faq-item">
-        <div class="faq-q">How long does it take to get my results? <i class="fa-solid fa-plus"></i></div>
-        <div class="faq-a"><div class="faq-a-inner">Most customers receive their full results and insights dashboard within 72 hours of their sample being processed.</div></div>
-      </div>
+      @forelse($faqs->where('is_active', true) as $faq)
+        <div class="faq-item">
+          <div class="faq-q">
+            {{ $faq->question }} 
+            <i class="fa-solid fa-plus"></i>
+          </div>
+          <div class="faq-a">
+            <div class="faq-a-inner">
+              {!! nl2br(e($faq->answer)) !!}
+            </div>
+          </div>
+        </div>
+      @empty
+        <div class="faq-item">
+          <div class="faq-q">Are Vyralabs tests medical diagnostic tests? <i class="fa-solid fa-plus"></i></div>
+          <div class="faq-a"><div class="faq-a-inner">No. Our tests are designed for wellness and longevity tracking. They do not provide medical diagnoses and should not replace consultation with a doctor.</div></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">How is my personal and health data protected? <i class="fa-solid fa-plus"></i></div>
+          <div class="faq-a"><div class="faq-a-inner">We are fully GDPR compliant. All health data is encrypted and shared only with accredited laboratories when necessary for analysis.</div></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">How long does it take to get my results? <i class="fa-solid fa-plus"></i></div>
+          <div class="faq-a"><div class="faq-a-inner">Usually 7 to 14 business days from when the laboratory receives your sample.</div></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Can I cancel my subscription or order? <i class="fa-solid fa-plus"></i></div>
+          <div class="faq-a"><div class="faq-a-inner">Yes. You can cancel your subscription at any time from your account. Unopened kits can be returned within 14 days.</div></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">What happens if my sample is insufficient or invalid? <i class="fa-solid fa-plus"></i></div>
+          <div class="faq-a"><div class="faq-a-inner">We will notify you. In some cases, you may need to repeat the test (a new kit may be required at additional cost).</div></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Is the longevity score a medical assessment? <i class="fa-solid fa-plus"></i></div>
+          <div class="faq-a"><div class="faq-a-inner">No. The Longevity Score is a wellness indicator based on your biomarkers. It is not a medical diagnosis.</div></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">Do you ship to all European countries? <i class="fa-solid fa-plus"></i></div>
+          <div class="faq-a"><div class="faq-a-inner">Yes, we currently ship to all EU countries.</div></div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">How do I activate my kit? <i class="fa-solid fa-plus"></i></div>
+          <div class="faq-a"><div class="faq-a-inner">You can activate your kit easily through the mobile app or web portal by entering the kit code provided in the box.</div></div>
+        </div>
+      @endforelse
     </div>
   </div>
 </section>
@@ -1710,6 +2444,113 @@ const barObs=new IntersectionObserver(entries=>{
   });
 },{threshold:.3});
 document.querySelectorAll('.bm-bar-track').forEach(el=>barObs.observe(el));
+
+document.addEventListener("DOMContentLoaded", function () {
+    // Video Modal Elements
+    const videoModal    = document.getElementById("vyrEcosystemVideoModal");
+    const videoIframe   = document.getElementById("vyrEcosystemIframeTarget");
+    const videoCloseBtn = document.getElementById("vyrEcosystemCloseBtn");
+    const videoTriggers = document.querySelectorAll("[data-video-trigger], .vyr-video-modal-trigger");
+
+    // Article Modal Elements
+    const articleModal  = document.getElementById("vyrEcosystemArticleModal");
+    const articleTitle  = document.getElementById("vyrArticleModalTitle");
+    const articleBody   = document.getElementById("vyrArticleModalBody");
+    const articleDate   = document.getElementById("vyrArticleModalMetaDate");
+    const articleCloseBtn = document.getElementById("vyrArticleCloseBtn");
+    const articleTriggers = document.querySelectorAll(".vyr-article-trigger");
+
+    
+    function parseToEmbedUrl(url) {
+        let videoId = "";
+        try {
+            if (url.includes("youtube.com/shorts/")) {
+                videoId = url.split("shorts/")[1].split(/[?#]/)[0];
+            } else if (url.includes("youtu.be/")) {
+                videoId = url.split("youtu.be/")[1].split(/[?#]/)[0];
+            } else if (url.includes("youtube.com/watch")) {
+                const urlParams = new URLSearchParams(new URL(url).search);
+                videoId = urlParams.get("v");
+            } else {
+                return url;
+            }
+            return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+        } catch (e) {
+            return url;
+        }
+    }
+
+    // ৩. ভিডিও প্লেয়ার মডাল কন্ট্রোলস
+    videoTriggers.forEach(trigger => {
+        trigger.addEventListener("click", function (e) {
+            e.preventDefault();
+            const streamUrl = this.getAttribute("data-stream-url");
+            if (streamUrl) {
+                videoIframe.src = parseToEmbedUrl(streamUrl);
+                videoModal.style.display = "flex";
+                document.body.style.overflow = "hidden";
+            }
+        });
+    });
+
+    function killVideoPlayer() {
+        videoModal.style.display = "none";
+        videoIframe.src = ""; 
+        document.body.style.overflow = "";
+    }
+    if(videoCloseBtn) videoCloseBtn.addEventListener("click", killVideoPlayer);
+    if(videoModal) {
+        videoModal.addEventListener("click", function (e) {
+            if (e.target === videoModal) killVideoPlayer();
+        });
+    }
+
+    // ৪. আর্টিকেল মডাল রিডার কন্ট্রোলস (No Route Needed!)
+    articleTriggers.forEach(trigger => {
+        trigger.addEventListener("click", function (e) {
+            e.preventDefault();
+            const title = this.getAttribute("data-article-title");
+            const body  = this.getAttribute("data-article-body");
+            const date  = this.getAttribute("data-article-date");
+
+            if (title && body) {
+                articleTitle.innerText = title;
+                articleBody.innerHTML  = body; // Content জেনারেটেড HTML ফরমেটও সাপোর্ট করবে
+                articleDate.innerText  = "PUBLISHED AT: " + date;
+                
+                articleModal.style.display = "flex";
+                document.body.style.overflow = "hidden";
+            }
+        });
+    });
+
+    function closeArticleReader() {
+        articleModal.style.display = "none";
+        document.body.style.overflow = "";
+    }
+    if(articleCloseBtn) articleCloseBtn.addEventListener("click", closeArticleReader);
+    if(articleModal) {
+        articleModal.addEventListener("click", function (e) {
+            if (e.target === articleModal) closeArticleReader();
+        });
+    }
+});
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+      var btns  = document.querySelectorAll('.vyr-filter-btn');
+      var cards = document.querySelectorAll('.stream-item-node');
+      btns.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+              btns.forEach(function (b) { b.classList.remove('active'); });
+              this.classList.add('active');
+              var val = this.getAttribute('data-filter');
+              cards.forEach(function (card) {
+                  card.style.display = (val === 'all' || card.getAttribute('data-type-node') === val) ? 'flex' : 'none';
+              });
+          });
+      });
+  });
 </script>
 </body>
 </html>

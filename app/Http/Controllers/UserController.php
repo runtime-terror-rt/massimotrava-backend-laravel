@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Campaign;
+use App\Models\Content;
+use App\Models\Faq;
 use App\Models\Lab;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -11,9 +14,20 @@ use Spatie\Permission\Traits\HasRoles;
 
 class UserController extends Controller
 {
-    public function userHome()
+    public function userDashboard()
     {
         return view('user.dashboard');
+    }
+
+    public function userHome()
+    {
+        $campaigns = Campaign::where('status', 'active')->orderBy('id', 'desc')->get();
+        $faqs = Faq::where('is_active', true)->orderBy('id', 'desc')->get();
+        $contents = Content::where('status', 'published')
+                        ->latest('published_at')
+                        ->get();
+
+        return view('user.home', compact('contents','faqs', 'campaigns'));
     }
     
     public function profile()
