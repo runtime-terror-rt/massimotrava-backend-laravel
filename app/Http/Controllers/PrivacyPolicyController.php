@@ -28,6 +28,17 @@ class PrivacyPolicyController extends Controller
         return view('admin.privacy_policy.index', compact('policies', 'selectedPolicy'));
     }
 
+    public function frontIndex(){
+        $policy = PrivacyPolicy::where('is_active', true)
+                                ->latest()
+                                ->first();
+
+        $metaTitle = $policy ? $policy->title . " | Vyralabs" : "Privacy Policy | Vyralabs";
+        $lastUpdated = $policy ? $policy->updated_at->format('M d, Y') : now()->format('M d, Y');
+
+        return view('user.privacy', compact('policy', 'metaTitle', 'lastUpdated'));
+    }
+
     /**
      * Create and Update 
      */

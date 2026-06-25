@@ -98,13 +98,20 @@
       <button class="profile-btn" id="profileBtn" onclick="toggleDropdown()" style="display: flex; align-items: center; gap: 10px; background: transparent; border: none; cursor: pointer; padding: 5px 10px; border-radius: 12px; transition: 0.3s;">
         <div class="profile-avatar" style="position: relative; width: 35px; height: 35px;">
             @if(Auth::user() && Auth::user()->image)
-                <img src="{{ Storage::url(Auth::user()->image) }}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--accent, #6366f1);">
+              <img src="{{ asset('storage/' . Auth::user()->image) }}" 
+                alt="Profile" 
+                style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--accent, #6366f1);"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+               
+                <div style="display:none; width: 100%; height: 100%; border-radius: 50%; background: var(--bg, #334155); align-items: center; justify-content: center; border: 1.5px solid var(--border, #475569);">
+                    <i class="fa-solid fa-user" style="font-size: 14px; color: var(--text-muted, #94a3b8);"></i>
+                </div>
             @else
                 <div style="width: 100%; height: 100%; border-radius: 50%; background: var(--bg, #334155); display: flex; align-items: center; justify-content: center; border: 1.5px solid var(--border, #475569);">
                     <i class="fa-solid fa-user" style="font-size: 14px; color: var(--text-muted, #94a3b8);"></i>
                 </div>
             @endif
-            <span style="position: absolute; bottom: 0; right: 0; width: 10px; height: 10px; background: #10b981; border: 2px solid var(--surface, #0f172a); border-radius: 50%;"></span>
+          <span style="position: absolute; bottom: 0; right: 0; width: 10px; height: 10px; background: #10b981; border: 2px solid var(--surface, #0f172a); border-radius: 50%;"></span>
         </div>
         
         <span style="color: var(--text, #f1f5f9); font-size: 14px; font-weight: 500;">

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Traits\HasRoles;
+use App\Models\SubscriptionPlan;
 
 class UserController extends Controller
 {
@@ -27,7 +28,9 @@ class UserController extends Controller
                         ->latest('published_at')
                         ->get();
 
-        return view('user.home', compact('contents','faqs', 'campaigns'));
+        $data = SubscriptionPlan::where('status', true)->latest()->get();
+
+        return view('user.home', compact('contents', 'faqs', 'campaigns', 'data'));
     }
     
     public function profile()
@@ -107,6 +110,7 @@ class UserController extends Controller
 
             $request->validate([
                 'name'   => 'required|string|max:255',
+                'email'  => 'required|email|unique:users,email,' . $user->id,
                 'phone'  => 'nullable|string|max:20',
                 'age'    => 'nullable|integer|min:1',
                 'gender' => 'nullable|string|max:255',
@@ -115,19 +119,27 @@ class UserController extends Controller
                 'image'  => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
             ]);
 
-            $user->name   = $request->name;
-            $user->phone  = $request->phone;
-            $user->age    = $request->age;
-            $user->gender = $request->gender;
-            $user->height = $request->height;
-            $user->weight = $request->weight;
+            // ── Required fields ──
+            $user->name  = $request->name;
+            $user->email = $request->email;
 
-            if ($request->hasFile('image')) {
-                if ($user->image) {
+            $user->phone  = $request->phone  ?? $user->phone;
+            $user->age    = $request->age    ?? $user->age;
+            $user->gender = $request->gender ?? $user->gender;
+            $user->height = $request->height ?? $user->height;
+            $user->weight = $request->weight ?? $user->weight;
+
+            // ── Image Upload ──
+            if ($request->hasFile('image') && $request->file('image')->isValid()) {
+                
+                if ($user->image && Storage::disk('public')->exists($user->image)) {
                     Storage::disk('public')->delete($user->image);
                 }
 
-                $path = $request->file('image')->store('profiles', 'public');
+                $file     = $request->file('image');
+                $filename = 'profile_' . $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $path     = $file->storeAs('profiles', $filename, 'public');
+
                 $user->image = $path;
             }
 
@@ -137,25 +149,34 @@ class UserController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Profile updated successfully.',
-                    'data'    => $user
+                    'data'    => [
+                        'user'      => $user,
+                        'image_url' => $user->image ? asset('storage/' . $user->image) : null,
+                    ],
                 ], 200);
             }
 
             return back()->with('success', 'Profile updated successfully!');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => collect($e->errors())->flatten()->first()
-            ], 422);
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => collect($e->errors())->flatten()->first(),
+                ], 422);
+            }
+            return back()->withErrors($e->errors())->withInput();
 
         } catch (\Exception $e) {
             \Log::error('Profile Update Error: ' . $e->getMessage());
 
-            return response()->json([
-                'success' => false,
-                'message' => 'Internal Server Error: ' . $e->getMessage()
-            ], 500);
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Something went wrong.',
+                ], 500);
+            }
+            return back()->with('error', 'Something went wrong. Please try again.');
         }
     }
 }

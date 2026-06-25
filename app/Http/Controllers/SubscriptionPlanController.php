@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\SubscriptionPlan;
 use Illuminate\Http\Request;
+use Stripe\Stripe;
+use Stripe\Checkout\Session as StripeSession;
 
 class SubscriptionPlanController extends Controller
 {
@@ -50,6 +52,33 @@ class SubscriptionPlanController extends Controller
             ], 500);
         }
     }
+
+    public function showPricingPage(Request $request)
+    {
+        try {
+            $billing = strtolower($request->query('billing', 'monthly'));
+            
+            $plans = SubscriptionPlan::where('status', true)->latest()->get();
+
+            $data = $plans->map(function ($plan) use ($billing) {
+                return [
+                    'id'            => $plan->id,
+                    'name'           => $plan->name,
+                    'plan_type'      => $plan->plan_type,
+                    'billing_cycle'  => $plan->billing_cycle,
+                    'duration'       => $plan->duration,
+                    'features'       => $plan->features,
+                    'price'          => $billing === 'annual' ? $plan->annual_price : $plan->price,
+                ];
+            });
+
+            return view('pricing', compact('data'));
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Something went wrong: ' . $e->getMessage());
+        }
+    }
+
 
     public function storeOrUpdatePlan(Request $request)
     {
@@ -188,5 +217,45 @@ class SubscriptionPlanController extends Controller
 
         $plan->delete();
         return response()->json(['success' => true, 'message' => 'Plan deleted successfully'], 200);
+    }
+
+    public function checkout($id)
+    {
+        $plan = SubscriptionPlan::findOrFail($id);
+        $user = auth()->user();
+
+        try {
+            Stripe::setApiKey(config('services.stripe.secret') ?? env('STRIPE_SECRET'));
+
+            $checkoutSession = StripeSession::create([
+                'customer_email' => $user->email,
+                'payment_method_types' => ['card'],
+                'line_items' => [[
+                    'price_data' => [
+                        'currency' => 'eur',
+                        'product_data' => [
+                            'name' => $plan->name . ' - Longevity Suite',
+                        ],
+                        'unit_amount' => $plan->price * 100,
+                        'recurring' => [
+                            'interval' => $plan->billing_cycle === 'annual' ? 'year' : 'month',
+                        ],
+                    ],
+                    'quantity' => 1,
+                ]],
+                'mode' => 'subscription',
+                'success_url' => route('dashboard') . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => route('pricing.page') ?? url('/'),
+                'metadata' => [
+                    'user_id' => $user->id,
+                    'plan_id' => $plan->id,
+                ],
+            ]);
+
+            return redirect()->away($checkoutSession->url);
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Stripe checkout failed: ' . $e->getMessage());
+        }
     }
 }
