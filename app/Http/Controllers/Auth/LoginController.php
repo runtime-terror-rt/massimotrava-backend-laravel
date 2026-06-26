@@ -17,18 +17,17 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        try
-        {
+        try {
             $credentials = $request->validate([
-                'email' => 'required|email',
+                'email'    => 'required|email',
                 'password' => 'required|string|min:5',
             ], [
                 'email.required' => 'Email field is required.',
-                'password.min' => 'Password must be at least 5 characters.',
+                'password.min'   => 'Password must be at least 5 characters.',
             ]);
 
             $remember = $request->has('remember');
-            
+
             if (!Auth::attempt($credentials, $remember)) {
                 if ($request->expectsJson()) {
                     return response()->json(['success' => false, 'message' => 'Invalid credentials.'], 401);
@@ -37,10 +36,16 @@ class LoginController extends Controller
             }
 
             $user = Auth::user();
+            $role = $user->getRoleNames()->first() ?? 'user';
 
-            $expiresAt = $remember ? now()->addDays(30) : now()->addHours(2);
+            // ── Determine redirect based on role ──
+            $redirectUrl = match(true) {
+                in_array($role, ['admin', 'lab']) => '/admin/dashboard',
+                default                           => '/user/dashboard',
+            };
+
+            $expiresAt   = $remember ? now()->addDays(30) : now()->addHours(2);
             $tokenResult = $user->createToken('auth_token_' . $user->id);
-            
             $tokenResult->accessToken->expires_at = $expiresAt;
             $tokenResult->accessToken->save();
 
@@ -48,23 +53,22 @@ class LoginController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Login successful.',
-                    'data' => [
+                    'data'    => [
                         'user' => [
-                            'id' => $user->id,
+                            'id'    => $user->id,
                             'email' => $user->email,
-                            'role' => $user->getRoleNames()->first() ?? null,
+                            'role'  => $role,
                         ],
-                        'token' => $tokenResult->plainTextToken,
-                        'token_type' => 'Bearer',
-                    ]
+                        'token'        => $tokenResult->plainTextToken,
+                        'token_type'   => 'Bearer',
+                        'redirect_url' => $redirectUrl,   // ← frontend uses this
+                    ],
                 ], 200);
             }
 
-            return redirect()->intended('/dashboard')->with('success', 'Welcome back!');
+            return redirect($redirectUrl)->with('success', 'Welcome back!');
 
-        } 
-        catch (\Illuminate\Validation\ValidationException $e) 
-        {
+        } catch (\Illuminate\Validation\ValidationException $e) {
             $firstError = collect($e->errors())->flatten()->first();
 
             if ($request->expectsJson()) {
@@ -74,7 +78,7 @@ class LoginController extends Controller
 
         } catch (\Exception $e) {
             \Log::error('Login Error: ' . $e->getMessage());
-            
+
             if ($request->expectsJson()) {
                 return response()->json(['success' => false, 'message' => 'Something went wrong.'], 500);
             }

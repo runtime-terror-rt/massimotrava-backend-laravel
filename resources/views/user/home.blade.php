@@ -2108,35 +2108,6 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
   </div>
 </section>
 
-<!-- PRICING -->
-<section class="pricing-section" id="pricing">
-  <div class="container pricing-grid">
-    <div class="product-visual" data-reveal>
-      <div class="product-orb">vyralabs</div>
-    </div>
-    <div class="pricing-card" data-reveal delay-1>
-      <span class="ribbon">Save 20% on your first order</span>
-      <h3>Vyralabs At-Home Performance Test</h3>
-      <p class="sub">Ships every 30 days · Flexible subscription · Skip anytime</p>
-      <div class="price-row">
-        <span class="price-old">$79/mo</span>
-        <span class="price-now">$63.20</span>
-        <span class="price-period">first month + shipping</span>
-      </div>
-      <ul class="feature-list">
-        <li><i class="fa-solid fa-circle-check"></i> Easy and painless at-home collection</li>
-        <li><i class="fa-solid fa-circle-check"></i> Free pickup from your home</li>
-        <li><i class="fa-solid fa-circle-check"></i> Results ready in &lt;72hrs</li>
-        <li><i class="fa-solid fa-circle-check"></i> Unlimited personalized AI insights</li>
-        <li><i class="fa-solid fa-circle-check"></i> Unlimited AI coaching</li>
-      </ul>
-      <a href="#" class="btn btn-primary btn-lg"><i class="fa-solid fa-lock"></i> Secure Checkout</a>
-      <div class="pricing-note">HSA / FSA Eligible · Cancel anytime, no fees</div>
-    </div>
-  </div>
-</section>
-
-
 <section class="premium-pricing-section" id="pricing">
   <div class="container">
     
@@ -2148,94 +2119,90 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
 
     <div class="pricing-grid">
       
-      <div class="pricing-card" data-reveal>
-        <div class="card-badge-wrapper"></div>
-        <div class="pricing-card-header">
-          <span class="plan-type">Foundation</span>
-          <h3 class="plan-title">Single Biomarker Kit</h3>
-          <div class="plan-price-block">
-            <span class="currency">$</span>
-            <span class="price">149</span>
-            <span class="period">/one-time</span>
+      @isset($data)
+        @foreach($data as $index => $plan)
+          @php
+            $isPopular = (isset($plan['id']) && $plan['id'] == 2) || strtolower($plan['name']) == 'premium';
+            
+            $features = is_string($plan['features']) ? json_decode($plan['features'], true) : $plan['features'];
+            $features = $features ?? [];
+          @endphp
+
+          <div class="pricing-card {{ $isPopular ? 'popular-plan' : '' }}" data-reveal {{ $index > 0 ? 'delay-' . $index : '' }}>
+            
+            <div class="card-badge-wrapper">
+              @if($isPopular)
+                <span class="popular-badge">MOST POPULAR</span>
+              @endif
+            </div>
+
+            <div class="pricing-card-header">
+              <span class="plan-type {{ $isPopular ? 'text-gradient' : '' }}">
+                {{ $plan['name'] }}
+              </span>
+              <h3 class="plan-title">
+                {{ $plan['plan_type'] ? ucfirst($plan['plan_type']) : 'Health' }} Suite
+              </h3>
+              <div class="plan-price-block">
+                <span class="currency">€</span>
+                <span class="price">{{ number_format($plan['price'], 0) }}</span>
+                <span class="period">/{{ $plan['billing_cycle'] ?? 'month' }}</span>
+              </div>
+              <p class="plan-desc">
+                @if(isset($plan['duration']) && $plan['duration'] > 0)
+                  Includes {{ $plan['duration'] }} days trial setup for baseline optimization.
+                @else
+                  Continuous health monitoring tailored for your longevity optimization goals.
+                @endif
+              </p>
+            </div>
+            
+            <div class="plan-divider"></div>
+            
+            <ul class="plan-features">
+              @if(count($features) > 0)
+                @foreach($features as $feature)
+                  @php
+                    $isDisabled = str_contains($feature, '__disabled__');
+                    $cleanFeature = str_replace('__disabled__', '', $feature);
+                  @endphp
+                  
+                  <li class="{{ $isDisabled ? 'disabled' : '' }}">
+                    @if($isDisabled)
+                      <i class="fa-solid fa-circle-xmark"></i>
+                    @else
+                      <i class="fa-solid fa-circle-check"></i>
+                    @endif
+                    {!! $cleanFeature !!}
+                  </li>
+                @endforeach
+              @else
+                <li><i class="fa-solid fa-circle-check"></i> Standard Biomarker Insights</li>
+                <li><i class="fa-solid fa-circle-check"></i> Home Kit Delivery Included</li>
+                <li><i class="fa-solid fa-circle-check"></i> PDF Reports & Data Export</li>
+              @endif
+            </ul>
+
+            <div class="pricing-cta-wrap">
+              <form action="{{ route('user.subscribe.checkout', $plan['id']) }}" method="POST">
+                @csrf
+                <button type="submit" class="pricing-btn {{ $isPopular ? 'primary-glow-btn' : 'secondary-btn' }}">
+                  @if($isPopular)
+                    Subscribe & Optimize
+                  @else
+                    Get Started {{ $plan['name'] }}
+                  @endif
+                </button>
+              </form>
+            </div>
+
           </div>
-          <p class="plan-desc">Perfect for a baseline assessment of your essential health markers.</p>
+        @endforeach
+      @else
+        <div class="center" style="grid-column: 1/-1; padding: 40px; text-align: center; color: var(--c-muted);">
+            <p>No active pricing plans found at the moment.</p>
         </div>
-        
-        <div class="plan-divider"></div>
-        
-        <ul class="plan-features">
-          <li><i class="fa-solid fa-circle-check"></i> 15 Essential Biomarkers Tracked</li>
-          <li><i class="fa-solid fa-circle-check"></i> Certified In-House Lab Processing</li>
-          <li><i class="fa-solid fa-circle-check"></i> Basic AI Health Insights Dashboard</li>
-          <li><i class="fa-solid fa-circle-check"></i> Digital PDF Report Download</li>
-          <li class="disabled"><i class="fa-solid fa-circle-xmark"></i> Advanced Longevity Scoring</li>
-          <li class="disabled"><i class="fa-solid fa-circle-xmark"></i> 1-on-1 Expert Consultation</li>
-        </ul>
-
-        <div class="pricing-cta-wrap">
-          <a href="#" class="pricing-btn secondary-btn">Get Started Single Kit</a>
-        </div>
-      </div>
-
-      <div class="pricing-card popular-plan" data-reveal delay-1>
-        <div class="card-badge-wrapper">
-          <span class="popular-badge">MOST POPULAR</span>
-        </div>
-        <div class="pricing-card-header">
-          <span class="plan-type text-gradient">Optimization</span>
-          <h3 class="plan-title">Performance Membership</h3>
-          <div class="plan-price-block">
-            <span class="currency">$</span>
-            <span class="price">89</span>
-            <span class="period">/month</span>
-          </div>
-          <p class="plan-desc">Continuous monitoring with automated kits shipped right to your door.</p>
-        </div>
-        
-        <div class="plan-divider"></div>
-        
-        <ul class="plan-features">
-          <li><i class="fa-solid fa-circle-check"></i> <strong>25+ Advanced Biomarkers</strong> Included</li>
-          <li><i class="fa-solid fa-circle-check"></i> Automated Kit Replenishment (Every 90 Days)</li>
-          <li><i class="fa-solid fa-circle-check"></i> Full Real-time Moving Dashboard Access</li>
-          <li><i class="fa-solid fa-circle-check"></i> Multi-Tenant Cryptographic Data Privacy</li>
-          <li><i class="fa-solid fa-circle-check"></i> Personalized AI Smart Recommendations</li>
-          <li class="disabled"><i class="fa-solid fa-circle-xmark"></i> Priority Executive Lab Support</li>
-        </ul>
-
-        <div class="pricing-cta-wrap">
-          <a href="#" class="pricing-btn primary-glow-btn">Subscribe & Optimize</a>
-        </div>
-      </div>
-
-      <div class="pricing-card" data-reveal delay-2>
-        <div class="card-badge-wrapper"></div>
-        <div class="pricing-card-header">
-          <span class="plan-type">Ultimate</span>
-          <h3 class="plan-title">Longevity Suite</h3>
-          <div class="plan-price-block">
-            <span class="currency">$</span>
-            <span class="price">199</span>
-            <span class="period">/month</span>
-          </div>
-          <p class="plan-desc">The ultimate bio-hacking package designed for peak human data & feedback.</p>
-        </div>
-        
-        <div class="plan-divider"></div>
-        
-        <ul class="plan-features">
-          <li><i class="fa-solid fa-circle-check"></i> <strong>40+ Ultra-Advanced Biomarkers</strong></li>
-          <li><i class="fa-solid fa-circle-check"></i> Bi-Monthly Kit Shipments + DNA Insights</li>
-          <li><i class="fa-solid fa-circle-check"></i> Full Dashboard & Historical Trend Vectors</li>
-          <li><i class="fa-solid fa-circle-check"></i> 1-on-1 Monthly Medical Expert Review</li>
-          <li><i class="fa-solid fa-circle-check"></i> Early Access to New Lab Focus Panels</li>
-          <li><i class="fa-solid fa-circle-check"></i> 24/7 Priority Executive Support VIP</li>
-        </ul>
-
-        <div class="pricing-cta-wrap">
-          <a href="#" class="pricing-btn secondary-btn">Join Longevity Suite</a>
-        </div>
-      </div>
+      @endisset
 
     </div>
 

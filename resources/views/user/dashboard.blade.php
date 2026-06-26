@@ -236,7 +236,7 @@ input:checked + .hd-ios-slider:before { transform: translateX(16px); background-
                     <span class="hd-pill">Age: <b>{{ auth()->user()->age }}</b></span>
                     <span class="hd-pill">Height: <b>{{ auth()->user()->height }}</b></span>
                     <span class="hd-pill">Weight: <b>{{ auth()->user()->weight }}</b></span>
-                    <span class="hd-pill"><i class="fa-solid fa-calendar" style="color:var(--accent);margin-right:4px;"></i> Joined Sept 2025</span>
+                    <span class="hd-pill"><i class="fa-solid fa-calendar" style="color:var(--accent);margin-right:4px;"></i> Joined {{ auth()->user()->created_at }}</span>
                 </div>
             </div>
         </div>
@@ -268,10 +268,10 @@ input:checked + .hd-ios-slider:before { transform: translateX(16px); background-
             <i class="fa-solid fa-file-invoice-bleed"></i>
             <span>All Lab Panels</span>
         </a>
-        <a href="#" class="hd-action-card">
+        {{-- <a href="#" class="hd-action-card">
             <i class="fa-solid fa-user-doctor"></i>
             <span>Consult Expert</span>
-        </a>
+        </a> --}}
     </div>
 
     {{-- ══ 3. 4x4 OVERVIEW METRICS GRID ══ --}}
@@ -452,7 +452,7 @@ input:checked + .hd-ios-slider:before { transform: translateX(16px); background-
                     <h3 class="hd-card-title-v5"><i class="fa-solid fa-sliders"></i> Control Center & Settings</h3>
                 </div>
                 <div>
-                    <div class="hd-group-item">
+                    {{-- <div class="hd-group-item">
                         <div class="hd-group-meta">
                             <div class="title">Anonymized Lab Sync</div>
                             <div class="sub">Authorize end-to-end encrypted medical sync protocols.</div>
@@ -461,7 +461,7 @@ input:checked + .hd-ios-slider:before { transform: translateX(16px); background-
                             <input type="checkbox" checked>
                             <span class="hd-ios-slider"></span>
                         </label>
-                    </div>
+                    </div> --}}
 
                     <div class="hd-group-item">
                         <div class="hd-group-meta">
@@ -511,7 +511,7 @@ input:checked + .hd-ios-slider:before { transform: translateX(16px); background-
             </div>
 
             {{-- Knowledge Accordions Base --}}
-            <div class="hd-main-card">
+            {{-- <div class="hd-main-card">
                 <div class="hd-card-header-v5">
                     <h3 class="hd-card-title-v5"><i class="fa-solid fa-circle-question"></i> Knowledge & FAQ</h3>
                 </div>
@@ -546,7 +546,7 @@ input:checked + .hd-ios-slider:before { transform: translateX(16px); background-
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
 
     </div>
