@@ -4,50 +4,64 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\SubscriptionPlan;
+use App\Models\UserSubscription;
+use App\Models\Payment;
 use Stripe\Stripe;
 use Stripe\Checkout\Session;
-use Stripe\Webhook;
 
 class SubscriptionController extends Controller
 {
+    
     public function createCheckoutSession($planId)
     {
         $plan = SubscriptionPlan::findOrFail($planId);
-
-        Stripe::setApiKey(env('STRIPE_SECRET'));
         $user = auth()->user();
 
-        $features = json_decode($plan->features, true);
-        $stripePriceId = $features['stripe_price_id'] ?? null; 
-
-        if (!$stripePriceId) {
-            return redirect()->back()->with('error', 'Stripe Price ID not configured for this plan.');
+        if (!$user) {
+            return redirect()->back()->with('error', 'You must be logged in to subscribe.');
         }
 
-        $checkoutSession = Session::create([
-            'payment_method_types' => ['card'],
-            'line_items' => [[
-                'price' => $stripePriceId,
-                'quantity' => 1,
-            ]],
-            'mode' => $plan->billing_cycle === 'monthly' || $plan->billing_cycle === 'annual' ? 'subscription' : 'payment',
-            'success_url' => route('subscription.success') . '?session_id={CHECKOUT_SESSION_ID}',
-            'cancel_url' => route('subscription.cancel'),
-            'customer_email' => $user->email,
-            'metadata' => [
-                'user_id' => $user->id,
-                'subscription_plan_id' => $plan->id
-            ]
-        ]);
+        $stripePriceId = $plan->stripe_price_id; 
+        if (!$stripePriceId) {
+            return redirect()->back()->with('error', 'Stripe Price ID is missing in your database for this plan.');
+        }
 
-        return redirect()->away($checkoutSession->url);
+        try {
+            \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
+
+            $billingCycle = strtolower($plan->billing_cycle);
+            $isSubscription = in_array($billingCycle, ['monthly', 'annual', 'year', 'month', 'weekly']);
+            $mode = $isSubscription ? 'subscription' : 'payment';
+
+            $checkoutSession = \Stripe\Checkout\Session::create([
+                'payment_method_types' => ['card'],
+                'line_items' => [[
+                    'price' => $stripePriceId,
+                    'quantity' => 1,
+                ]],
+                'mode' => $mode,
+                'success_url' => route('user.subscription.success') . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => route('user.subscription.cancel'),
+                'customer_email' => $user->email,
+                'metadata' => [
+                    'user_id' => $user->id,
+                    'subscription_plan_id' => $plan->id
+                ]
+            ]);
+
+            return redirect()->away($checkoutSession->url);
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Stripe Error: ' . $e->getMessage());
+        }
     }
 
-
+    
     public function handleWebhook(Request $request)
     {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
-        $endpointSecret = env('STRIPE_WEBHOOK_SECRET');
+        Stripe::setApiKey(config('services.stripe.secret', env('STRIPE_SECRET')));
+        $endpointSecret = config('services.stripe.webhook_secret', env('STRIPE_WEBHOOK_SECRET'));
+        
         $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature');
 
@@ -66,20 +80,30 @@ class SubscriptionController extends Controller
             $planId = $session->metadata->subscription_plan_id;
             $stripeSubId = $session->subscription ?? null;
 
-            \App\Models\UserSubscription::where('user_id', $userId)
+            $plan = SubscriptionPlan::find($planId);
+            if (!$plan) {
+                return response()->json(['error' => 'Plan not found'], 404);
+            }
+
+            UserSubscription::where('user_id', $userId)
                 ->where('status', 'active')
                 ->update(['status' => 'expired']);
 
-            $userSubscription = \App\Models\UserSubscription::create([
+            $endsAt = now()->addMonth(); // Default
+            if (strtolower($plan->billing_cycle) === 'annual' || strtolower($plan->billing_cycle) === 'year') {
+                $endsAt = now()->addYear();
+            }
+
+            $userSubscription = UserSubscription::create([
                 'user_id' => $userId,
                 'subscription_plan_id' => $planId,
                 'stripe_subscription_id' => $stripeSubId,
                 'status' => 'active',
                 'starts_at' => now(),
-                'ends_at' => now()->addMonth(), 
+                'ends_at' => $endsAt, 
             ]);
 
-            \App\Models\Payment::create([
+            Payment::create([
                 'user_id' => $userId,
                 'user_subscription_id' => $userSubscription->id,
                 'stripe_charge_id' => $session->payment_intent ?? $session->id,

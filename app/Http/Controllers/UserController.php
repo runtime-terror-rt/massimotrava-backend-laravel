@@ -33,6 +33,20 @@ class UserController extends Controller
         return view('user.home', compact('contents', 'faqs', 'campaigns', 'data'));
     }
     
+
+    public function helthInsight()
+    {
+        return view('user.health-insight', [
+            'longevityScore'   => 84,
+            'previousScore'    => 74,
+            'scoreImprovement' => 12,
+            'scoreSince'       => 'Oct 2025',
+            'testDate'         => 'Mar 25, 2026',
+            'kitNumber'        => '23281',
+            'updatedAgo'       => '2 days ago',
+        ]);
+    }
+
     public function profile()
     {
         $user = Auth::user();

@@ -12,10 +12,10 @@ class SubscriptionPlan extends Model
         'billing_cycle',
         'price',
         'duration',
-        'member_limit',
         'features',
         'status',
-        'projection_limit'
+        'stripe_product_id',
+        'stripe_price_id'
     ];
 
     /**

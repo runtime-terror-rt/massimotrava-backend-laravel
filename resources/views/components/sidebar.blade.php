@@ -74,7 +74,7 @@
           <span>{{ __('messages.sb_pickup') ?? 'Pickup' }}</span>
         </a>
 
-        <a href="{{ Route::has('user.insights.index') ? route('user.insights.index') : '#' }}" class="nav-item {{ request()->routeIs('user.insights*') ? 'active' : '' }}" data-tooltip="Insights">
+        <a href="{{ Route::has('user.health.insights') ? route('user.health.insights') : '#' }}" class="nav-item {{ request()->routeIs('user.health.insights*') ? 'active' : '' }}" data-tooltip="Insights">
           <i class="fa-solid fa-brain"></i>
           <span>{{ __('messages.sb_insights') ?? 'Insights' }}</span>
         </a>
