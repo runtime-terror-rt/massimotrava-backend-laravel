@@ -14,6 +14,10 @@ Route::get('/terms-and-condition', function () {
     return view('user.terms-and-condition');
     
 });
+Route::get('/laboratory-services-consent', function () {
+    return view('user.laboratory-services');
+    
+});
 Route::get('/pricing', [SubscriptionPlanController::class, 'showPricingPage'])->name('pricing.page');
 Route::get('/privacy-policy', [PrivacyPolicyController::class, 'frontIndex'])->name('privacy.policy');
 

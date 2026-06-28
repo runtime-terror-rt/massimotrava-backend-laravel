@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $metaTitle ?? 'Terms & Conditions' }} | Vyralabs</title>
+    <title>{{ $metaTitle ?? 'Laboratory Services Consent' }} | Vyralabs</title>
     <link rel="icon" type="image/jpeg" href="{{ asset('images/favicon.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -123,17 +123,17 @@ a{color:inherit;text-decoration:none}
 }
 
 /* ── HERO ── */
-.terms-hero{
+.consent-hero{
     padding:72px 0 52px;
     border-bottom:1px solid var(--border);
     position:relative;overflow:hidden;
 }
-.terms-hero::before{
+.consent-hero::before{
     content:'';position:absolute;top:-120px;left:50%;transform:translateX(-50%);
     width:600px;height:600px;border-radius:50%;
     border:0.5px solid rgba(34,211,238,.08);pointer-events:none;
 }
-.terms-hero::after{
+.consent-hero::after{
     content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);
     width:380px;height:380px;border-radius:50%;
     border:0.5px solid rgba(34,211,238,.05);pointer-events:none;
@@ -151,7 +151,7 @@ a{color:inherit;text-decoration:none}
     letter-spacing:-1.2px;color:#fff;line-height:1.1;margin-bottom:18px;
 }
 .hero-title .grad{
-    background:linear-gradient(135deg,var(--c2) 0%,var(--c) 100%);
+    background:linear-gradient(135deg,var(--c) 0%,var(--c2) 100%);
     -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
 .hero-meta{
@@ -163,7 +163,7 @@ a{color:inherit;text-decoration:none}
 .hero-meta-sep{width:3px;height:3px;border-radius:50%;background:var(--border2)}
 
 /* ── LAYOUT ── */
-.terms-layout{
+.consent-layout{
     max-width:1240px;margin:56px auto 100px auto;
     padding:0 32px;
     display:grid;
@@ -173,7 +173,7 @@ a{color:inherit;text-decoration:none}
 }
 
 /* ── SIDEBAR ── */
-.terms-sidebar{position:sticky;top:96px;height:fit-content}
+.consent-sidebar{position:sticky;top:96px;height:fit-content}
 .sidebar-label{
     font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
     color:var(--muted2);margin-bottom:14px;
@@ -207,12 +207,12 @@ a{color:inherit;text-decoration:none}
 
 /* ── CONTENT ── */
 .content-stream{display:flex;flex-direction:column;gap:14px}
-.terms-card{
+.consent-card{
     background:var(--surface);border:1px solid var(--border);
     border-radius:var(--r);overflow:hidden;
     transition:border-color .3s,box-shadow .3s;
 }
-.terms-card:hover{
+.consent-card:hover{
     border-color:rgba(34,211,238,.18);
     box-shadow:0 16px 48px rgba(0,0,0,.35),0 0 24px rgba(34,211,238,.04);
 }
@@ -228,18 +228,18 @@ a{color:inherit;text-decoration:none}
     display:flex;align-items:center;justify-content:center;transition:all .25s;
 }
 .card-icon i{font-size:15px;color:var(--c2)}
-.terms-card.open .card-icon{
+.consent-card.open .card-icon{
     background:linear-gradient(135deg,var(--c2),var(--c));
     border-color:transparent;
 }
-.terms-card.open .card-icon i{color:#000}
+.consent-card.open .card-icon i{color:#000}
 .card-meta{flex:1;min-width:0}
 .card-num{font-size:10px;color:var(--muted2);letter-spacing:.8px;margin-bottom:3px;text-transform:uppercase}
 .card-title{font-family:var(--font);font-size:16px;font-weight:700;color:#fff}
 .card-chevron{font-size:13px;color:var(--muted2);transition:transform .3s var(--ease),color .2s;flex-shrink:0}
-.terms-card.open .card-chevron{transform:rotate(180deg);color:var(--c2)}
+.consent-card.open .card-chevron{transform:rotate(180deg);color:var(--c2)}
 .card-body{max-height:0;overflow:hidden;transition:max-height .4s var(--ease)}
-.terms-card.open .card-body{max-height:1000px}
+.consent-card.open .card-body{max-height:1200px}
 .card-body-inner{
     padding:0 28px 28px 82px;
     font-size:14.5px;color:var(--muted);line-height:1.85;
@@ -293,11 +293,11 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
 
 /* ── RESPONSIVE ── */
 @media(max-width:1080px){
-    .terms-layout{grid-template-columns:1fr}
-    .terms-sidebar{display:none}
+    .consent-layout{grid-template-columns:1fr}
+    .consent-sidebar{display:none}
 }
 @media(max-width:768px){
-    .container,.terms-layout{padding:0 20px}
+    .container,.consent-layout{padding:0 20px}
     .nav-links{display:none}
     .nav-toggle{display:flex}
     .hero-title{font-size:32px}
@@ -337,67 +337,119 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
 </nav>
 
 {{-- ── HERO ── --}}
-<header class="terms-hero">
+<header class="consent-hero">
     <div class="container hero-inner" data-reveal>
         <div class="hero-eyebrow">Legal &amp; Agreement</div>
         <h1 class="hero-title">
-            {{ $terms->title ?? '' }}<span class="grad">{{ isset($terms->title) ? '' : 'Terms & Conditions' }}</span>
+            Laboratory <span class="grad">Services Consent</span>
         </h1>
         <div class="hero-meta">
             <div class="hero-meta-item">
                 <i class="fa-regular fa-calendar-check"></i>
-                Effective Date: <strong style="color:#fff">{{ $effectiveDate ?? 'June 22, 2026' }}</strong>
+                Effective Date: <strong style="color:#fff">{{ $effectiveDate ?? 'June 26, 2026' }}</strong>
             </div>
             <span class="hero-meta-sep"></span>
             <div class="hero-meta-item">
-                <i class="fa-solid fa-scale-balanced"></i>
-                Legally Binding
+                <i class="fa-solid fa-flask-vial"></i>
+                Laboratory Agreement
             </div>
             <span class="hero-meta-sep"></span>
             <div class="hero-meta-item">
                 <i class="fa-solid fa-clock"></i>
-                ~8 min read
+                ~5 min read
             </div>
         </div>
     </div>
 </header>
 
 {{-- ── MAIN LAYOUT ── --}}
-<div class="terms-layout">
+<div class="consent-layout">
 
     @php
     $icons = [
-        'fa-file-contract','fa-flask','fa-heart-pulse','fa-user-check',
-        'fa-credit-card','fa-box','fa-chart-line','fa-rotate',
-        'fa-rotate-left','fa-shield-halved','fa-gavel','fa-pen-to-square',
-        'fa-flask-vial',
+        'fa-flask-vial','fa-microscope','fa-vial-circle-check','fa-syringe',
+        'fa-file-medical','fa-shield-halved','fa-user-check','fa-rotate',
+        'fa-circle-info','fa-gavel','fa-pen-to-square',
     ];
 
-    $hasDynamic = isset($terms) && is_array($terms->content) && count($terms->content) > 0;
+    $hasDynamic = isset($consent) && is_array($consent->content) && count($consent->content) > 0;
 
     $fallback = [
-        ['icon'=>'fa-file-contract','title'=>'Introduction','body'=>'These Terms and Conditions ("Terms") govern your access to and use of the Vyralabs website, mobile application, and services provided by Vyralabs OÜ ("Vyralabs", "we", "us", "our"). By using our services or purchasing our products, you agree to be bound by these Terms.','note'=>null],
-        ['icon'=>'fa-flask','title'=>'Our Services','body'=>'Vyralabs provides at-home wellness and longevity testing kits, biomarker analysis, personalized insights, and related digital tools. All services are intended solely for general wellness, preventive health monitoring, and informational purposes. They are not intended for the diagnosis, prevention, treatment, or cure of any disease and do not replace professional medical advice.','note'=>null],
-        ['icon'=>'fa-heart-pulse','title'=>'Health Disclaimer','body'=>'You understand and agree that test results are for informational purposes only. Vyralabs does not provide medical advice. You should consult a qualified healthcare professional before making any health-related decisions. We are not liable for any actions taken based on our test results or recommendations.','note'=>'Always consult a licensed healthcare provider before making medical decisions based on your results.'],
-        ['icon'=>'fa-user-check','title'=>'Eligibility','body'=>'You must be at least 18 years of age and a resident of the European Union. By using our services, you represent and warrant that you meet these requirements.','note'=>null],
-        ['icon'=>'fa-credit-card','title'=>'Ordering, Payment & Shipping','body'=>"• All prices are inclusive of applicable VAT.\n• We use third-party payment providers (Stripe) and shipping partners.\n• Delivery times are estimates only. We are not responsible for delays caused by couriers.\n• You are responsible for providing accurate shipping and contact information.",'note'=>null],
-        ['icon'=>'fa-box','title'=>'Kit Use and Sample Collection','body'=>'You must follow the instructions provided with the kit. Improper collection or shipping may result in invalid results. We are not responsible for lost, damaged, or contaminated samples during transit.','note'=>null],
-        ['icon'=>'fa-chart-line','title'=>'Results Delivery','body'=>'Results are typically available within 7–14 business days after the laboratory receives your sample. Results will be delivered through our secure app or web portal.','note'=>null],
-        ['icon'=>'fa-rotate','title'=>'Subscriptions and Auto-Renewal','body'=>'Subscriptions automatically renew unless cancelled. You may cancel at any time via your account. No refunds are provided for partially used subscription periods.','note'=>null],
-        ['icon'=>'fa-rotate-left','title'=>'Refunds and Returns','body'=>"• Unopened kits may be returned within 14 days of receipt for a full refund (minus shipping costs).\n• Opened kits or used samples are non-refundable.",'note'=>null],
-        ['icon'=>'fa-shield-halved','title'=>'Limitation of Liability','body'=>"To the fullest extent permitted by law, Vyralabs's total liability shall not exceed the amount you paid for the specific product or service. We are not liable for indirect, incidental, or consequential damages.",'note'=>null],
-        ['icon'=>'fa-gavel','title'=>'Governing Law and Jurisdiction','body'=>'These Terms are governed by the laws of Estonia. Mandatory consumer protection laws of your country of residence (e.g., Italy) shall apply where more favorable to you.','note'=>null],
-        ['icon'=>'fa-pen-to-square','title'=>'Changes to Terms','body'=>'We reserve the right to modify these Terms. Continued use after changes constitutes your acceptance.','note'=>null],
-        ['icon'=>'fa-flask-vial','title'=>'Laboratory Services Consent','body'=>'This section will contain your consent to laboratory services provided through Vyralabs. Details will be updated soon.','note'=>null],
+        [
+            'icon' => 'fa-flask-vial',
+            'title' => 'Purpose of Consent',
+            'body' => 'By using Vyralabs laboratory testing services, you voluntarily consent to the collection, processing, and analysis of your biological samples for the purpose of generating wellness and longevity biomarker insights. This consent covers all testing kits purchased through the Vyralabs platform.',
+            'note' => 'This consent is required to process your sample. You may withdraw at any time before sample receipt by our laboratory partners.'
+        ],
+        [
+            'icon' => 'fa-microscope',
+            'title' => 'Laboratory Partners',
+            'body' => "Vyralabs partners with accredited, CLIA-certified third-party laboratories to process your samples. These partners operate under strict confidentiality agreements and are prohibited from using your sample or data for any purpose other than fulfilling your test order.\n\nAll laboratory partners are:\n• CLIA-certified and/or ISO 15189 accredited\n• Bound by HIPAA-compliant data handling protocols\n• Prohibited from retaining samples beyond the processing window",
+            'note' => null
+        ],
+        [
+            'icon' => 'fa-vial-circle-check',
+            'title' => 'Sample Collection & Handling',
+            'body' => "You acknowledge and agree that:\n• You will follow all sample collection instructions provided with your kit\n• Improper collection may result in inconclusive or invalid results\n• Vyralabs is not responsible for results affected by incorrect sample collection\n• Samples must be returned within the specified window (typically 24–48 hours of collection)\n• You are providing a voluntary biological sample for wellness purposes only",
+            'note' => 'Samples are handled and destroyed in accordance with applicable biomedical waste regulations after analysis is complete.'
+        ],
+        [
+            'icon' => 'fa-syringe',
+            'title' => 'Nature of Testing & Limitations',
+            'body' => "You understand and agree that:\n• Vyralabs tests are for general wellness and longevity monitoring only\n• Results are not intended to diagnose, treat, cure, or prevent any disease\n• Results do not replace professional medical advice, diagnosis, or treatment\n• Reference ranges provided are population-based and may not apply to all individuals\n• A single biomarker reading should be interpreted in the context of your overall health",
+            'note' => 'Always consult a licensed healthcare provider before making any medical decisions based on your results.'
+        ],
+        [
+            'icon' => 'fa-file-medical',
+            'title' => 'Results Access & Delivery',
+            'body' => "Results are delivered exclusively through your secure Vyralabs dashboard within 7–14 business days of laboratory receipt. You consent to:\n• Results being stored in your Vyralabs account\n• Receiving result notifications via your registered email\n• Historical results being retained for your ongoing trend analysis\n\nResults will not be shared with any third party, including your healthcare provider, without your explicit authorization.",
+            'note' => null
+        ],
+        [
+            'icon' => 'fa-shield-halved',
+            'title' => 'Data Privacy & Sample Retention',
+            'body' => "Your biological sample is used solely for the biomarker analysis you ordered. After processing:\n• Physical samples are destroyed within 30 days of analysis\n• Anonymized analytical data may be retained for quality assurance\n• No identifiable biological data is sold or shared with third parties\n• You may request deletion of all associated data by contacting privacy@vyralabs.com",
+            'note' => 'Vyralabs never sells, licenses, or shares your biological data with insurance companies, employers, or advertisers.'
+        ],
+        [
+            'icon' => 'fa-user-check',
+            'title' => 'Eligibility & Voluntary Participation',
+            'body' => "By submitting a sample, you confirm that:\n• You are at least 18 years of age\n• You are providing your own biological sample\n• Your participation is entirely voluntary\n• You have not been coerced or pressured to participate\n• You have the legal capacity to enter into this consent agreement",
+            'note' => null
+        ],
+        [
+            'icon' => 'fa-rotate',
+            'title' => 'Right to Withdraw Consent',
+            'body' => "You may withdraw your consent at any time before your sample is received and logged by the laboratory. To withdraw:\n• Contact support@vyralabs.com immediately after kit dispatch\n• Provide your order number and registered email\n\nOnce a sample has been received and logged by the laboratory, it may not be possible to halt processing. In such cases, you retain the right to request deletion of stored results after delivery.",
+            'note' => null
+        ],
+        [
+            'icon' => 'fa-circle-info',
+            'title' => 'Incidental Findings',
+            'body' => "In rare circumstances, laboratory analysis may detect markers that fall significantly outside expected wellness ranges. Vyralabs does not provide medical interpretation of such findings. If your results suggest a concern that may benefit from clinical attention, your dashboard will prompt you to consult a healthcare professional.\n\nVyralabs assumes no liability for actions taken or not taken in response to your results.",
+            'note' => 'Vyralabs does not contact emergency services or healthcare providers on your behalf based on test results.'
+        ],
+        [
+            'icon' => 'fa-gavel',
+            'title' => 'Governing Terms',
+            'body' => "This Laboratory Services Consent is incorporated into and subject to Vyralabs' full Terms & Conditions and Privacy Policy. In the event of any conflict, the Terms & Conditions shall prevail. This agreement is governed by the laws of Estonia, with mandatory consumer protections of your country of residence applying where more favorable to you.",
+            'note' => null
+        ],
+        [
+            'icon' => 'fa-pen-to-square',
+            'title' => 'Updates to This Consent',
+            'body' => "Vyralabs reserves the right to update this Laboratory Services Consent at any time. Material changes will be communicated via email and displayed prominently on this page. Continued use of our laboratory services after the effective date of any update constitutes your acceptance of the revised consent.",
+            'note' => null
+        ],
     ];
     @endphp
 
     {{-- SIDEBAR --}}
-    <aside class="terms-sidebar" data-reveal>
-        <div class="sidebar-label">Agreement Chapters</div>
+    <aside class="consent-sidebar" data-reveal>
+        <div class="sidebar-label">Consent Chapters</div>
         <ul class="toc-list">
             @if($hasDynamic)
-                @foreach($terms->content as $index => $item)
+                @foreach($consent->content as $index => $item)
                     @if(!empty($item['heading']))
                     <li class="toc-item {{ $index === 0 ? 'active' : '' }}">
                         <a href="#chapter-{{ $index + 1 }}">
@@ -420,7 +472,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
         </ul>
 
         <div class="sidebar-contact">
-            <p>Questions about these terms?</p>
+            <p>Questions about this consent?</p>
             <a href="mailto:legal@vyralabs.com">
                 <i class="fa-solid fa-envelope"></i> Contact Legal
             </a>
@@ -430,9 +482,9 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
     {{-- CONTENT --}}
     <main class="content-stream">
         @if($hasDynamic)
-            @foreach($terms->content as $index => $item)
+            @foreach($consent->content as $index => $item)
                 @if(!empty($item['heading']) || !empty($item['content']))
-                <div class="terms-card {{ $index === 0 ? 'open' : '' }}" id="chapter-{{ $index + 1 }}" data-reveal>
+                <div class="consent-card {{ $index === 0 ? 'open' : '' }}" id="chapter-{{ $index + 1 }}" data-reveal>
                     <div class="card-head" onclick="toggleCard(this)">
                         <div class="card-icon">
                             <i class="fa-solid {{ $icons[$index % count($icons)] }}"></i>
@@ -453,7 +505,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
             @endforeach
         @else
             @foreach($fallback as $i => $s)
-            <div class="terms-card {{ $i === 0 ? 'open' : '' }}" id="chapter-{{ $i + 1 }}" data-reveal>
+            <div class="consent-card {{ $i === 0 ? 'open' : '' }}" id="chapter-{{ $i + 1 }}" data-reveal>
                 <div class="card-head" onclick="toggleCard(this)">
                     <div class="card-icon">
                         <i class="fa-solid {{ $s['icon'] }}"></i>
@@ -525,11 +577,11 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
         <div class="footer-bottom">
             <div>&copy; {{ date('Y') }} Vyralabs. All rights reserved.</div>
             <div class="footer-legal">
-                <a href="{{ url('/terms-and-condition') }}" class="active-page">Terms &amp; Conditions</a>
+                <a href="{{ url('/terms-and-condition') }}">Terms &amp; Conditions</a>
                 <a href="#">Refund Policy</a>
                 <a href="{{ route('privacy.policy') }}">Privacy Policy</a>
                 <a href="#">Consumer Health Data Privacy Policy</a>
-                <a href="{{ url('/laboratory-services-consent') }}">Laboratory Services Consent</a>
+                <a href="{{ request()->url() }}" class="active-page">Laboratory Services Consent</a>
             </div>
         </div>
 
@@ -557,9 +609,9 @@ document.getElementById('navToggle')?.addEventListener('click', () => {
 });
 
 function toggleCard(head) {
-    const card = head.closest('.terms-card');
+    const card = head.closest('.consent-card');
     const isOpen = card.classList.contains('open');
-    document.querySelectorAll('.terms-card').forEach(c => c.classList.remove('open'));
+    document.querySelectorAll('.consent-card').forEach(c => c.classList.remove('open'));
     if (!isOpen) card.classList.add('open');
 }
 
@@ -570,7 +622,7 @@ const revealObs = new IntersectionObserver(entries => {
 }, { threshold: 0.1 });
 document.querySelectorAll('[data-reveal]').forEach(el => revealObs.observe(el));
 
-const sections = document.querySelectorAll('.terms-card[id]');
+const sections = document.querySelectorAll('.consent-card[id]');
 const tocItems = document.querySelectorAll('.toc-item');
 window.addEventListener('scroll', () => {
     let current = '';

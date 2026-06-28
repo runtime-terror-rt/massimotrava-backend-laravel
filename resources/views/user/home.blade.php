@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vyralabs | The World's Easiest Performance Lab Test</title>
+<link rel="icon" type="image/jpeg" href="{{ asset('images/favicon.png') }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -2323,11 +2324,11 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
     <div class="footer-bottom">
       <div>&copy; 2026 Vyralabs. All rights reserved.</div>
       <div class="footer-legal">
-        <a href="#">Terms &amp; Conditions</a>
+        <a href="{{ url('/terms-and-condition') }}">Terms &amp; Conditions</a>
         <a href="#">Refund Policy</a>
-        <a href="#">Privacy Policy</a>
+        <a href="{{ route('privacy.policy') }}">Privacy Policy</a>
         <a href="#">Consumer Health Data Privacy Policy</a>
-        <a href="#">Laboratory Services Consent</a>
+        <a href="{{ url('/laboratory-services-consent') }}">Laboratory Services Consent</a>
       </div>
     </div>
     <div class="disclaimer">
@@ -2447,7 +2448,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // ৩. ভিডিও প্লেয়ার মডাল কন্ট্রোলস
     videoTriggers.forEach(trigger => {
         trigger.addEventListener("click", function (e) {
             e.preventDefault();
@@ -2472,7 +2472,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // ৪. আর্টিকেল মডাল রিডার কন্ট্রোলস (No Route Needed!)
     articleTriggers.forEach(trigger => {
         trigger.addEventListener("click", function (e) {
             e.preventDefault();
@@ -2482,7 +2481,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (title && body) {
                 articleTitle.innerText = title;
-                articleBody.innerHTML  = body; // Content জেনারেটেড HTML ফরমেটও সাপোর্ট করবে
+                articleBody.innerHTML  = body;
                 articleDate.innerText  = "PUBLISHED AT: " + date;
                 
                 articleModal.style.display = "flex";

@@ -100,6 +100,27 @@
 }
 @media (max-width: 1024px) { .hd-layout-grid { grid-template-columns: 1fr; } }
 
+/* ── Mobile Dashboard Responsive ── */
+@media (max-width: 768px) {
+    .hd-wrap { padding: 16px; }
+    .hd-hero { flex-direction: column; align-items: flex-start; padding: 24px; gap: 20px; border-radius: 20px; }
+    .hd-score-container { width: 100%; justify-content: flex-start; }
+    .hd-name { font-size: 24px; }
+    .hd-metrics-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .hd-metric-val { font-size: 26px; }
+    .hd-quick-actions { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .hd-main-card { padding: 20px; border-radius: 20px; }
+    .hd-bio-row-v5 { grid-template-columns: auto 1fr; gap: 12px; }
+    .hd-bio-data { grid-column: 2; text-align: left; padding-left: 60px; margin-top: -8px; }
+}
+@media (max-width: 480px) {
+    .hd-metrics-grid { grid-template-columns: 1fr 1fr; }
+    .hd-quick-actions { grid-template-columns: repeat(3, 1fr); }
+    .hd-score-breakdown { display: none; }
+    .hd-meta-pills { gap: 6px; }
+    .hd-pill { font-size: 11px; padding: 4px 10px; }
+}
+
 /* ── Component Master Container ── */
 .hd-main-card {
     background: var(--surface); border: 1px solid rgba(255, 255, 255, 0.02); border-radius: 28px;
@@ -116,7 +137,7 @@
 /* Clean Minimal Insights Header */
 .hd-insight-stripe {
     display: flex; gap: 14px; align-items: flex-start; padding: 16px 20px; border-radius: 16px; margin-bottom: 14px; font-size: 13px;
-    background: linear-gradient(90deg, rgba(239,68,68,0.03), transparent); border: 1px solid rgba(239,68,68,0.1);
+    background: linear-gradient(90deg, rgba(245,158,11,0.03), transparent); border: 1px solid rgba(245,158,11,0.12);
 }
 .hd-insight-stripe.green-mode {
     background: linear-gradient(90deg, rgba(16,185,129,0.03), transparent); border-color: rgba(16,185,129,0.1);
@@ -147,7 +168,7 @@
 .hd-bio-data .num unit { font-size: 11.5px; color: var(--text-muted); font-weight: 400; margin-left: 2px; }
 .hd-bio-status { font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; margin-top: 4px; padding: 2px 8px; border-radius: 6px; }
 .hd-st-opt { color: #10b981; background: rgba(16,185,129,0.06); }
-.hd-st-high { color: #ef4444; background: rgba(239,68,68,0.06); }
+.hd-st-high { color: #f59e0b; background: rgba(245,158,11,0.06); }
 .hd-st-low { color: #f59e0b; background: rgba(245,158,11,0.06); }
 
 /* Premium Action Button */
@@ -223,36 +244,240 @@ input:checked + .hd-ios-slider:before { transform: translateX(16px); background-
 <div class="-wrap">
 
     {{-- ══ 1. PROFILE HERO HERO BANNER ══ --}}
-    <div class="hd-hero">
-        <div class="hd-hero-left">
-            <div class="hd-avatar-zone">
+    {{-- CSS --}}
+<style>
+.hd-hero {
+    background: linear-gradient(135deg, rgba(20, 24, 33, 0.8) 0%, rgba(11, 15, 22, 0.95) 100%);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 32px;
+    padding: 36px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+    margin-bottom: 36px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+}
+
+/* Ambient Ambient Background Glows */
+.hd-hero::before {
+    content: '';
+    position: absolute; top: -100px; right: -100px;
+    width: 350px; height: 350px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(34, 211, 238, 0.12) 0%, transparent 70%);
+    filter: blur(50px);
+    pointer-events: none;
+}
+.hd-hero::after {
+    content: '';
+    position: absolute; bottom: -80px; left: 120px;
+    width: 250px; height: 250px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+    filter: blur(40px);
+    pointer-events: none;
+}
+
+.hd-hero-left { display: flex; align-items: center; gap: 24px; position: relative; z-index: 1; }
+
+/* Premium Avatar Ring with Gradient */
+.hd-avatar-zone { position: relative; width: 76px; height: 76px; flex-shrink: 0; }
+.hd-avatar-zone svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+.hd-avatar-inner {
+    position: absolute; inset: 6px;
+    background: #141923;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; 
+    background: linear-gradient(135deg, #22d3ee, #0ea5e9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.hd-avatar-status {
+    position: absolute; bottom: 3px; right: 3px;
+    width: 14px; height: 14px;
+    background: #10b981;
+    border: 2.5px solid #0b0f16;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+}
+
+/* Hero Info */
+.hd-greeting { 
+    font-size: 11px; 
+    color: #22d3ee; 
+    text-transform: uppercase; 
+    letter-spacing: 0.12em; 
+    font-weight: 700; 
+    margin-bottom: 8px;
+    opacity: 0.9;
+}
+.hd-name { 
+    font-family: 'Syne', sans-serif; 
+    font-size: 28px; 
+    font-weight: 800; 
+    letter-spacing: -0.02em; 
+    margin-bottom: 14px; 
+    color: #ffffff;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+.hd-meta-pills { display: flex; gap: 10px; flex-wrap: wrap; }
+.hd-pill {
+    font-size: 12px; color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 6px 14px; border-radius: 100px;
+    display: flex; align-items: center; gap: 6px;
+    backdrop-filter: blur(4px);
+    transition: all 0.3s ease;
+}
+.hd-pill:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+.hd-pill b { color: #ffffff; font-weight: 600; }
+.hd-pill i { color: #22d3ee; font-size: 11px; }
+
+/* Divider */
+.hd-hero-divider { width: 1px; height: 90px; background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.08), transparent); flex-shrink: 0; }
+
+/* Score Container Upgrade */
+.hd-score-container { display: flex; align-items: center; gap: 28px; position: relative; z-index: 1; }
+.hd-score-ring { 
+    position: relative; 
+    width: 110px; 
+    height: 110px; 
+    flex-shrink: 0; 
+}
+.hd-score-ring svg { transform: rotate(-90deg); }
+.hd-score-center {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+
+/* Text Gradient for the 84 Score */
+.hd-score-num { 
+    font-family: 'Syne', sans-serif; 
+    font-size: 36px; 
+    font-weight: 900; 
+    line-height: 1;
+    background: linear-gradient(135deg, #22d3ee 0%, #10b981 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 8px rgba(34, 211, 238, 0.2));
+}
+.hd-score-total { font-size: 11px; color: rgba(255, 255, 255, 0.4); font-weight: 600; margin-top: 2px; }
+
+/* Stats Breakdown Layout */
+.hd-score-breakdown { display: flex; flex-direction: column; gap: 14px; }
+.hd-sub-score { display: flex; flex-direction: column; gap: 4px; }
+.hd-sub-label { font-size: 10px; color: rgba(255, 255, 255, 0.4); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+.hd-sub-val { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+.hd-sub-bar { height: 4px; background: rgba(255, 255, 255, 0.05); border-radius: 100px; width: 140px; overflow: hidden; margin-top: 3px; }
+.hd-sub-fill { height: 100%; border-radius: 100px; }
+
+@media (max-width: 991px) {
+    .hd-hero { padding: 28px; }
+    .hd-hero-divider { display: none; }
+    .hd-score-container { width: 100%; justify-content: flex-start; margin-top: 10px; }
+}
+@media (max-width: 576px) {
+    .hd-name { font-size: 24px; }
+    .hd-sub-bar { width: 100px; }
+    .hd-avatar-zone { width: 64px; height: 64px; }
+    .hd-avatar-zone svg { width: 64px; height: 64px; }
+}
+</style>
+
+{{-- HTML --}}
+<div class="hd-hero">
+    <div class="hd-hero-left">
+        {{-- Avatar with Gradient Ring --}}
+        <div class="hd-avatar-zone">
+            <svg width="76" height="76" viewBox="0 0 76 76">
+                <defs>
+                    <linearGradient id="avatarGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#0ea5e9" />
+                        <stop offset="100%" stop-color="#22d3ee" />
+                    </linearGradient>
+                </defs>
+                <circle cx="38" cy="38" r="34" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="3"/>
+                <circle cx="38" cy="38" r="34" fill="none" stroke="url(#avatarGrad)" stroke-width="3"
+                    stroke-dasharray="213" stroke-dashoffset="60" stroke-linecap="round"/>
+            </svg>
+            <div class="hd-avatar-inner">
                 <i class="fa-solid fa-user-astronaut"></i>
-                <div class="hd-avatar-status"></div>
             </div>
-            <div>
-                <p class="hd-greeting">Welcome back to Vyralabs,</p>
-                <h2 class="hd-name">{{ auth()->user()->name }}</h2>
-                <div class="hd-meta-pills">
-                    <span class="hd-pill">Age: <b>{{ auth()->user()->age }}</b></span>
-                    <span class="hd-pill">Height: <b>{{ auth()->user()->height }}</b></span>
-                    <span class="hd-pill">Weight: <b>{{ auth()->user()->weight }}</b></span>
-                    <span class="hd-pill"><i class="fa-solid fa-calendar" style="color:var(--accent);margin-right:4px;"></i> Joined {{ auth()->user()->created_at }}</span>
-                </div>
-            </div>
+            <div class="hd-avatar-status"></div>
         </div>
-        
-        <div class="hd-score-container">
-            <div class="hd-score-main">
-                <div class="hd-score-num">84</div>
-                <div class="hd-score-total">/100</div>
-            </div>
-            <div class="hd-score-breakdown">
-                <span class="hd-sub-score">Biological Age: <b>-2.4 Years</b></span>
-                <span class="hd-sub-score">Sleep Index: <b>92% Optimal</b></span>
-                <span class="hd-sub-score">Cardio Fitness: <b>Excellent</b></span>
+
+        <div>
+            <p class="hd-greeting">Welcome back to Vyralabs</p>
+            <h2 class="hd-name">{{ auth()->user()->name }}</h2>
+            <div class="hd-meta-pills">
+                <span class="hd-pill"><i class="fa-solid fa-cake-candles"></i> Age: <b>{{ auth()->user()->age ?? 32 }}</b></span>
+                <span class="hd-pill"><i class="fa-solid fa-ruler-vertical"></i> Height: <b>{{ auth()->user()->height ?? '178 cm' }}</b></span>
+                <span class="hd-pill"><i class="fa-solid fa-weight-scale"></i> Weight: <b>{{ auth()->user()->weight ?? '74 kg' }}</b></span>
+                <span class="hd-pill"><i class="fa-solid fa-calendar"></i> Joined <b>{{ auth()->user()->created_at ? auth()->user()->created_at->format('M Y') : 'Jun 2026' }}</b></span>
             </div>
         </div>
     </div>
+
+    <div class="hd-hero-divider"></div>
+
+    <div class="hd-score-container">
+        {{-- High-End Gradient & Glowing Ring Score --}}
+        <div class="hd-score-ring">
+            <svg width="110" height="110" viewBox="0 0 110 110">
+                <defs>
+                    <!-- গ্রাফিক্সের জন্য মেইন কালার গ্রেডিয়েন্ট -->
+                    <linearGradient id="scoreRingGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#22d3ee" />   <!-- Cyan Accent -->
+                        <stop offset="60%" stop-color="#10b981" />  <!-- Longevity Emerald Green -->
+                        <stop offset="100%" stop-color="#059669" /> <!-- Deep Green -->
+                    </linearGradient>
+                    <!-- গ্লো ইফেক্ট ফিল্টার -->
+                    <filter id="ringGlow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="3" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
+                </defs>
+                <circle cx="55" cy="55" r="46" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="5.5"/>
+                <circle cx="55" cy="55" r="46" fill="none" stroke="url(#scoreRingGradient)" stroke-width="5.5"
+                    stroke-dasharray="289" stroke-dashoffset="46" stroke-linecap="round" filter="url(#ringGlow)"/>
+            </svg>
+            <div class="hd-score-center">
+                <div class="hd-score-num">84</div>
+                <div class="hd-score-total">/100</div>
+            </div>
+        </div>
+
+        {{-- Stats Breakdown with Subtle Shading --}}
+        <div class="hd-score-breakdown">
+            <div class="hd-sub-score">
+                <div class="hd-sub-label">Biological Age</div>
+                <div class="hd-sub-val" style="color:#c084fc;"><i class="fa-solid fa-sparkles" style="font-size:10px;"></i> −2.4 Years Younger</div>
+                <div class="hd-sub-bar"><div class="hd-sub-fill" style="width:78%; background: linear-gradient(to right, #a78bfa, #c084fc);"></div></div>
+            </div>
+            <div class="hd-sub-score">
+                <div class="hd-sub-label">Sleep Index</div>
+                <div class="hd-sub-val" style="color:#22d3ee;"><i class="fa-solid fa-moon" style="font-size:10px;"></i> 92% Optimal</div>
+                <div class="hd-sub-bar"><div class="hd-sub-fill" style="width:92%; background: linear-gradient(to right, #06b6d4, #22d3ee);"></div></div>
+            </div>
+            <div class="hd-sub-score">
+                <div class="hd-sub-label">Cardio Fitness</div>
+                <div class="hd-sub-val" style="color:#10b981;"><i class="fa-solid fa-heart-pulse" style="font-size:10px;"></i> Excellent</div>
+                <div class="hd-sub-bar"><div class="hd-sub-fill" style="width:88%; background: linear-gradient(to right, #059669, #10b981);"></div></div>
+            </div>
+        </div>
+    </div>
+</div>
 
     {{-- ══ 2. USER FRIENDLY QUICK ACTIONS SHORTCUTS ══ --}}
     <div class="hd-quick-actions">
@@ -281,8 +506,8 @@ input:checked + .hd-ios-slider:before { transform: translateX(16px); background-
                 <span class="hd-metric-lbl">Longevity Index</span>
                 <div class="hd-metric-icon">🧬</div>
             </div>
-            <div class="hd-metric-val" style="color:var(--accent);">84</div>
-            <div class="hd-metric-trend" style="color:#10b981;"><i class="fa-solid fa-arrow-trend-up"></i> +5 points increase vs Jan</div>
+            <div class="hd-metric-val" style="color:var(--accent);font-size:42px;text-shadow:0 0 30px rgba(99,102,241,0.4);">84</div>
+            <div class="hd-metric-trend" style="color:#10b981;"><i class="fa-solid fa-arrow-trend-up"></i> +5 points vs last panel — you're trending younger</div>
         </div>
 
         <div class="hd-metric-box c-green">
@@ -291,7 +516,7 @@ input:checked + .hd-ios-slider:before { transform: translateX(16px); background-
                 <div class="hd-metric-icon">✅</div>
             </div>
             <div class="hd-metric-val" style="color:#10b981;">3 <span style="font-size:14px;color:var(--text-muted);font-weight:400;">/ 4</span></div>
-            <div class="hd-metric-trend"><i class="fa-solid fa-circle" style="font-size:6px;color:#ef4444;vertical-align:middle;"></i> 1 core marker needs target focus</div>
+            <div class="hd-metric-trend"><i class="fa-solid fa-circle" style="font-size:6px;color:#f59e0b;vertical-align:middle;"></i> 1 marker needs a little focus</div>
         </div>
 
         <div class="hd-metric-box c-cyan">
@@ -327,12 +552,12 @@ input:checked + .hd-ios-slider:before { transform: translateX(16px); background-
 
                 {{-- Actionable Core Insights --}}
                 <div class="hd-insight-stripe">
-                    <i class="fa-solid fa-circle-exclamation" style="color:#ef4444;"></i>
-                    <p><strong>Priority Action Required:</strong> Your LDL Cholesterol levels have risen 8% above baseline. Review your dietary architecture immediately.</p>
+                    <i class="fa-solid fa-circle-info" style="color:#f59e0b;"></i>
+                    <p><strong>Action Recommended:</strong> Your LDL Cholesterol has risen 8% above your personal baseline. A small dietary adjustment now can make a meaningful difference.</p>
                 </div>
                 <div class="hd-insight-stripe green-mode">
                     <i class="fa-solid fa-shield-heart" style="color:#10b981;"></i>
-                    <p><strong>Excellent Metrics:</strong> Fasting Glucose and Testosterone show peak performance stability over the past 90 days.</p>
+                    <p><strong>Looking Great:</strong> Fasting Glucose and Testosterone are showing peak stability over the past 90 days — keep it up!</p>
                 </div>
 
                 {{-- Detailed Rows with Embedded Advice --}}
@@ -357,11 +582,11 @@ input:checked + .hd-ios-slider:before { transform: translateX(16px); background-
                         <div class="hd-bio-details">
                             <div class="cat">Cardiovascular Matrix</div>
                             <div class="name">LDL Cholesterol</div>
-                            <span class="guide" style="color:rgba(239,68,68,0.7);">Dietary Focus: Minimize saturated lipid profile vectors and increase soluble fiber intake.</span>
+                            <span class="guide" style="color:rgba(245,158,11,0.8);">Small win: reduce saturated fats and add more fiber to your daily meals — your heart will thank you.</span>
                         </div>
                         <div class="hd-bio-data">
-                            <div class="num" style="color:#ef4444;">145 <unit>mg/dL</unit></div>
-                            <span class="hd-bio-status hd-st-high">● Elevated Risk</span>
+                            <div class="num" style="color:#f59e0b;">145 <unit>mg/dL</unit></div>
+                            <span class="hd-bio-status hd-st-high">● Needs Attention</span>
                         </div>
                     </div>
 
@@ -385,17 +610,17 @@ input:checked + .hd-ios-slider:before { transform: translateX(16px); background-
                         <div class="hd-bio-details">
                             <div class="cat">Micronutrient Profile</div>
                             <div class="name">Vitamin D (25-Hydroxy)</div>
-                            <span class="guide" style="color:rgba(245,158,11,0.7);">Action Point: Recommended 15 mins daily morning sun or safe nutritional integration.</span>
+                            <span class="guide" style="color:rgba(245,158,11,0.8);">Easy boost: 15 mins of morning sunlight or a simple Vitamin D supplement can lift your levels quickly.</span>
                         </div>
                         <div class="hd-bio-data">
                             <div class="num" style="color:#f59e0b;">22 <unit>ng/mL</unit></div>
-                            <span class="hd-bio-status hd-st-low">● Deficient Alert</span>
+                            <span class="hd-bio-status hd-st-low">● Needs Attention</span>
                         </div>
                     </div>
                 </div>
 
                 <a href="{{ route('user.reports.index') }}" class="hd-download-trigger">
-                    <i class="fa-solid fa-file-pdf"></i> Download Complete Medical PDF Report
+                    <i class="fa-solid fa-file-lines"></i> Download Your Longevity Report
                 </a>
             </div>
 

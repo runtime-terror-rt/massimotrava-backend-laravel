@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $metaTitle ?? 'Privacy Policy' }} | Vyralabs</title>
+    <link rel="icon" type="image/jpeg" href="{{ asset('images/favicon.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -384,6 +385,9 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
 <header class="policy-hero">
     <div class="container hero-inner" data-reveal>
         <div class="hero-eyebrow">Legal &amp; Privacy</div>
+        <h1 class="hero-title">
+            {{ $policy->name ?? '' }}<span class="grad">{{ isset($policy->name) ? '' : 'Privacy Policy' }}</span>
+        </h1>
         <h3 class="hero-title">
             {{ $policy->title ?? '<span class="grad">Privacy</span> Policy' }}
         </h3>
@@ -471,7 +475,6 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
             @endforeach
 
         @else
-            {{-- FALLBACK: hardcoded sections যদি DB তে কিছু না থাকে --}}
             @php
             $fallback = [
                 ['icon'=>'fa-database','title'=>'Information We Collect','body'=>'We collect information you provide directly — such as your name, email, and profile details — as well as data generated through your use of our services, including test records, booking history, and payment information.','note'=>'We never collect more than what is strictly necessary to deliver the service.'],
@@ -480,6 +483,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
                 ['icon'=>'fa-user-shield','title'=>'Your Rights','body'=>'You have the right to access, correct, or delete your personal data at any time. You may also request a copy of all data we hold about you. Contact us through the in-app support or at privacy@vyralabs.com.','note'=>null],
                 ['icon'=>'fa-cookie','title'=>'Cookies','body'=>'We use only essential cookies required to maintain your session and remember your preferences. No tracking, profiling, or advertising cookies are used.','note'=>null],
                 ['icon'=>'fa-lock','title'=>'Data Security','body'=>'We implement industry-standard security measures including end-to-end encryption, secure HTTPS connections, and regular security audits to protect your personal data.','note'=>'All payment data is handled exclusively by Stripe — we never store card details on our servers.'],
+                ['icon'=>'fa-flask-vial','title'=>'Laboratory Services Consent','body'=>'This section will contain your consent to laboratory services provided through Vyralabs. Details will be updated soon.','note'=>null],
             ];
             @endphp
             @foreach($fallback as $i => $s)
@@ -553,11 +557,11 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
         <div class="footer-bottom">
             <div>&copy; {{ date('Y') }} Vyralabs. All rights reserved.</div>
             <div class="footer-legal">
-                <a href="#">Terms &amp; Conditions</a>
+                <a href="{{ url('/terms-and-condition') }}">Terms &amp; Conditions</a>
                 <a href="#">Refund Policy</a>
                 <a href="{{ request()->url() }}" class="active-policy">Privacy Policy</a>
                 <a href="#">Consumer Health Data Privacy Policy</a>
-                <a href="#">Laboratory Services Consent</a>
+                <a href="{{ url('/laboratory-services-consent') }}">Laboratory Services Consent</a>
             </div>
         </div>
 
