@@ -389,7 +389,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
             {{ $policy->name ?? '' }}<span class="grad">{{ isset($policy->name) ? '' : 'Privacy Policy' }}</span>
         </h1>
         <h3 class="hero-title">
-            {{ $policy->title ?? '<span class="grad">Privacy</span> Policy' }}
+            {{ $policy->title }}
         </h3>
         <div class="hero-meta">
             <div class="hero-meta-item">
