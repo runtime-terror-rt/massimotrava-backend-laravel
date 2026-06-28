@@ -13,7 +13,9 @@ class Subscription extends Model
         'price',
         'status',
         'starts_at',
-        'ends_at'
+        'ends_at',
+        'stripe_subscription_id',
+        
     ];
 
     protected $casts = [

@@ -83,42 +83,98 @@ class SubscriptionPlanController extends Controller
     public function storeOrUpdatePlan(Request $request)
     {
         $request->validate([
-            'id' => 'nullable|integer|exists:subscription_plans,id',
-            'name' => 'required|string|max:255',
-            'billing_cycle' => 'required|in:days,monthly,half_annual,annual,custom',
-            'price' => 'required|numeric|min:0',
-            'duration' => 'nullable|integer',
-            'features' => 'nullable|array',
-            'status' => 'boolean',
+            'id'           => 'nullable|integer|exists:subscription_plans,id',
+            'name'         => 'required|string|max:255',
+            'billing_cycle'=> 'required|in:monthly,annual',
+            'price'        => 'required|numeric|min:0',
+            'duration'     => 'nullable|integer',
+            'features'     => 'nullable|array',
+            'status'       => 'boolean',
         ]);
-
+    
         try {
-            // Use updateOrCreate
+            \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
+    
+            $isUpdate  = $request->filled('id');
+            $existingPlan = $isUpdate ? SubscriptionPlan::find($request->id) : null;
+    
+            $priceChanged = $isUpdate
+                && $existingPlan
+                && (float) $existingPlan->price !== (float) $request->price;
+    
+            $stripePriceId   = $existingPlan?->stripe_price_id;
+            $stripeProductId = $existingPlan?->stripe_product_id;
+    
+            $intervalMap = [
+                'monthly' => ['interval' => 'month', 'count' => 1],
+                'annual'  => ['interval' => 'year',  'count' => 1],
+            ];
+            $interval = $intervalMap[$request->billing_cycle] ?? ['interval' => 'month', 'count' => 1];
+    
+            if (!$isUpdate || !$stripePriceId || $priceChanged) {
+    
+                if ($stripeProductId) {
+                    \Stripe\Product::update($stripeProductId, [
+                        'name' => $request->name,
+                    ]);
+                } else {
+                    $product = \Stripe\Product::create([
+                        'name'        => $request->name,
+                        'description' => "Vyralabs {$request->name} plan",
+                    ]);
+                    $stripeProductId = $product->id;
+                }
+    
+                if ($stripePriceId && $priceChanged) {
+                    \Stripe\Price::update($stripePriceId, ['active' => false]);
+                }
+    
+                $stripePrice = \Stripe\Price::create([
+                    'product'       => $stripeProductId,
+                    'unit_amount'   => (int) round($request->price * 100), // cents
+                    'currency'      => 'usd',
+                    'recurring'     => [
+                        'interval'       => $interval['interval'],
+                        'interval_count' => $interval['count'],
+                    ],
+                ]);
+    
+                $stripePriceId = $stripePrice->id;
+            }
+    
+            // ── DB save ─────────────────────────────────────────────────────
             $plan = SubscriptionPlan::updateOrCreate(
-                ['id' => $request->id], // if id exists → update, otherwise create
+                ['id' => $request->id],
                 [
-                    'name' => $request->name,
-                    'user_id' => $request->user()->id,
-                    'billing_cycle' => $request->billing_cycle,
-                    'price' => $request->price,
-                    'duration' => $request->duration,
-                    'features' => $request->features,
-                    'status' => $request->status ?? true,
+                    'name'              => $request->name,
+                    'user_id'           => $request->user()->id,
+                    'billing_cycle'     => $request->billing_cycle,
+                    'price'             => $request->price,
+                    'duration'          => $request->duration,
+                    'features'          => $request->features,
+                    'status'            => $request->status ?? true,
+                    'stripe_price_id'   => $stripePriceId,
+                    'stripe_product_id' => $stripeProductId,
                 ]
             );
-
-            $message = $request->filled('id') ? 'Plan updated successfully.' : 'Plan created successfully.';
-
+    
             return response()->json([
                 'success' => true,
-                'message' => $message,
-                'data' => $plan
-            ], $request->filled('id') ? 200 : 201);
-
-        } catch (\Exception $e) {
+                'message' => $isUpdate ? 'Plan updated successfully.' : 'Plan created successfully.',
+                'data'    => $plan,
+            ], $isUpdate ? 200 : 201);
+    
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            \Log::error('Stripe Plan Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Something went wrong. Error: ' . $e->getMessage()
+                'message' => 'Stripe error: ' . $e->getMessage(),
+            ], 500);
+        } catch (\Exception $e) {
+            \Log::error('Plan Store Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong: ' . $e->getMessage(),
             ], 500);
         }
     }

@@ -15,7 +15,7 @@
                 {{ __('messages.pipeline_subheader') }}
             </p>
         </div>
-        {{-- Trigger Button for Modal --}}
+        {{-- Trigger Button for Create Modal --}}
         <button type="button" class="btn px-4 py-2 text-white font-weight-bold" data-bs-toggle="modal" data-bs-target="#createContentModal" style="background: var(--accent); border-radius: 8px; font-family: 'DM Sans', sans-serif; border: none;">
             <i class="fa-solid fa-plus me-2"></i> {{ __('messages.btn_create_content') }}
         </button>
@@ -28,7 +28,7 @@
         </div>
     @endif
 
-    {{-- Session Error Alert (Validation Fallback or Store Errors) --}}
+    {{-- Session Error Alert --}}
     @if(session('error') || $errors->any())
         <div class="alert text-rose-400 border-0 mb-4 text-sm" style="background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.2) !important; border-radius: 8px;">
             <i class="fa-solid fa-circle-exclamation me-2"></i> 
@@ -53,7 +53,7 @@
         </a>
     </div>
 
-    {{-- Data Pipeline Grid Card Table --}}
+    {{-- Data Pipeline Table --}}
     <div class="card border-0 overflow-hidden shadow-sm" style="background: var(--surface); border-radius: 12px; border: 1px solid var(--border) !important; font-family: 'DM Sans', sans-serif;">
         <div class="table-responsive">
             <table class="table table-hover mb-0 align-middle" style="color: var(--text);">
@@ -64,23 +64,26 @@
                         <th class="px-4 py-3 border-0">{{ __('messages.th_author') }}</th>
                         <th class="px-4 py-3 border-0">{{ __('messages.th_status_state') }}</th>
                         <th class="px-4 py-3 border-0">{{ __('messages.th_date_log') }}</th>
+                        <th class="px-4 py-3 border-0 text-end">{{ __('messages.th_actions') ?? 'Actions' }}</th>
                     </tr>
                 </thead>
                 <tbody style="border-top: none;">
                     @forelse($feed as $item)
                         <tr style="border-bottom: 1px solid var(--border);">
                             <td class="px-4 py-3">
-                                <span class="d-block font-weight-medium mb-0" style="font-size: 15px; color: var(--text);">{{ $item->title }}</span>
+                                <span class="d-block font-weight-medium mb-0" style="font-size: 15px; color: var(--text);">
+                                    {{ Str::limit($item->title, 20, '...') }}
+                                </span>
                                 <small class="font-mono" style="font-size: 11px; color: var(--text-muted);">{{ $item->slug }}</small>
                             </td>
                             <td class="px-4 py-3">
                                 @if($item->type === 'post')
                                     <span class="badge px-2.5 py-1.5" style="background: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 20px; font-weight: 500;">
-                                        📄 {{ __('messages.badge_post') }}
+                                         {{ __('messages.badge_post') }}
                                     </span>
                                 @else
                                     <span class="badge px-2.5 py-1.5" style="background: rgba(251, 191, 36, 0.1); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.2); border-radius: 20px; font-weight: 500;">
-                                        🎥 {{ __('messages.badge_video') }}
+                                         {{ __('messages.badge_video') }}
                                     </span>
                                 @endif
                             </td>
@@ -89,22 +92,36 @@
                             </td>
                             <td class="px-4 py-3">
                                 <span class="{{ $item->status === 'published' ? 'text-emerald-400 font-weight-medium' : 'text-muted' }}">
-                                    @if($item->status === 'published')
-                                        {{ __('messages.status_published') }}
-                                    @elseif($item->status === 'draft')
-                                        {{ __('messages.status_draft') }}
-                                    @else
-                                        {{ ucfirst($item->status) }}
-                                    @endif
+                                    {{ $item->status === 'published' ? __('messages.status_published') : __('messages.status_draft') }}
                                 </span>
                             </td>
                             <td class="px-4 py-3" style="color: var(--text-muted); font-size: 12px; font-family: monospace;">
                                 {{ $item->created_at->format('M d, Y h:i A') }}
                             </td>
+                            <td class="px-4 py-3 text-end">
+                                <div class="d-flex justify-content-end gap-2">
+                                    {{-- Edit Button (Triggers JS function to populate data into Edit Modal) --}}
+                                    <button type="button" 
+                                            class="btn btn-sm p-1.5 px-2.5" 
+                                            style="background: rgba(34, 211, 238, 0.1); color: #22d3ee; border: 1px solid rgba(34, 211, 238, 0.2); border-radius: 6px; font-size: 12px; display: inline-flex; align-items: center;"
+                                            onclick="openEditModal({{ json_encode($item) }})">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+
+                                    {{-- Delete Button Form --}}
+                                    <form action="{{ route('admin.contents.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this content?');" style="display: inline-block; margin: 0;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm p-1.5 px-2.5" style="background: rgba(239, 68, 68, 0.08); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 6px; font-size: 12px; display: inline-flex; align-items: center;">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-4 py-5 text-center" style="font-size: 14px; color: var(--text-muted);">
+                            <td colspan="6" class="px-4 py-5 text-center" style="font-size: 14px; color: var(--text-muted);">
                                 <i class="fa-solid fa-folder-open d-block mb-2 fs-3" style="color: var(--text-muted);"></i> 
                                 {{ __('messages.no_pipeline_contents_found') }}
                             </td>
@@ -115,148 +132,169 @@
         </div>
     </div>
 
-    {{-- Render Appended Pagination Streams Links --}}
     <div class="mt-4 d-flex justify-content-end">
         {{ $feed->appends(request()->query())->links() }}
     </div>
 </div>
 
-{{-- Creation Modal Integration --}}
+{{-- ==================== 1. Creation Modal ==================== --}}
 <div class="modal fade" id="createContentModal" tabindex="-1" aria-labelledby="createContentModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 p-2 shadow-lg" style="background: var(--surface); border-radius: 12px; border: 1px solid var(--border) !important; font-family: 'DM Sans', sans-serif;">
-            
-            {{-- Modal Header --}}
             <div class="modal-header pb-3 border-0 d-flex flex-column align-items-start position-relative" style="border-bottom: 1px solid var(--border) !important;">
                 <h1 class="modal-title h4 font-weight-bold mb-1" id="createContentModalLabel" style="font-family: 'Syne', sans-serif; color: var(--text);">
                     {{ __('messages.create_content_header') }}
                 </h1>
-                <p class="text-sm mb-0 text-start" style="color: var(--text-muted);">
-                    {{ __('messages.create_content_subheader') }}
-                </p>
+                <p class="text-sm mb-0 text-start" style="color: var(--text-muted);">{{ __('messages.create_content_subheader') }}</p>
                 <button type="button" class="btn-close position-absolute top-0 end-0 mt-3 me-3" data-bs-dismiss="modal" aria-label="Close" style="filter: var(--close-btn-filter, none); color: var(--text); shadow: none; outline: none;"></button>
             </div>
 
-            {{-- Modal Body Form --}}
             <div class="modal-body py-4">
-                {{-- FIXED: Added enctype attribute for handling file uploads --}}
                 <form action="{{ route('admin.contents.store') }}" method="POST" enctype="multipart/form-data" id="modal_content_form" class="row g-4">
                     @csrf
-
-                    {{-- Asset Type Switcher --}}
                     <div class="col-12">
                         <label for="type_switcher" class="form-label font-weight-bold mb-2" style="font-size: 14px; color: var(--text);">
                             {{ __('messages.lbl_asset_type') }} <span class="text-danger">*</span>
                         </label>
                         <select name="type" id="type_switcher" class="form-select form-input py-2.5" style="background-color: var(--surface-2); border: 1px solid var(--border); color: var(--text); outline: none;">
-                            <option value="post" {{ old('type') == 'post' ? 'selected' : '' }} style="background: var(--surface); color: var(--text);">📄 {{ __('messages.opt_type_post') }}</option>
-                            <option value="video" {{ old('type') == 'video' ? 'selected' : '' }} style="background: var(--surface); color: var(--text);">🎥 {{ __('messages.opt_type_video') }}</option>
+                            <option value="post" {{ old('type') == 'post' ? 'selected' : '' }}> {{ __('messages.opt_type_post') }}</option>
+                            <option value="video" {{ old('type') == 'video' ? 'selected' : '' }}> {{ __('messages.opt_type_video') }}</option>
                         </select>
-                        @error('type') <span class="text-danger d-block text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
 
-                    {{-- Headline Title --}}
                     <div class="col-12">
                         <label for="title" class="form-label font-weight-bold mb-2" style="font-size: 14px; color: var(--text);">
                             {{ __('messages.lbl_headline_title') }} <span class="text-danger">*</span>
                         </label>
-                        <input type="text" name="title" id="title" value="{{ old('title') }}" 
-                               placeholder="{{ __('messages.ph_headline_title') }}" class="form-control form-input py-2.5" style="background-color: var(--surface-2); border: 1px solid var(--border); color: var(--text); outline: none;">
-                        @error('title') <span class="text-danger d-block text-xs mt-1">{{ $message }}</span> @enderror
+                        <input type="text" name="title" id="title" value="{{ old('title') }}" placeholder="{{ __('messages.ph_headline_title') }}" class="form-control form-input py-2.5" style="background-color: var(--surface-2); border: 1px solid var(--border); color: var(--text); outline: none;">
                     </div>
 
-                    {{-- FIXED & ADDED: Featured Image Input Field --}}
                     <div class="col-12">
-                        <label for="featured_image" class="form-label font-weight-bold mb-2" style="font-size: 14px; color: var(--text);">
-                            Featured Image <small style="color: var(--text-muted);">({{ __('messages.lbl_optional') }})</small>
-                        </label>
+                        <label for="featured_image" class="form-label font-weight-bold mb-2" style="font-size: 14px; color: var(--text);">Featured Image</label>
                         <input type="file" name="featured_image" id="featured_image" class="form-control form-input py-2" style="background-color: var(--surface-2); border: 1px solid var(--border); color: var(--text); outline: none;">
-                        <small class="text-muted d-block mt-1" style="font-size: 11px; color: var(--text-muted) !important;">Supported formats: JPG, JPEG, PNG, WEBP, GIF (Max size: 2MB)</small>
-                        @error('featured_image') <span class="text-danger d-block text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
 
-                    {{-- Article Body Container (Conditional) --}}
                     <div class="col-12" id="post_meta_container">
-                        <label for="body" class="form-label font-weight-bold mb-2" style="font-size: 14px; color: var(--text);">
-                            {{ __('messages.lbl_content_body') }}
-                        </label>
-                        <textarea name="body" id="body" rows="6" 
-                                  placeholder="{{ __('messages.ph_content_body') }}" class="form-control form-input" style="background-color: var(--surface-2); border: 1px solid var(--border); color: var(--text); outline: none;"></textarea>
-                        @error('body') <span class="text-danger d-block text-xs mt-1">{{ $message }}</span> @enderror
+                        <label for="body" class="form-label font-weight-bold mb-2" style="font-size: 14px; color: var(--text);">{{ __('messages.lbl_content_body') }}</label>
+                        <textarea name="body" id="body" rows="6" placeholder="{{ __('messages.ph_content_body') }}" class="form-control form-input" style="background-color: var(--surface-2); border: 1px solid var(--border); color: var(--text); outline: none;">{{ old('body') }}</textarea>
                     </div>
 
-                    {{-- Video URL Container (Conditional) --}}
                     <div class="col-12 d-none" id="video_meta_container">
-                        <label for="video_url" class="form-label font-weight-bold mb-2" style="font-size: 14px; color: var(--text);">
-                            {{ __('messages.lbl_video_url') }}
-                        </label>
-                        <input type="text" name="video_url" id="video_url" value="{{ old('video_url') }}" 
-                               placeholder="https://www.youtube.com/watch?v=..." class="form-control form-input py-2.5" style="background-color: var(--surface-2); border: 1px solid var(--border); color: var(--text); outline: none;">
-                        @error('video_url') <span class="text-danger d-block text-xs mt-1">{{ $message }}</span> @enderror
+                        <label for="video_url" class="form-label font-weight-bold mb-2" style="font-size: 14px; color: var(--text);">{{ __('messages.lbl_video_url') }}</label>
+                        <input type="text" name="video_url" id="video_url" value="{{ old('video_url') }}" placeholder="https://www.youtube.com/watch?v=..." class="form-control form-input py-2.5" style="background-color: var(--surface-2); border: 1px solid var(--border); color: var(--text); outline: none;">
                     </div>
 
-                    {{-- Queue Pipeline Status --}}
                     <div class="col-md-6">
-                        <label for="status" class="form-label font-weight-bold mb-2" style="font-size: 14px; color: var(--text);">
-                            {{ __('messages.lbl_queue_status') }} <span class="text-danger">*</span>
-                        </label>
+                        <label for="status" class="form-label font-weight-bold mb-2" style="font-size: 14px; color: var(--text);">{{ __('messages.lbl_queue_status') }} <span class="text-danger">*</span></label>
                         <select name="status" id="status" class="form-select form-input py-2.5" style="background-color: var(--surface-2); border: 1px solid var(--border); color: var(--text); outline: none;">
-                            <option value="published" {{ old('status') == 'published' ? 'selected' : '' }} style="background: var(--surface); color: var(--text);">🚀 {{ __('messages.opt_status_publish_now') }}</option>
-                            <option value="draft" {{ old('status') == 'draft' ? 'selected' : '' }} style="background: var(--surface); color: var(--text);">📁 {{ __('messages.opt_status_hold_draft') }}</option>
+                            <option value="published"> {{ __('messages.opt_status_publish_now') }}</option>
+                            <option value="draft"> {{ __('messages.opt_status_hold_draft') }}</option>
                         </select>
-                        @error('status') <span class="text-danger d-block text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
                     
-                    {{-- Video Duration --}}
                     <div class="col-md-6">
-                        <label for="duration" class="form-label font-weight-bold mb-2" style="font-size: 14px; color: var(--text);">
-                            {{ __('messages.lbl_video_duration') }} <small style="color: var(--text-muted);">({{ __('messages.lbl_optional') }})</small>
-                        </label>
+                        <label for="duration" class="form-label font-weight-bold mb-2" style="font-size: 14px; color: var(--text);">{{ __('messages.lbl_video_duration') }}</label>
                         <input type="number" name="duration" id="duration" value="{{ old('duration') }}" placeholder="e.g., 180" class="form-control form-input py-2.5" style="background-color: var(--surface-2); border: 1px solid var(--border); color: var(--text); outline: none;">
-                        @error('duration') <span class="text-danger d-block text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
                 </form>
             </div>
 
-            {{-- Modal Footer --}}
-            <div class="modal-footer border-0 pt-0 d-flex justify-content-end gap-2" style="border-top: 1px solid var(--border) !important; padding-top: 1rem !important;">
-                <button type="button" class="btn px-4 py-2" data-bs-dismiss="modal" style="background: var(--bg); border: 1px solid var(--border); color: var(--text-muted); border-radius: 6px; transition: all 0.2s;">
-                    {{ __('messages.btn_cancel') }}
-                </button>
-                <button type="submit" form="modal_content_form" class="btn px-4 py-2 text-white font-weight-bold" style="background: var(--accent); border-radius: 6px; border: none; cursor: pointer; transition: background-color 0.2s;">
-                    {{ __('messages.btn_save_content') }}
-                </button>
+            <div class="modal-footer border-0 pt-0 d-flex justify-content-end gap-2">
+                <button type="button" class="btn px-4 py-2" data-bs-dismiss="modal" style="background: var(--bg); border: 1px solid var(--border); color: var(--text-muted); border-radius: 6px;">{{ __('messages.btn_cancel') }}</button>
+                <button type="submit" form="modal_content_form" class="btn px-4 py-2 text-white font-weight-bold" style="background: var(--accent); border-radius: 6px; border: none;">{{ __('messages.btn_save_content') }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ==================== 2. Edit Modal (New Added) ==================== --}}
+<div class="modal fade" id="editContentModal" tabindex="-1" aria-labelledby="editContentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 p-2 shadow-lg" style="background: var(--surface); border-radius: 12px; border: 1px solid var(--border) !important; font-family: 'DM Sans', sans-serif;">
+            <div class="modal-header pb-3 border-0 d-flex flex-column align-items-start position-relative" style="border-bottom: 1px solid var(--border) !important;">
+                <h1 class="modal-title h4 font-weight-bold mb-1" id="editContentModalLabel" style="font-family: 'Syne', sans-serif; color: var(--text);">
+                     Edit Content Resource
+                </h1>
+                <p class="text-sm mb-0 text-start" style="color: var(--text-muted);">Modify your stream resource attributes below.</p>
+                <button type="button" class="btn-close position-absolute top-0 end-0 mt-3 me-3" data-bs-dismiss="modal" aria-label="Close" style="filter: var(--close-btn-filter, none); color: var(--text); shadow: none; outline: none;"></button>
             </div>
 
+            <div class="modal-body py-4">
+                {{-- Form action is empty because JS will inject it dynamically --}}
+                <form action="" method="POST" enctype="multipart/form-data" id="edit_modal_content_form" class="row g-4">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="col-12">
+                        <label for="edit_type_switcher" class="form-label font-weight-bold mb-2" style="font-size: 14px; color: var(--text);">Asset Type <span class="text-danger">*</span></label>
+                        <select name="type" id="edit_type_switcher" class="form-select form-input py-2.5" style="background-color: var(--surface-2); border: 1px solid var(--border); color: var(--text); outline: none;">
+                            <option value="post"> Post (Article)</option>
+                            <option value="video"> Video Library</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <label for="edit_title" class="form-label font-weight-bold mb-2" style="font-size: 14px; color: var(--text);">Headline Title <span class="text-danger">*</span></label>
+                        <input type="text" name="title" id="edit_title" class="form-control form-input py-2.5" style="background-color: var(--surface-2); border: 1px solid var(--border); color: var(--text); outline: none;" required>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label font-weight-bold mb-2" style="font-size: 14px; color: var(--text);">Featured Image</label>
+                        <div id="edit_image_preview_box" class="mb-2 d-none">
+                            <img src="" id="edit_image_preview" class="img-thumbnail" style="max-height: 80px; background: rgba(0,0,0,0.1); border-color: var(--border);">
+                        </div>
+                        <input type="file" name="featured_image" id="edit_featured_image" class="form-control form-input py-2" style="background-color: var(--surface-2); border: 1px solid var(--border); color: var(--text); outline: none;">
+                    </div>
+
+                    <div class="col-12" id="edit_post_meta_container">
+                        <label for="edit_body" class="form-label font-weight-bold mb-2" style="font-size: 14px; color: var(--text);">Content Body</label>
+                        <textarea name="body" id="edit_body" rows="6" class="form-control form-input" style="background-color: var(--surface-2); border: 1px solid var(--border); color: var(--text); outline: none;"></textarea>
+                    </div>
+
+                    <div class="col-12 d-none" id="edit_video_meta_container">
+                        <label for="edit_video_url" class="form-label font-weight-bold mb-2" style="font-size: 14px; color: var(--text);">Video URL</label>
+                        <input type="text" name="video_url" id="edit_video_url" class="form-control form-input py-2.5" style="background-color: var(--surface-2); border: 1px solid var(--border); color: var(--text); outline: none;">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="edit_status" class="form-label font-weight-bold mb-2" style="font-size: 14px; color: var(--text);">Queue Status <span class="text-danger">*</span></label>
+                        <select name="status" id="edit_status" class="form-select form-input py-2.5" style="background-color: var(--surface-2); border: 1px solid var(--border); color: var(--text); outline: none;">
+                            <option value="published"> Published</option>
+                            <option value="draft"> Draft</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="edit_duration" class="form-label font-weight-bold mb-2" style="font-size: 14px; color: var(--text);">Video Duration</label>
+                        <input type="number" name="duration" id="edit_duration" class="form-control form-input py-2.5" style="background-color: var(--surface-2); border: 1px solid var(--border); color: var(--text); outline: none;">
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer border-0 pt-0 d-flex justify-content-end gap-2">
+                <button type="button" class="btn px-4 py-2" data-bs-dismiss="modal" style="background: var(--bg); border: 1px solid var(--border); color: var(--text-muted); border-radius: 6px;">Cancel</button>
+                <button type="submit" form="edit_modal_content_form" class="btn px-4 py-2 text-white font-weight-bold" style="background: var(--accent); border-radius: 6px; border: none;">Update Changes</button>
+            </div>
         </div>
     </div>
 </div>
 
 <style>
-    .form-input {
-        transition: border-color 0.2s, box-shadow 0.2s;
-    }
+    .form-input { transition: border-color 0.2s, box-shadow 0.2s; }
     .form-input:focus {
         background-color: var(--surface-2) !important;
         color: var(--text) !important;
         border-color: var(--accent) !important;
         box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
     }
-    .form-input::placeholder {
-        color: var(--text-muted);
-        opacity: 0.6;
-    }
-    .form-select, .form-control {
-        box-shadow: none;
-    }
-    /* Modal Close Button Adjustment for Dark/Light alignment */
-    .btn-close:focus {
-        box-shadow: none;
-    }
+    .form-input::placeholder { color: var(--text-muted); opacity: 0.6; }
+    .form-select, .form-control { box-shadow: none; }
+    .btn-close:focus { box-shadow: none; }
 </style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // --- Create Modal Switcher Logic ---
         const switcher = document.getElementById('type_switcher');
         const postBox  = document.getElementById('post_meta_container');
         const videoBox = document.getElementById('video_meta_container');
@@ -270,24 +308,65 @@
                 videoBox.classList.add('d-none');
             }
         }
-
         toggleInputLayers(switcher.value);
+        switcher.addEventListener('change', function(e) { toggleInputLayers(e.target.value); });
 
-        switcher.addEventListener('change', function(e) {
-            toggleInputLayers(e.target.value);
-        });
+        // --- Edit Modal Switcher Logic ---
+        const editSwitcher = document.getElementById('edit_type_switcher');
+        const editPostBox  = document.getElementById('edit_post_meta_container');
+        const editVideoBox = document.getElementById('edit_video_meta_container');
 
-        // Smooth auto fade-out handling for success alert
+        function toggleEditInputLayers(type) {
+            if (type === 'video') {
+                editVideoBox.classList.remove('d-none');
+                editPostBox.classList.add('d-none');
+            } else {
+                editPostBox.classList.remove('d-none');
+                editVideoBox.classList.add('d-none');
+            }
+        }
+        editSwitcher.addEventListener('change', function(e) { toggleEditInputLayers(e.target.value); });
+
+        // Auto fade-out alert
         setTimeout(function() {
             var msg = document.getElementById('alert-msg');
             if(msg) msg.style.display = 'none';
         }, 4000);
-
-        // Validation Error Auto-open Modal Feature
-        @if($errors->any())
-            var createModal = new bootstrap.Modal(document.getElementById('createContentModal'));
-            createModal.show();
-        @endif
     });
+
+    // --- Dynamic Edit Modal Function ---
+    function openEditModal(item) {
+        const form = document.getElementById('edit_modal_content_form');
+        form.action = `/admin/contents/${item.id}`;
+
+        document.getElementById('edit_title').value = item.title;
+        document.getElementById('edit_type_switcher').value = item.type;
+        document.getElementById('edit_status').value = item.status;
+        document.getElementById('edit_body').value = item.body || '';
+        document.getElementById('edit_video_url').value = item.video_url || '';
+        document.getElementById('edit_duration').value = item.duration || '';
+
+        const previewBox = document.getElementById('edit_image_preview_box');
+        const previewImg = document.getElementById('edit_image_preview');
+        if (item.featured_image) {
+            previewImg.src = '/' + item.featured_image;
+            previewBox.classList.remove('d-none');
+        } else {
+            previewBox.classList.add('d-none');
+        }
+
+        const editPostBox  = document.getElementById('edit_post_meta_container');
+        const editVideoBox = document.getElementById('edit_video_meta_container');
+        if (item.type === 'video') {
+            editVideoBox.classList.remove('d-none');
+            editPostBox.classList.add('d-none');
+        } else {
+            editPostBox.classList.remove('d-none');
+            editVideoBox.classList.add('d-none');
+        }
+
+        var editModal = new bootstrap.Modal(document.getElementById('editContentModal'));
+        editModal.show();
+    }
 </script>
 @endsection

@@ -436,13 +436,11 @@ input:checked + .hd-ios-slider:before { transform: translateX(16px); background-
         <div class="hd-score-ring">
             <svg width="110" height="110" viewBox="0 0 110 110">
                 <defs>
-                    <!-- গ্রাফিক্সের জন্য মেইন কালার গ্রেডিয়েন্ট -->
                     <linearGradient id="scoreRingGradient" x1="0%" y1="100%" x2="100%" y2="0%">
                         <stop offset="0%" stop-color="#22d3ee" />   <!-- Cyan Accent -->
                         <stop offset="60%" stop-color="#10b981" />  <!-- Longevity Emerald Green -->
                         <stop offset="100%" stop-color="#059669" /> <!-- Deep Green -->
                     </linearGradient>
-                    <!-- গ্লো ইফেক্ট ফিল্টার -->
                     <filter id="ringGlow" x="-20%" y="-20%" width="140%" height="140%">
                         <feGaussianBlur stdDeviation="3" result="blur" />
                         <feComposite in="SourceGraphic" in2="blur" operator="over" />

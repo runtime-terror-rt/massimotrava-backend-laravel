@@ -15,24 +15,31 @@
             @endif
         </h2>
 
-        <a href="{{ route('admin.get.users') }}" class="btn-theme-back" style="color: var(--text-muted); text-decoration: none; font-size: 14px; background: var(--surface-2); padding: 8px 15px; border-radius: 6px; border: 1px solid var(--border); transition: all 0.2s; white-space: nowrap;">
-            <i class="fa-solid fa-arrow-left"></i> {{ __('messages.btn_back_to_users') }}
-        </a>
+        @hasanyrole('admin|lab')
+            <a href="{{ route('admin.get.users') }}" class="btn-theme-back" style="color: var(--text-muted); text-decoration: none; font-size: 14px; background: var(--surface-2); padding: 8px 15px; border-radius: 6px; border: 1px solid var(--border); transition: all 0.2s; white-space: nowrap;">
+                <i class="fa-solid fa-arrow-left"></i> {{ __('messages.btn_back_to_users') }}
+            </a>
+        @endhasanyrole
     </div>
 
     <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 20px;">
-        <a href="{{ route('admin.reports.create') }}" 
-           style="background: var(--accent); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: bold; transition: opacity 0.2s; font-size: 14px;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-            <i class="fa-solid fa-plus"></i>
-            {{ __('messages.btn_create_new_report') }}
-        </a>
+        
+        @hasanyrole('admin|lab')
+            <a href="{{ route('admin.reports.create') }}" 
+            style="background: var(--accent); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: bold; transition: opacity 0.2s; font-size: 14px;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                <i class="fa-solid fa-plus"></i>
+                {{ __('messages.btn_create_new_report') }}
+            </a>
+        @endhasanyrole
 
         @if($reports->count() > 0)
-        <a href="{{ route('admin.reports.download.pdf', request()->query()) }}" 
-           style="background: #ef4444; color: white; padding: 10px 18px; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; transition: opacity 0.2s; font-size: 14px;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-            <i class="fa-solid fa-file-pdf"></i>
-            {{ __('messages.btn_bulk_download_pdf') }}
-        </a>
+            @hasanyrole('admin|lab')
+                    <a href="{{ route('admin.reports.download.pdf', request()->query()) }}" 
+                    style="background: #ef4444; color: white; padding: 10px 18px; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; transition: opacity 0.2s; font-size: 14px;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                        <i class="fa-solid fa-file-pdf"></i>
+                        {{ __('messages.btn_bulk_download_pdf') }}
+                    </a>
+                @endhasanyrole
         @endif
     </div>
 

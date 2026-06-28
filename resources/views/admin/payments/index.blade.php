@@ -4,6 +4,28 @@
 
 @section('content')
 <div class="content" style="color: var(--text); transition: color 0.3s;">
+
+    {{-- Flash Messages --}}
+    @if(session('success'))
+        <div style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:#10b981;padding:12px 18px;border-radius:8px;margin-bottom:20px;display:flex;align-items:center;gap:10px;font-size:13px;">
+            <i class="fa-solid fa-circle-check"></i> {{ session('success') }}
+        </div>
+    @endif
+    @if(session('error'))
+        <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#ef4444;padding:12px 18px;border-radius:8px;margin-bottom:20px;display:flex;align-items:center;gap:10px;font-size:13px;">
+            <i class="fa-solid fa-triangle-exclamation"></i> {{ session('error') }}
+        </div>
+    @endif
+    @if($errors->any())
+        <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:#ef4444;padding:12px 18px;border-radius:8px;margin-bottom:20px;font-size:13px;">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <ul style="margin:6px 0 0 16px;padding:0;">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     {{-- Page Header --}}
     <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
         <div>
@@ -64,6 +86,12 @@
                     <div style="margin-top: 8px; font-size: 11px; color: var(--text-muted); display: flex; gap: 12px; margin-bottom: 15px;">
                         @if($planDuration)
                             <span><i class="fa-solid fa-clock" style="margin-right: 4px;"></i> {{ $planDuration }} Days</span>
+                        @endif
+                        @php $planStripeId = is_array($plan) ? ($plan['stripe_price_id'] ?? null) : $plan->stripe_price_id; @endphp
+                        @if($planStripeId)
+                            <span style="color:#10b981"><i class="fa-brands fa-stripe" style="margin-right: 4px;"></i> Connected</span>
+                        @else
+                            <span style="color:#ef4444"><i class="fa-solid fa-triangle-exclamation" style="margin-right: 4px;"></i> No Stripe ID</span>
                         @endif
                     </div>
                 </div>
@@ -212,7 +240,7 @@
         
         <form id="planForm" action="{{ route('admin.plans.store') }}" method="POST" style="padding: 20px;">
             @csrf
-            <input type="hidden" id="inputPlanId" name="plan_id" value="">
+            <input type="hidden" id="inputPlanId" name="id" value="">
 
             <div style="margin-bottom: 16px;">
                 <label style="display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 6px;">Plan Name *</label>
@@ -240,12 +268,14 @@
 
             <div style="margin-bottom: 20px;">
                 <label style="display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 6px;">Features (Comma Separated)</label>
-                <input type="text" id="inputFeatures" name="features" placeholder="Feature 1, Feature 2, Feature 3" class="form-input" style="width: 100%; padding: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; color: var(--text); outline: none;">
+                <input type="text" id="inputFeatures" placeholder="Feature 1, Feature 2, Feature 3" class="form-input" style="width: 100%; padding: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; color: var(--text); outline: none;">
+                <div id="featuresHiddenContainer"></div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:5px;">Each feature separated by comma will be saved individually.</div>
             </div>
 
             <div style="padding-top: 15px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px;">
                 <button type="button" onclick="closePlanModal()" class="btn btn-secondary" style="padding: 10px 16px; border-radius: 6px; cursor: pointer;">Cancel</button>
-                <button type="submit" class="btn btn-primary" id="submitBtn" style="padding: 10px 16px; border-radius: 6px; cursor: pointer; background: var(--accent); border: none; color: #fff;">Save Plan</button>
+                <button type="submit" class="btn btn-primary" id="submitBtn" onclick="prepareFeatures()" style="padding: 10px 16px; border-radius: 6px; cursor: pointer; background: var(--accent); border: none; color: #fff;">Save Plan</button>
             </div>
         </form>
     </div>
@@ -344,6 +374,29 @@
 
     function closePlanModal() {
         document.getElementById('planModal').style.display = 'none';
+    }
+
+    // Features string → array[] inputs before submit
+    function prepareFeatures() {
+        const featuresInput = document.getElementById('inputFeatures').value;
+        const container = document.getElementById('featuresHiddenContainer');
+        container.innerHTML = '';
+
+        if (featuresInput.trim()) {
+            const features = featuresInput.split(',').map(f => f.trim()).filter(f => f !== '');
+            features.forEach(function(feature) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'features[]';
+                input.value = feature;
+                container.appendChild(input);
+            });
+        }
+
+        // Loading state
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="margin-right:6px"></i> Saving to Stripe...';
     }
 
     // View Details Modal

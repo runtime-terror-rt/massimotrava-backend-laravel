@@ -1500,7 +1500,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
     </div>
     <div class="nav-actions">
       <a href="{{route('login')}}" class="btn btn-ghost">Login <i class="fa-solid fa-arrow-right-to-bracket"></i></a>
-      <a href="#pricing" class="btn btn-primary">Get Vyralabs</a>
+      <a href="{{route('register')}}" class="btn btn-primary">Get Vyralabs</a>
       <button class="nav-toggle"><i class="fa-solid fa-bars"></i></button>
     </div>
   </div>
@@ -2119,7 +2119,11 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
     </div>
 
     <div class="pricing-grid">
-      
+      @if(session('error'))
+        <div style="background: #ff4a4a; color: white; padding: 14px; text-align: center; border-radius: 8px; margin-bottom: 25px; font-weight: bold; width: 100%; max-width: 1200px; margin-left: auto; margin-right: auto;">
+            {{ session('error') }}
+        </div>
+      @endif
       @isset($data)
         @foreach($data as $index => $plan)
           @php

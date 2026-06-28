@@ -19,7 +19,7 @@ class DashboardController extends Controller
 
     public function register(Request $request)
     {
-        return view('admin.auth.register');
+        return view('user.auth.signup');
     }
 
     public function forgotPassword(Request $request)
