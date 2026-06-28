@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\AdminPickupRequestController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Auth\LoginController;
@@ -111,6 +112,9 @@ Route::prefix('admin')
             Route::get('/contents/create', [ContentController::class, 'create'])->name('contents.create');
             Route::get('/contents', [ContentController::class, 'index'])->name('contents.index');
             Route::post('/contents', [ContentController::class, 'store'])->name('contents.store');
+            Route::get('/contents/{id}/edit', [ContentController::class, 'edit'])->name('contents.edit');
+            Route::put('/contents/{id}', [ContentController::class, 'update'])->name('contents.update');
+            Route::delete('/contents/{id}', [ContentController::class, 'destroy'])->name('contents.destroy');
 
             Route::get('/campaigns/create', [CampaignController::class, 'create'])->name('campaigns.create');
             Route::get('/campaigns', [CampaignController::class, 'index'])->name('campaigns.index');
@@ -123,4 +127,10 @@ Route::prefix('admin')
             Route::get('plan/{id}', [PaymentController::class, 'show'])->name('plans.show');
             Route::get('plan/{id}/edit', [PaymentController::class, 'edit'])->name('plans.edit');
             Route::delete('plan/{id}', [PaymentController::class, 'destroy'])->name('plans.destroy');
+
+            Route::get('/pickup-requests', [AdminPickupRequestController::class, 'index'])->name('pickup.index');
+            Route::get('/pickup-requests/{id}', [AdminPickupRequestController::class, 'show'])->name('pickup.show');
+            Route::patch('/pickup/{id}/schedule', [AdminPickupRequestController::class, 'schedule'])->name('pickup.schedule');
+            Route::patch('/pickup/{id}/collect', [AdminPickupRequestController::class, 'collect'])->name('pickup.collect');
+            Route::patch('/pickup/{id}/cancel', [AdminPickupRequestController::class, 'cancel'])->name('pickup.cancel');
     });

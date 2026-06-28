@@ -1500,7 +1500,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
     </div>
     <div class="nav-actions">
       <a href="{{route('login')}}" class="btn btn-ghost">Login <i class="fa-solid fa-arrow-right-to-bracket"></i></a>
-      <a href="#pricing" class="btn btn-primary">Get Vyralabs</a>
+      <a href="{{route('register')}}" class="btn btn-primary">Get Vyralabs</a>
       <button class="nav-toggle"><i class="fa-solid fa-bars"></i></button>
     </div>
   </div>

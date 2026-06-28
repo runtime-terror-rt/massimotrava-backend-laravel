@@ -60,7 +60,7 @@ class SubscriptionController extends Controller
     public function handleWebhook(Request $request)
     {
         Stripe::setApiKey(config('services.stripe.secret', env('STRIPE_SECRET')));
-        $endpointSecret = config('services.stripe.webhook_secret', env('STRIPE_WEBHOOK_SECRET'));
+        $endpointSecret = env('STRIPE_WEBHOOK_SECRET');
         
         $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature');

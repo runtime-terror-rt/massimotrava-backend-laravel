@@ -7,7 +7,7 @@
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                 <div>
                     <h4 class="mb-1" style="color: var(--text-main); font-weight: 600;">Biomarker Report Details</h4>
-                    <p class="text-muted mb-0">Batch Invoice Track ID: <strong class="text-primary">{{ $mainReport->inv_code }}</strong></p>
+                    <p class=" mb-0" style="color: var(--text-main);">Batch Invoice Track ID: <strong class="text-primary">{{ $mainReport->inv_code }}</strong></p>
                 </div>
                 <div>
                     <a href="{{ route('admin.reports.index') }}" class="btn btn-secondary px-3 me-2">

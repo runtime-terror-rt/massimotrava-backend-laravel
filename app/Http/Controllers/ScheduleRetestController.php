@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\ScheduleRetest;
+use App\Models\Kit; 
 use App\Mail\RetestScheduledMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -12,6 +13,112 @@ use Illuminate\Support\Facades\DB;
 
 class ScheduleRetestController extends Controller
 {
+    /**
+     * Display a listing of the retest schedules for the Authenticated User.
+     */
+    public function index()
+    {
+        $userId = auth()->id();
+
+        $feed = ScheduleRetest::with(['kit'])
+            ->where('user_id', $userId)
+            ->orderBy('retest_date', 'asc')
+            ->paginate(15);
+        
+        $kits = \App\Models\Kit::where('user_id', $userId)->get(); 
+
+        return view('user.retests.index', compact('feed', 'kits'));
+    }
+
+    /**
+     * Store a newly scheduled retest session via User Dashboard (Blade)
+     */
+    public function storeWeb(Request $request)
+    {
+        $request->validate([
+            'kit_id'            => 'required|exists:kits,id',
+            'original_inv_code' => 'nullable|string', 
+            'retest_date'       => 'required|date|after_or_equal:today',
+            'retest_time'       => 'nullable',
+            'user_notes'        => 'nullable|string|max:1000',
+        ]);
+
+        try {
+            DB::transaction(function () use ($request) {
+                $schedule = new ScheduleRetest();
+                $schedule->user_id           = auth()->id(); 
+                $schedule->kit_id            = $request->kit_id;
+                $schedule->original_inv_code = $request->original_inv_code;
+                $schedule->retest_date       = $request->retest_date;
+                $schedule->retest_time       = $request->retest_time;
+                $schedule->user_notes        = $request->user_notes;
+                $schedule->admin_notes       = null; 
+                $schedule->status            = 1; 
+                $schedule->save();
+
+                $user = auth()->user();
+                if ($user && filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
+                    $schedule->load('kit');
+                    Mail::to($user->email)->send(new RetestScheduledMail($schedule));
+                }
+            });
+
+            return redirect()->back()->with('success', 'Your Biomarker Retest Session has been successfully scheduled!');
+        } catch (\Exception $e) {
+            Log::error('User Retest Store Exception: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Failed to schedule retest: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Update the specified retest schedule via User Dashboard Modal (Blade)
+     */
+    public function updateWeb(Request $request, $id)
+    {
+        $request->validate([
+            'kit_id'            => 'required|exists:kits,id',
+            'original_inv_code' => 'nullable|string', 
+            'retest_date'       => 'required|date|after_or_equal:today',
+            'retest_time'       => 'nullable',
+            'user_notes'        => 'nullable|string|max:1000',
+        ]);
+
+        try {
+            $schedule = ScheduleRetest::where('user_id', auth()->id())->findOrFail($id);
+            
+            DB::transaction(function () use ($request, $schedule) {
+                $schedule->kit_id            = $request->kit_id;
+                $schedule->original_inv_code = $request->original_inv_code;
+                $schedule->retest_date       = $request->retest_date;
+                $schedule->retest_time       = $request->retest_time;
+                $schedule->user_notes        = $request->user_notes;
+                $schedule->save();
+            });
+
+            return redirect()->back()->with('success', 'Your retest schedule has been updated successfully!');
+        } catch (\Exception $e) {
+            Log::error('User Retest Update Exception: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Failed to update retest schedule: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Delete/Cancel method for User context
+     */
+    public function destroyWeb($id)
+    {
+        try {
+            $schedule = ScheduleRetest::where('user_id', auth()->id())->findOrFail($id);
+            $schedule->delete();
+            return redirect()->back()->with('success', 'Retest schedule cancelled successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error cancelling schedule: ' . $e->getMessage());
+        }
+    }
+
+
+    /* ==================== EXISTING API FUNCTIONS ==================== */
+
     /**
      * Store a newly scheduled retest session and send email notice
      */

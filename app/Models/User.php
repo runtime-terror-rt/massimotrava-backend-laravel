@@ -35,7 +35,8 @@ class User extends Authenticatable
         'lab_id',
         'role',
         'otp',
-        'otp_expire_at' ];
+        'otp_expire_at',
+        'email_verified_at' ];
 
     /**
      * The attributes that should be hidden for serialization.
