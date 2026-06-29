@@ -41,7 +41,7 @@ class LoginController extends Controller
             // ── Determine redirect based on role ──
             $redirectUrl = match(true) {
                 in_array($role, ['admin', 'lab']) => '/admin/dashboard',
-                default                           => '/user/dashboard',
+                default                           => '/user/action-item',
             };
 
             $expiresAt   = $remember ? now()->addDays(30) : now()->addHours(2);
