@@ -696,7 +696,16 @@ input:checked + .hd-ios-slider:before { transform: translateX(16px); background-
                             <span class="hd-ios-slider"></span>
                         </label>
                     </div>
-
+                    <div class="hd-group-item">
+                        <div class="hd-group-meta">
+                            <div class="title">SMS Notification</div>
+                            <div class="sub">Receive sms when complete your report.</div>
+                        </div>
+                        <label class="hd-ios-switch">
+                            <input type="checkbox" checked>
+                            <span class="hd-ios-slider"></span>
+                        </label>
+                    </div>
                     <div class="hd-group-item">
                         <div class="hd-group-meta">
                             <div class="title">Biomarker Smart Reminders</div>
