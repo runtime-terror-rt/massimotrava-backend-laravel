@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 
 class User extends Authenticatable
 {
@@ -36,7 +37,10 @@ class User extends Authenticatable
         'role',
         'otp',
         'otp_expire_at',
-        'email_verified_at' ];
+        'email_verified_at',
+        'health_profile',
+        'kit_questionnaire',
+        'action_item_viewed', ];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -58,6 +62,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'health_profile' => AsArrayObject::class,
+            'kit_questionnaire' => AsArrayObject::class,
+            'action_item_viewed' => 'boolean',
         ];
     }
 
@@ -90,5 +97,16 @@ class User extends Authenticatable
     public function payments()
     {
         return $this->hasMany(Payment::class);
+        
     }
+    public function pickupRequests()
+    {
+        return $this->hasMany(PickupRequest::class);
+    }
+
+    public function reports()
+    {
+        return $this->hasMany(BiomarkerReport::class); 
+    }
+
 }

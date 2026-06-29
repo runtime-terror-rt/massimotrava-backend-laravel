@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActionItem\ActionItemController;
 use App\Http\Controllers\Auth\SignUpController;
 use App\Http\Controllers\BiomarkerReportController;
 use App\Http\Controllers\KitController;
@@ -24,6 +25,7 @@ Route::get('/laboratory-services-consent', function () {
     return view('user.laboratory-services');
     
 });
+
 Route::get('/pricing', [SubscriptionPlanController::class, 'showPricingPage'])->name('pricing.page');
 Route::get('/privacy-policy', [PrivacyPolicyController::class, 'frontIndex'])->name('privacy.policy');
 
@@ -57,6 +59,14 @@ Route::prefix('user')->name('user.')->middleware(['auth'])->group(function () {
     Route::post('retests', [ScheduleRetestController::class, 'storeWeb'])->name('retests.store');
     Route::put('retests/{id}', [ScheduleRetestController::class, 'updateWeb'])->name('retests.update');
     Route::delete('retests/{id}', [ScheduleRetestController::class, 'destroyWeb'])->name('retests.destroy');
+
+    Route::get('/action-item', [ActionItemController::class, 'index'])->name('actionitem.index');
+    Route::get('/action-item/helth-profile', [ActionItemController::class, 'helthProfile'])->name('actionitem.helthprofile');
+    Route::post('/health-profile', [ActionItemController::class, 'storeHelthProfile'])->name('health-profile.store');
+    Route::get('/action-item/instruction', [ActionItemController::class, 'instruction'])->name('actionitem.instruction');
+    Route::post('/action-items/mark-viewed', [ActionItemController::class, 'markViewed'])->name('action-items.mark-viewed');
+    Route::get('/action-item/questionnaire', [ActionItemController::class, 'questionnaire'])->name('actionitem.questionnaire');
+    Route::post('/kit-questionnaire', [ActionItemController::class, 'storeKitQuestionnaire'])->name('kit-questionnaire.store');
 });
 
 require __DIR__.'/admin.php';

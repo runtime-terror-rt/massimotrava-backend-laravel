@@ -16,7 +16,9 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->string('email')->unique();
             $table->string('phone')->nullable();
-
+            $table->json('health_profile')->nullable();
+            $table->json('kit_questionnaire')->nullable();
+            $table->boolean('action_item_viewed')->default(false);
             $table->integer('age')->nullable();
             $table->string('gender')->nullable();
             $table->string('height')->nullable();
