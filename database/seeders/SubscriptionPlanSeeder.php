@@ -13,12 +13,8 @@ class SubscriptionPlanSeeder extends Seeder
      */
     public function run(): void
     {
-        // ফরেন কি চেক এরর এড়াতে এবং নতুন করে ডেটা ইনসার্ট করতে টেবিল ক্লিয়ার করা
-        SubscriptionPlan::truncate();
-
-        // user_id এর জন্য প্রথম উপলব্ধ ইউজার আইডি নেওয়া হলো
-        $adminUser = User::where('role', 'admin')->first() ?? User::first();
-        $userId = $adminUser ? $adminUser->id : 1; 
+        $adminUser = User::first();
+        $userId = $adminUser ? $adminUser->id : 1;
 
         $plans = [
             [
@@ -100,9 +96,12 @@ class SubscriptionPlanSeeder extends Seeder
         ];
 
         foreach ($plans as $planData) {
-            SubscriptionPlan::create(array_merge($planData, [
-                'user_id' => $userId,
-            ]));
+            SubscriptionPlan::updateOrCreate(
+                ['name' => $planData['name']], // unique key
+                array_merge($planData, [
+                    'user_id' => $userId,
+                ])
+            );
         }
     }
 }
