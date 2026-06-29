@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\SubscriptionPlan;
 use App\Models\Subscription;
-use App\Models\User; 
+use App\Models\User;
+use App\Models\UserSubscription;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -38,7 +39,7 @@ class PaymentController extends Controller
                 ];
             });
 
-            $userSubscriptions = Subscription::with(['user', 'plan'])
+            $userSubscriptions = UserSubscription::with(['user', 'plan'])
                 ->latest()
                 ->paginate(10);
 

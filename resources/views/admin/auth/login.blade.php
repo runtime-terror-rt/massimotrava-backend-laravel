@@ -62,6 +62,10 @@
                 <i class="fas fa-arrow-right"></i>
             </button>
         </form>
+
+        <div class="auth-footer">
+                Don't have an account? <a href="/register" class="auth-link">Sign up</a>
+        </div>
     </div>
 </div>
 

@@ -2145,9 +2145,6 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
               <span class="plan-type {{ $isPopular ? 'text-gradient' : '' }}">
                 {{ $plan['name'] }}
               </span>
-              <h3 class="plan-title">
-                {{ $plan['plan_type'] ? ucfirst($plan['plan_type']) : 'Health' }} Suite
-              </h3>
               <div class="plan-price-block">
                 <span class="currency">€</span>
                 <span class="price">{{ number_format($plan['price'], 0) }}</span>
