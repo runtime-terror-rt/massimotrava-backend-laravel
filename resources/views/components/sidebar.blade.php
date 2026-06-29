@@ -23,6 +23,18 @@
     {{-- ── MAIN ── --}}
     <div class="nav-section-label">Main</div>
 
+    @if(!$isAdminOrLab)
+
+      {{-- Action Items (Rythm Health style) --}}
+      <a href="{{ Route::has('user.actionitem.index') ? route('user.actionitem.index') : '#' }}"
+        class="nav-item {{ request()->routeIs('user.actionitem.index*') ? 'active' : '' }}"
+        data-tooltip="Action Items">
+        <i class="fa-solid fa-list-check"></i>
+        <span>Action Items</span>
+       
+      </a>
+
+    @endif
     {{-- Dashboard --}}
     @if($isAdminOrLab)
       <a href="{{ route('admin.dashboard.index') }}"
