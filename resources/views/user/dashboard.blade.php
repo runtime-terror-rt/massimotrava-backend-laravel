@@ -418,13 +418,13 @@ input:checked + .hd-ios-slider:before { transform: translateX(16px); background-
         </div>
 
         <div>
-            <p class="hd-greeting">Welcome back to Vyralabs</p>
+            <p class="hd-greeting">{{ __('messages.welcome_back', ['platform' => 'Vyralabs']) }}</p>
             <h2 class="hd-name">{{ auth()->user()->name }}</h2>
             <div class="hd-meta-pills">
-                <span class="hd-pill"><i class="fa-solid fa-cake-candles"></i> Age: <b>{{ auth()->user()->age ?? 32 }}</b></span>
-                <span class="hd-pill"><i class="fa-solid fa-ruler-vertical"></i> Height: <b>{{ auth()->user()->height ?? '178 cm' }}</b></span>
-                <span class="hd-pill"><i class="fa-solid fa-weight-scale"></i> Weight: <b>{{ auth()->user()->weight ?? '74 kg' }}</b></span>
-                <span class="hd-pill"><i class="fa-solid fa-calendar"></i> Joined <b>{{ auth()->user()->created_at ? auth()->user()->created_at->format('M Y') : 'Jun 2026' }}</b></span>
+                <span class="hd-pill"><i class="fa-solid fa-cake-candles"></i> {{ __('messages.age') }}: <b>{{ auth()->user()->age ?? 32 }}</b></span>
+                <span class="hd-pill"><i class="fa-solid fa-ruler-vertical"></i> {{ __('messages.height') }}: <b>{{ auth()->user()->height ?? '178 cm' }}</b></span>
+                <span class="hd-pill"><i class="fa-solid fa-weight-scale"></i> {{ __('messages.weight') }}: <b>{{ auth()->user()->weight ?? '74 kg' }}</b></span>
+                <span class="hd-pill"><i class="fa-solid fa-calendar"></i> {{ __('messages.joined') }} <b>{{ auth()->user()->created_at ? auth()->user()->created_at->format('M Y') : 'Jun 2026' }}</b></span>
             </div>
         </div>
     </div>
@@ -459,329 +459,275 @@ input:checked + .hd-ios-slider:before { transform: translateX(16px); background-
         {{-- Stats Breakdown with Subtle Shading --}}
         <div class="hd-score-breakdown">
             <div class="hd-sub-score">
-                <div class="hd-sub-label">Biological Age</div>
-                <div class="hd-sub-val" style="color:#c084fc;"><i class="fa-solid fa-sparkles" style="font-size:10px;"></i> −2.4 Years Younger</div>
+                <div class="hd-sub-label">{{ __('messages.biological_age') }}</div>
+                <div class="hd-sub-val" style="color:#c084fc;"><i class="fa-solid fa-sparkles" style="font-size:10px;"></i> {{ __('messages.years_younger', ['count' => '2.4']) }}</div>
                 <div class="hd-sub-bar"><div class="hd-sub-fill" style="width:78%; background: linear-gradient(to right, #a78bfa, #c084fc);"></div></div>
             </div>
             <div class="hd-sub-score">
-                <div class="hd-sub-label">Sleep Index</div>
-                <div class="hd-sub-val" style="color:#22d3ee;"><i class="fa-solid fa-moon" style="font-size:10px;"></i> 92% Optimal</div>
+                <div class="hd-sub-label">{{ __('messages.sleep_index') }}</div>
+                <div class="hd-sub-val" style="color:#22d3ee;"><i class="fa-solid fa-moon" style="font-size:10px;"></i> {{ __('messages.optimal_percentage', ['pct' => '92']) }}</div>
                 <div class="hd-sub-bar"><div class="hd-sub-fill" style="width:92%; background: linear-gradient(to right, #06b6d4, #22d3ee);"></div></div>
             </div>
             <div class="hd-sub-score">
-                <div class="hd-sub-label">Cardio Fitness</div>
-                <div class="hd-sub-val" style="color:#10b981;"><i class="fa-solid fa-heart-pulse" style="font-size:10px;"></i> Excellent</div>
+                <div class="hd-sub-label">{{ __('messages.cardio_fitness') }}</div>
+                <div class="hd-sub-val" style="color:#10b981;"><i class="fa-solid fa-heart-pulse" style="font-size:10px;"></i> {{ __('messages.excellent') }}</div>
                 <div class="hd-sub-bar"><div class="hd-sub-fill" style="width:88%; background: linear-gradient(to right, #059669, #10b981);"></div></div>
             </div>
         </div>
     </div>
 </div>
 
-    {{-- ══ 2. USER FRIENDLY QUICK ACTIONS SHORTCUTS ══ --}}
-    <div class="hd-quick-actions">
-        <a href="#" class="hd-action-card">
-            <i class="fa-solid fa-plus-circle"></i>
-            <span>Order New Kit</span>
-        </a>
-        <a href="#" class="hd-action-card">
-            <i class="fa-solid fa-truck-ramp-box"></i>
-            <span>Track Sample</span>
-        </a>
-        <a href="{{ route('user.reports.index') }}" class="hd-action-card">
-            <i class="fa-solid fa-file-invoice-bleed"></i>
-            <span>All Lab Panels</span>
-        </a>
-        {{-- <a href="#" class="hd-action-card">
-            <i class="fa-solid fa-user-doctor"></i>
-            <span>Consult Expert</span>
-        </a> --}}
+{{-- ══ 2. USER FRIENDLY QUICK ACTIONS SHORTCUTS ══ --}}
+<div class="hd-quick-actions">
+    <a href="#" class="hd-action-card">
+        <i class="fa-solid fa-plus-circle"></i>
+        <span>{{ __('messages.order_new_kit') }}</span>
+    </a>
+    <a href="#" class="hd-action-card">
+        <i class="fa-solid fa-truck-ramp-box"></i>
+        <span>{{ __('messages.track_sample') }}</span>
+    </a>
+    <a href="{{ route('user.reports.index') }}" class="hd-action-card">
+        <i class="fa-solid fa-file-invoice-bleed"></i>
+        <span>{{ __('messages.all_lab_panels') }}</span>
+    </a>
+</div>
+
+{{-- ══ 3. 4x4 OVERVIEW METRICS GRID ══ --}}
+<div class="hd-metrics-grid">
+    <div class="hd-metric-box c-indigo">
+        <div class="hd-metric-head">
+            <span class="hd-metric-lbl">{{ __('messages.longevity_index') }}</span>
+            <div class="hd-metric-icon">🧬</div>
+        </div>
+        <div class="hd-metric-val" style="color:var(--accent);font-size:42px;text-shadow:0 0 30px rgba(99,102,241,0.4);">84</div>
+        <div class="hd-metric-trend" style="color:#10b981;"><i class="fa-solid fa-arrow-trend-up"></i> {{ __('messages.longevity_trend') }}</div>
     </div>
 
-    {{-- ══ 3. 4x4 OVERVIEW METRICS GRID ══ --}}
-    <div class="hd-metrics-grid">
-        <div class="hd-metric-box c-indigo">
-            <div class="hd-metric-head">
-                <span class="hd-metric-lbl">Longevity Index</span>
-                <div class="hd-metric-icon">🧬</div>
+    <div class="hd-metric-box c-green">
+        <div class="hd-metric-head">
+            <span class="hd-metric-lbl">{{ __('messages.biomarkers_validated') }}</span>
+            <div class="hd-metric-icon">✅</div>
+        </div>
+        <div class="hd-metric-val" style="color:#10b981;">3 <span style="font-size:14px;color:var(--text-muted);font-weight:400;">/ 4</span></div>
+        <div class="hd-metric-trend"><i class="fa-solid fa-circle" style="font-size:6px;color:#f59e0b;vertical-align:middle;"></i> {{ __('messages.biomarkers_trend') }}</div>
+    </div>
+
+    <div class="hd-metric-box c-cyan">
+        <div class="hd-metric-head">
+            <span class="hd-metric-lbl">{{ __('messages.registered_kits') }}</span>
+            <div class="hd-metric-icon">🧪</div>
+        </div>
+        <div class="hd-metric-val" style="color:#38bdf8;">2</div>
+        <div class="hd-metric-trend">{{ __('messages.registered_kits_trend') }}</div>
+    </div>
+
+    <div class="hd-metric-box c-amber">
+        <div class="hd-metric-head">
+            <span class="hd-metric-lbl">{{ __('messages.next_recalibration') }}</span>
+            <div class="hd-metric-icon">📅</div>
+        </div>
+        <div class="hd-metric-val" style="color:#f59e0b;">{{ __('messages.july_short') }}</div>
+        <div class="hd-metric-trend">{{ __('messages.recalibration_trend') }}</div>
+    </div>
+</div>
+
+{{-- ══ 4. MAIN DUAL COLUMN CONTENT SYSTEM ══ --}}
+<div class="hd-layout-grid">
+    
+    {{-- LEFT COLUMN: ADVANCED BIOMARKERS & JOURNEY --}}
+    <div>
+        {{-- Biomarkers Evaluation Card --}}
+        <div class="hd-main-card">
+            <div class="hd-card-header-v5">
+                <h3 class="hd-card-title-v5"><i class="fa-solid fa-heart-pulse"></i> {{ __('messages.biomarker_analysis') }}</h3>
+                <span class="hd-card-tag">{{ __('messages.latest_sample_panel') }}</span>
             </div>
-            <div class="hd-metric-val" style="color:var(--accent);font-size:42px;text-shadow:0 0 30px rgba(99,102,241,0.4);">84</div>
-            <div class="hd-metric-trend" style="color:#10b981;"><i class="fa-solid fa-arrow-trend-up"></i> +5 points vs last panel — you're trending younger</div>
+
+            {{-- Actionable Core Insights --}}
+            <div class="hd-insight-stripe">
+                <i class="fa-solid fa-circle-info" style="color:#f59e0b;"></i>
+                <p><strong>{{ __('messages.action_recommended') }}:</strong> {{ __('messages.ldl_insight_text') }}</p>
+            </div>
+            <div class="hd-insight-stripe green-mode">
+                <i class="fa-solid fa-shield-heart" style="color:#10b981;"></i>
+                <p><strong>{{ __('messages.looking_great') }}:</strong> {{ __('messages.glucose_testosterone_insight') }}</p>
+            </div>
+
+            {{-- Detailed Rows with Embedded Advice --}}
+            <div class="hd-bio-rows">
+                {{-- Item 1 --}}
+                <div class="hd-bio-row-v5">
+                    <div class="hd-avatar-box" style="color:#a855f7;">🧬</div>
+                    <div class="hd-bio-details">
+                        <div class="cat">{{ __('messages.cat_hormonal') }}</div>
+                        <div class="name">{{ __('messages.biomarker_testosterone') }}</div>
+                        <span class="guide">{{ __('messages.guide_testosterone') }}</span>
+                    </div>
+                    <div class="hd-bio-data">
+                        <div class="num">650 <unit>ng/dL</unit></div>
+                        <span class="hd-bio-status hd-st-opt">● {{ __('messages.status_optimal_baseline') }}</span>
+                    </div>
+                </div>
+
+                {{-- Item 2 --}}
+                <div class="hd-bio-row-v5">
+                    <div class="hd-avatar-box" style="color:#ef4444;">❤️</div>
+                    <div class="hd-bio-details">
+                        <div class="cat">{{ __('messages.cat_cardio') }}</div>
+                        <div class="name">{{ __('messages.biomarker_ldl') }}</div>
+                        <span class="guide" style="color:rgba(245,158,11,0.8);">{{ __('messages.guide_ldl') }}</span>
+                    </div>
+                    <div class="hd-bio-data">
+                        <div class="num" style="color:#f59e0b;">145 <unit>mg/dL</unit></div>
+                        <span class="hd-bio-status hd-st-high">● {{ __('messages.status_needs_attention') }}</span>
+                    </div>
+                </div>
+
+                {{-- Item 3 --}}
+                <div class="hd-bio-row-v5">
+                    <div class="hd-avatar-box" style="color:#3b82f6;">💧</div>
+                    <div class="hd-bio-details">
+                        <div class="cat">{{ __('messages.cat_metabolic') }}</div>
+                        <div class="name">{{ __('messages.biomarker_glucose') }}</div>
+                        <span class="guide">{{ __('messages.guide_glucose') }}</span>
+                    </div>
+                    <div class="hd-bio-data">
+                        <div class="num">88 <unit>mg/dL</unit></div>
+                        <span class="hd-bio-status hd-st-opt">● {{ __('messages.status_optimal_baseline') }}</span>
+                    </div>
+                </div>
+
+                {{-- Item 4 --}}
+                <div class="hd-bio-row-v5">
+                    <div class="hd-avatar-box" style="color:#f59e0b;">☀️</div>
+                    <div class="hd-bio-details">
+                        <div class="cat">{{ __('messages.cat_micronutrient') }}</div>
+                        <div class="name">{{ __('messages.biomarker_vit_d') }}</div>
+                        <span class="guide" style="color:rgba(245,158,11,0.8);">{{ __('messages.guide_vit_d') }}</span>
+                    </div>
+                    <div class="hd-bio-data">
+                        <div class="num" style="color:#f59e0b;">22 <unit>ng/mL</unit></div>
+                        <span class="hd-bio-status hd-st-low">● {{ __('messages.status_needs_attention') }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <a href="{{ route('user.reports.index') }}" class="hd-download-trigger">
+                <i class="fa-solid fa-file-lines"></i> {{ __('messages.download_longevity_report') }}
+            </a>
         </div>
 
-        <div class="hd-metric-box c-green">
-            <div class="hd-metric-head">
-                <span class="hd-metric-lbl">Biomarkers Validated</span>
-                <div class="hd-metric-icon">✅</div>
+        {{-- Clinical Timeline Journey --}}
+        <div class="hd-main-card">
+            <div class="hd-card-header-v5">
+                <h3 class="hd-card-title-v5"><i class="fa-solid fa-route"></i> {{ __('messages.health_journey_timeline') }}</h3>
             </div>
-            <div class="hd-metric-val" style="color:#10b981;">3 <span style="font-size:14px;color:var(--text-muted);font-weight:400;">/ 4</span></div>
-            <div class="hd-metric-trend"><i class="fa-solid fa-circle" style="font-size:6px;color:#f59e0b;vertical-align:middle;"></i> 1 marker needs a little focus</div>
-        </div>
-
-        <div class="hd-metric-box c-cyan">
-            <div class="hd-metric-head">
-                <span class="hd-metric-lbl">Registered Kits</span>
-                <div class="hd-metric-icon">🧪</div>
+            <div class="hd-clean-timeline">
+                <div class="hd-timeline-node">
+                    <div class="hd-timeline-marker" style="background:#10b981;"></div>
+                    <div class="hd-node-date">{{ __('messages.timeline_date_1') }}</div>
+                    <div class="hd-node-title">{{ __('messages.timeline_desc_1') }}</div>
+                    <span class="hd-node-badge">{{ __('messages.batch_id', ['id' => 'N/H-8291-952G']) }}</span>
+                </div>
+                <div class="hd-timeline-node">
+                    <div class="hd-timeline-marker" style="background:var(--accent);"></div>
+                    <div class="hd-node-date">{{ __('messages.timeline_date_2') }}</div>
+                    <div class="hd-node-title">{{ __('messages.timeline_desc_2') }}</div>
+                    <span class="hd-node-badge">{{ __('messages.batch_id', ['id' => 'N/H-9120-450L']) }}</span>
+                </div>
             </div>
-            <div class="hd-metric-val" style="color:#38bdf8;">2</div>
-            <div class="hd-metric-trend">1 active transit, 1 archive package</div>
-        </div>
-
-        <div class="hd-metric-box c-amber">
-            <div class="hd-metric-head">
-                <span class="hd-metric-lbl">Next Recalibration</span>
-                <div class="hd-metric-icon">📅</div>
-            </div>
-            <div class="hd-metric-val" style="color:#f59e0b;">Jul</div>
-            <div class="hd-metric-trend">Target optimal retest timeline</div>
         </div>
     </div>
 
-    {{-- ══ 4. MAIN DUAL COLUMN CONTENT SYSTEM ══ --}}
-    <div class="hd-layout-grid">
-        
-        {{-- LEFT COLUMN: ADVANCED BIOMARKERS & JOURNEY --}}
-        <div>
-            {{-- Biomarkers Evaluation Card --}}
-            <div class="hd-main-card">
-                <div class="hd-card-header-v5">
-                    <h3 class="hd-card-title-v5"><i class="fa-solid fa-heart-pulse"></i> Biomarker Analysis</h3>
-                    <span class="hd-card-tag">Latest Sample Panel</span>
-                </div>
-
-                {{-- Actionable Core Insights --}}
-                <div class="hd-insight-stripe">
-                    <i class="fa-solid fa-circle-info" style="color:#f59e0b;"></i>
-                    <p><strong>Action Recommended:</strong> Your LDL Cholesterol has risen 8% above your personal baseline. A small dietary adjustment now can make a meaningful difference.</p>
-                </div>
-                <div class="hd-insight-stripe green-mode">
-                    <i class="fa-solid fa-shield-heart" style="color:#10b981;"></i>
-                    <p><strong>Looking Great:</strong> Fasting Glucose and Testosterone are showing peak stability over the past 90 days — keep it up!</p>
-                </div>
-
-                {{-- Detailed Rows with Embedded Advice --}}
-                <div class="hd-bio-rows">
-                    {{-- Item 1 --}}
-                    <div class="hd-bio-row-v5">
-                        <div class="hd-avatar-box" style="color:#a855f7;">🧬</div>
-                        <div class="hd-bio-details">
-                            <div class="cat">Hormonal Profile</div>
-                            <div class="name">Total Testosterone</div>
-                            <span class="guide">Maintains peak muscle mass, cellular focus, and metabolic driving rate.</span>
-                        </div>
-                        <div class="hd-bio-data">
-                            <div class="num">650 <unit>ng/dL</unit></div>
-                            <span class="hd-bio-status hd-st-opt">● Optimal Baseline</span>
-                        </div>
-                    </div>
-
-                    {{-- Item 2 --}}
-                    <div class="hd-bio-row-v5">
-                        <div class="hd-avatar-box" style="color:#ef4444;">❤️</div>
-                        <div class="hd-bio-details">
-                            <div class="cat">Cardiovascular Matrix</div>
-                            <div class="name">LDL Cholesterol</div>
-                            <span class="guide" style="color:rgba(245,158,11,0.8);">Small win: reduce saturated fats and add more fiber to your daily meals — your heart will thank you.</span>
-                        </div>
-                        <div class="hd-bio-data">
-                            <div class="num" style="color:#f59e0b;">145 <unit>mg/dL</unit></div>
-                            <span class="hd-bio-status hd-st-high">● Needs Attention</span>
-                        </div>
-                    </div>
-
-                    {{-- Item 3 --}}
-                    <div class="hd-bio-row-v5">
-                        <div class="hd-avatar-box" style="color:#3b82f6;">💧</div>
-                        <div class="hd-bio-details">
-                            <div class="cat">Metabolic Efficiency</div>
-                            <div class="name">Fasting Glucose</div>
-                            <span class="guide">Peak insulin response metrics. Carbohydrate processing thresholds are healthy.</span>
-                        </div>
-                        <div class="hd-bio-data">
-                            <div class="num">88 <unit>mg/dL</unit></div>
-                            <span class="hd-bio-status hd-st-opt">● Optimal Baseline</span>
-                        </div>
-                    </div>
-
-                    {{-- Item 4 --}}
-                    <div class="hd-bio-row-v5">
-                        <div class="hd-avatar-box" style="color:#f59e0b;">☀️</div>
-                        <div class="hd-bio-details">
-                            <div class="cat">Micronutrient Profile</div>
-                            <div class="name">Vitamin D (25-Hydroxy)</div>
-                            <span class="guide" style="color:rgba(245,158,11,0.8);">Easy boost: 15 mins of morning sunlight or a simple Vitamin D supplement can lift your levels quickly.</span>
-                        </div>
-                        <div class="hd-bio-data">
-                            <div class="num" style="color:#f59e0b;">22 <unit>ng/mL</unit></div>
-                            <span class="hd-bio-status hd-st-low">● Needs Attention</span>
-                        </div>
-                    </div>
-                </div>
-
-                <a href="{{ route('user.reports.index') }}" class="hd-download-trigger">
-                    <i class="fa-solid fa-file-lines"></i> Download Your Longevity Report
-                </a>
+    {{-- RIGHT COLUMN: MANAGEMENT & PREFERENCES CONTROL PANEL --}}
+    <div>
+        {{-- Logistics Fulfillment Box --}}
+        <div class="hd-main-card">
+            <div class="hd-card-header-v5">
+                <h3 class="hd-card-title-v5"><i class="fa-solid fa-box"></i> {{ __('messages.kit_fulfillment_status') }}</h3>
             </div>
-
-            {{-- Clinical Timeline Journey --}}
-            <div class="hd-main-card">
-                <div class="hd-card-header-v5">
-                    <h3 class="hd-card-title-v5"><i class="fa-solid fa-route"></i> Health Journey Timeline</h3>
+            <div>
+                <div class="hd-group-item">
+                    <div class="hd-group-meta">
+                        <div class="title">{{ __('messages.kit_title', ['id' => 'N/H-8291-952G']) }}</div>
+                        <div class="sub">{{ __('messages.kit_desc_transit') }}</div>
+                    </div>
+                    <span style="font-size:11px; font-weight:700; color:#38bdf8; background:rgba(56,189,248,0.08); padding:4px 10px; border-radius:8px;">{{ __('messages.status_in_transit') }}</span>
                 </div>
-                <div class="hd-clean-timeline">
-                    <div class="hd-timeline-node">
-                        <div class="hd-timeline-marker" style="background:#10b981;"></div>
-                        <div class="hd-node-date">March 25, 2026</div>
-                        <div class="hd-node-title">Comprehensive biomarker validation successfully generated by laboratory experts.</div>
-                        <span class="hd-node-badge">Batch ID: #N/H-8291-952G</span>
+                <div class="hd-group-item" style="opacity:0.65;">
+                    <div class="hd-group-meta">
+                        <div class="title">{{ __('messages.kit_title', ['id' => 'N/H-9120-450L']) }}</div>
+                        <div class="sub">{{ __('messages.kit_desc_archived') }}</div>
                     </div>
-                    <div class="hd-timeline-node">
-                        <div class="hd-timeline-marker" style="background:var(--accent);"></div>
-                        <div class="hd-node-date">January 15, 2026</div>
-                        <div class="hd-node-title">Initial foundational health onboarding evaluation and panel tracking complete.</div>
-                        <span class="hd-node-badge">Batch ID: #N/H-9120-450L</span>
-                    </div>
+                    <span style="font-size:11px; font-weight:700; color:#10b981; background:rgba(16,185,129,0.08); padding:4px 10px; border-radius:8px;">{{ __('messages.status_archived') }}</span>
                 </div>
             </div>
         </div>
 
-        {{-- RIGHT COLUMN: MANAGEMENT & REPREFERENCES CONTROL PANEL --}}
-        <div>
-            {{-- Logistics Fulfillment Box --}}
-            <div class="hd-main-card">
-                <div class="hd-card-header-v5">
-                    <h3 class="hd-card-title-v5"><i class="fa-solid fa-box"></i> Kit Fulfillment Status</h3>
+        {{-- Integrated Control Preferences Panel --}}
+        <div class="hd-main-card">
+            <div class="hd-card-header-v5">
+                <h3 class="hd-card-title-v5"><i class="fa-solid fa-sliders"></i> {{ __('messages.control_center_settings') }}</h3>
+            </div>
+            <div>
+                <div class="hd-group-item">
+                    <div class="hd-group-meta">
+                        <div class="title">{{ __('messages.setting_email_reports') }}</div>
+                        <div class="sub">{{ __('messages.setting_email_reports_sub') }}</div>
+                    </div>
+                    <label class="hd-ios-switch">
+                        <input type="checkbox" checked>
+                        <span class="hd-ios-slider"></span>
+                    </label>
                 </div>
+                <div class="hd-group-item">
+                    <div class="hd-group-meta">
+                        <div class="title">{{ __('messages.setting_sms_notification') }}</div>
+                        <div class="sub">{{ __('messages.setting_sms_notification_sub') }}</div>
+                    </div>
+                    <label class="hd-ios-switch">
+                        <input type="checkbox" checked>
+                        <span class="hd-ios-slider"></span>
+                    </label>
+                </div>
+                <div class="hd-group-item">
+                    <div class="hd-group-meta">
+                        <div class="title">{{ __('messages.setting_smart_reminders') }}</div>
+                        <div class="sub">{{ __('messages.setting_smart_reminders_sub') }}</div>
+                    </div>
+                    <label class="hd-ios-switch">
+                        <input type="checkbox" checked>
+                        <span class="hd-ios-slider"></span>
+                    </label>
+                </div>
+
+                <div class="hd-group-item">
+                    <div class="hd-group-meta">
+                        <div class="title">{{ __('messages.setting_ai_insights') }}</div>
+                        <div class="sub">{{ __('messages.setting_ai_insights_sub') }}</div>
+                    </div>
+                    <label class="hd-ios-switch">
+                        <input type="checkbox">
+                        <span class="hd-ios-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        {{-- Scheduling Anchor --}}
+        <div class="hd-main-card" style="padding:24px;">
+            <div class="hd-retest-stripe">
+                <div class="hd-retest-badge-icon"><i class="fa-solid fa-calendar-plus"></i></div>
                 <div>
-                    <div class="hd-group-item">
-                        <div class="hd-group-meta">
-                            <div class="title">Kit N/H-8291-952G</div>
-                            <div class="sub">Inbound courier transit via partner network. Registered Apr 24, 2026.</div>
-                        </div>
-                        <span style="font-size:11px; font-weight:700; color:#38bdf8; background:rgba(56,189,248,0.08); padding:4px 10px; border-radius:8px;">In-Transit</span>
-                    </div>
-                    <div class="hd-group-item" style="opacity:0.65;">
-                        <div class="hd-group-meta">
-                            <div class="title">Kit N/H-9120-450L</div>
-                            <div class="sub">Evaluation completed. Secure analytical data successfully stored on Jan 15, 2026.</div>
-                        </div>
-                        <span style="font-size:11px; font-weight:700; color:#10b981; background:rgba(16,185,129,0.08); padding:4px 10px; border-radius:8px;">Archived</span>
-                    </div>
+                    <div class="title">{{ __('messages.schedule_next_retest') }}</div>
+                    <div class="sub">{{ __('messages.schedule_next_retest_sub') }}</div>
+                    <a href="#" class="hd-retest-action">{{ __('messages.initialize_scheduling') }}</a>
                 </div>
             </div>
-
-            {{-- Integrated Control Preferences Panel --}}
-            <div class="hd-main-card">
-                <div class="hd-card-header-v5">
-                    <h3 class="hd-card-title-v5"><i class="fa-solid fa-sliders"></i> Control Center & Settings</h3>
-                </div>
-                <div>
-                    {{-- <div class="hd-group-item">
-                        <div class="hd-group-meta">
-                            <div class="title">Anonymized Lab Sync</div>
-                            <div class="sub">Authorize end-to-end encrypted medical sync protocols.</div>
-                        </div>
-                        <label class="hd-ios-switch">
-                            <input type="checkbox" checked>
-                            <span class="hd-ios-slider"></span>
-                        </label>
-                    </div> --}}
-
-                    <div class="hd-group-item">
-                        <div class="hd-group-meta">
-                            <div class="title">Email Health Reports</div>
-                            <div class="sub">Receive complete documentation immediately when verified.</div>
-                        </div>
-                        <label class="hd-ios-switch">
-                            <input type="checkbox" checked>
-                            <span class="hd-ios-slider"></span>
-                        </label>
-                    </div>
-                    <div class="hd-group-item">
-                        <div class="hd-group-meta">
-                            <div class="title">SMS Notification</div>
-                            <div class="sub">Receive sms when complete your report.</div>
-                        </div>
-                        <label class="hd-ios-switch">
-                            <input type="checkbox" checked>
-                            <span class="hd-ios-slider"></span>
-                        </label>
-                    </div>
-                    <div class="hd-group-item">
-                        <div class="hd-group-meta">
-                            <div class="title">Biomarker Smart Reminders</div>
-                            <div class="sub">Notify your linked communications one calendar week before metrics expire.</div>
-                        </div>
-                        <label class="hd-ios-switch">
-                            <input type="checkbox" checked>
-                            <span class="hd-ios-slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="hd-group-item">
-                        <div class="hd-group-meta">
-                            <div class="title">AI Insights Stream</div>
-                            <div class="sub">Allow algorithmic updates for nutrition, lifestyle, and exercise routines.</div>
-                        </div>
-                        <label class="hd-ios-switch">
-                            <input type="checkbox">
-                            <span class="hd-ios-slider"></span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Scheduling Anchor --}}
-            <div class="hd-main-card" style="padding:24px;">
-                <div class="hd-retest-stripe">
-                    <div class="hd-retest-badge-icon"><i class="fa-solid fa-calendar-plus"></i></div>
-                    <div>
-                        <div class="title">Schedule Next Retest</div>
-                        <div class="sub">Maintain analytical consistency and monitor progression profiles every 90 days.</div>
-                        <a href="#" class="hd-retest-action">Initialize Scheduling</a>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Knowledge Accordions Base --}}
-            {{-- <div class="hd-main-card">
-                <div class="hd-card-header-v5">
-                    <h3 class="hd-card-title-v5"><i class="fa-solid fa-circle-question"></i> Knowledge & FAQ</h3>
-                </div>
-                <div style="display:flex; flex-direction:column;">
-                    <div class="hd-accordion-item">
-                        <button class="hd-accordion-btn" onclick="let b = this.nextElementSibling; b.style.display = b.style.display === 'block' ? 'none' : 'block';">
-                            <span>How do I activate my physical kit?</span>
-                            <i class="fa-solid fa-chevron-down"></i>
-                        </button>
-                        <div class="hd-accordion-body" style="display:none;">
-                            Navigate to the Quick Action card above or dedicated panel, and input the 8-character unique identity key found inside the box.
-                        </div>
-                    </div>
-
-                    <div class="hd-accordion-item">
-                        <button class="hd-accordion-btn" onclick="let b = this.nextElementSibling; b.style.display = b.style.display === 'block' ? 'none' : 'block';">
-                            <span>When will my finalized panel show?</span>
-                            <i class="fa-solid fa-chevron-down"></i>
-                        </button>
-                        <div class="hd-accordion-body" style="display:none;">
-                            Laboratory analysis requires between 2 to 5 standard processing business days from reception of sample vectors.
-                        </div>
-                    </div>
-
-                    <div class="hd-accordion-item">
-                        <button class="hd-accordion-btn" onclick="let b = this.nextElementSibling; b.style.display = b.style.display === 'block' ? 'none' : 'block';">
-                            <span>Is my personal data completely secure?</span>
-                            <i class="fa-solid fa-chevron-down"></i>
-                        </button>
-                        <div class="hd-accordion-body" style="display:none;">
-                            Absolutely. BioVue stores all physiological statistics behind banking-grade algorithmic tokenization systems to maintain privacy frameworks.
-                        </div>
-                    </div>
-                </div>
-            </div> --}}
         </div>
-
     </div>
+
 </div>
 
 @endsection

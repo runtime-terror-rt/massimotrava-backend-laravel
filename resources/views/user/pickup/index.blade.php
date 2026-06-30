@@ -349,7 +349,7 @@
             <div class="pu-form-row">
                 <div class="pu-form-group" style="margin-bottom:0">
                     <label class="pu-form-label">New Date</label>
-                    <input type="date" name="pickup_date" id="rescheduleDate" class="pu-form-input" min="{{ date('Y-m-d', strtotime('+1 day')) }}" required>
+                    <input type="date" name="pickup_date" value="pickup_date" id="rescheduleDate" class="pu-form-input" min="{{ date('Y-m-d', strtotime('+1 day')) }}" required>
                 </div>
                 <div class="pu-form-group" style="margin-bottom:0">
                     <label class="pu-form-label">Time Slot</label>
@@ -380,7 +380,9 @@
     }
     function openPickupRescheduleModal(id, date, slot) {
         var form = document.getElementById('rescheduleForm');
-        form.action = '/user/pickup/' + id + '/reschedule';
+        var url = "{{ route('user.pickup.reschedule', ':id') }}";
+        form.action = url.replace(':id', id); 
+        
         if (date) document.getElementById('rescheduleDate').value = date;
         if (slot) document.getElementById('rescheduleSlot').value = slot;
         document.getElementById('rescheduleModal').classList.add('open');

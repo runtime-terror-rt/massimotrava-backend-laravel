@@ -298,8 +298,8 @@
 
     {{-- Top bar --}}
     <div class="ai-topbar">
-        <div class="ai-title">Action Items</div>
-        <div class="ai-sub">Complete these steps to get the most out of your Vyralabs experience.</div>
+        <div class="ai-title">{{ __('messages.action_items') }}</div>
+        <div class="ai-sub">{{ __('messages.action_items_sub') }}</div>
     </div>
 
     @php
@@ -313,12 +313,12 @@
                 'color'     => '#22d3ee',
                 'bg'        => 'rgba(34,211,238,0.1)',
                 'border'    => 'rgba(34,211,238,0.15)',
-                'title'     => 'Activate your kit',
-                'desc'      => 'Register your home test kit to get started. Your kit ID can be found on the label inside your box.',
-                'time'      => '2 minutes',
-                'btn_label' => 'Activate',
+                'title'     => 'messages.step_activate_title',
+                'desc'      => 'messages.step_activate_desc',
+                'time'      => 'messages.time_2_mins',
+                'btn_label' => 'messages.btn_activate',
                 'btn_url'   => Route::has('user.kits.index') ? route('user.kits.index') : '#',
-                'done_label'=> 'Kit activated',
+                'done_label'=> 'messages.done_kit_activated',
                 'done'      => optional($user->kits())->exists() ?? false,
             ],
             [
@@ -328,13 +328,13 @@
                 'color'     => '#a78bfa',
                 'bg'        => 'rgba(167,139,250,0.1)',
                 'border'    => 'rgba(167,139,250,0.15)',
-                'title'     => 'View instructions',
-                'desc'      => 'Watch a short video to see how to use your lab kit correctly before collecting your sample.',
-                'time'      => '3 minutes',
-                'btn_label' => 'View',
+                'title'     => 'messages.step_instructions_title',
+                'desc'      => 'messages.step_instructions_desc',
+                'time'      => 'messages.time_3_mins',
+                'btn_label' => 'messages.btn_view',
                 'btn_url'   => Route::has('user.actionitem.instruction') ? route('user.actionitem.instruction') : '#',
-                'done_label'=> 'Instructions viewed',
-                'done' => (bool) $user->action_item_viewed,
+                'done_label'=> 'messages.done_instructions_viewed',
+                'done'      => (bool) $user->action_item_viewed,
             ],
             [
                 'key'       => 'health_profile',
@@ -343,12 +343,12 @@
                 'color'     => '#10b981',
                 'bg'        => 'rgba(16,185,129,0.1)',
                 'border'    => 'rgba(16,185,129,0.15)',
-                'title'     => 'Complete your health profile',
-                'desc'      => 'Answer a few questions to help us interpret your results more precisely.',
-                'time'      => '5 minutes',
-                'btn_label' => 'Start now',
+                'title'     => 'messages.step_profile_title',
+                'desc'      => 'messages.step_profile_desc',
+                'time'      => 'messages.time_5_mins',
+                'btn_label' => 'messages.btn_start_now',
                 'btn_url'   => Route::has('user.actionitem.helthprofile') ? route('user.actionitem.helthprofile') : '#',
-                'done_label'=> 'Profile completed',
+                'done_label'=> 'messages.done_profile_completed',
                 'done'      => !empty($user->health_profile),
             ],
             [
@@ -358,12 +358,12 @@
                 'color'     => '#f59e0b',
                 'bg'        => 'rgba(245,158,11,0.1)',
                 'border'    => 'rgba(245,158,11,0.15)',
-                'title'     => 'Complete your kit questionnaire',
-                'desc'      => 'Answer a few questions specific to your kit to help us interpret your results more precisely.',
-                'time'      => '5 minutes',
-                'btn_label' => 'Start now',
+                'title'     => 'messages.step_questionnaire_title',
+                'desc'      => 'messages.step_questionnaire_desc',
+                'time'      => 'messages.time_5_mins',
+                'btn_label' => 'messages.btn_start_now',
                 'btn_url'   => Route::has('user.actionitem.questionnaire') ? route('user.actionitem.questionnaire') : '#',
-                'done_label'=> 'Questionnaire done',
+                'done_label'=> 'messages.done_questionnaire_completed',
                 'done'      => !empty($user->kit_questionnaire),
             ],
             [
@@ -373,12 +373,12 @@
                 'color'     => '#06b6d4',
                 'bg'        => 'rgba(6,182,212,0.1)',
                 'border'    => 'rgba(6,182,212,0.15)',
-                'title'     => 'Schedule a pickup',
-                'desc'      => 'Book a courier to collect your sample at your preferred time slot.',
-                'time'      => '2 minutes',
-                'btn_label' => 'Schedule',
+                'title'     => 'messages.step_pickup_title',
+                'desc'      => 'messages.step_pickup_desc',
+                'time'      => 'messages.time_2_mins',
+                'btn_label' => 'messages.btn_schedule',
                 'btn_url'   => Route::has('user.pickup.index') ? route('user.pickup.index') : '#',
-                'done_label'=> 'Pickup scheduled',
+                'done_label'=> 'messages.done_pickup_scheduled',
                 'done'      => optional($user->pickupRequests())->whereIn('status',['scheduled','collected'])->exists() ?? false,
             ],
         ];
@@ -393,31 +393,31 @@
         <div class="ai-progress-left">
             <div class="ai-progress-title">
                 @if($completedSteps === $totalSteps)
-                    🎉 All steps completed!
+                    {{ __('messages.progress_all_completed') }}
                 @elseif($completedSteps === 0)
-                    Let's get you started
+                    {{ __('messages.progress_started') }}
                 @else
-                    You're making great progress
+                    {{ __('messages.progress_great') }}
                 @endif
             </div>
             <div class="ai-progress-sub">
                 @if($completedSteps === $totalSteps)
-                    Your sample is on its way to the lab. Results will be ready within 3–5 business days.
+                    {{ __('messages.progress_all_completed_sub') }}
                 @else
-                    Complete all {{ $totalSteps }} steps to get your results processed quickly.
+                    {{ __('messages.progress_incomplete_sub', ['total' => $totalSteps]) }}
                 @endif
             </div>
             <div class="ai-prog-bar-bg">
                 <div class="ai-prog-bar-fill" style="width:{{ $progressPct }}%"></div>
             </div>
             <div class="ai-prog-meta">
-                <span class="ai-prog-label">{{ $completedSteps }} of {{ $totalSteps }} steps completed</span>
+                <span class="ai-prog-label">{{ __('messages.steps_completed_meta', ['completed' => $completedSteps, 'total' => $totalSteps]) }}</span>
                 <span class="ai-prog-pct">{{ $progressPct }}%</span>
             </div>
         </div>
         <div class="ai-counter">
             <div class="ai-counter-num">{{ $completedSteps }}<span style="font-size:28px;opacity:.4">/{{ $totalSteps }}</span></div>
-            <div class="ai-counter-label">steps done</div>
+            <div class="ai-counter-label">{{ __('messages.steps_done') }}</div>
         </div>
     </div>
 
@@ -426,14 +426,14 @@
     <div class="ai-all-done">
         <div class="ai-all-done-icon"><i class="fa-solid fa-circle-check"></i></div>
         <div>
-            <div class="ai-all-done-title">All action items completed!</div>
-            <div class="ai-all-done-sub">Your kit has been collected and sent to the lab. You'll be notified when your results are ready.</div>
+            <div class="ai-all-done-title">{{ __('messages.banner_all_done_title') }}</div>
+            <div class="ai-all-done-sub">{{ __('messages.banner_all_done_sub') }}</div>
         </div>
     </div>
     @endif
 
     {{-- What to expect --}}
-    <div class="section-label"><i class="fa-regular fa-square-check"></i> What to expect</div>
+    <div class="section-label"><i class="fa-regular fa-square-check"></i> {{ __('messages.what_to_expect') }}</div>
 
     <div class="wte-grid">
         @php
@@ -441,29 +441,29 @@
             [
                 'num'   => 1,
                 'image' => 'images/action1.png',
-                'title' => 'Receive your kit',
-                'desc'  => 'You will receive your at-home kit typically within <strong>3–4 business days</strong> after ordering. You will receive a notification once your kit has shipped.',
+                'title' => 'messages.wte_step1_title',
+                'desc'  => 'messages.wte_step1_desc',
                 'link'  => null,
             ],
             [
                 'num'   => 2,
                 'image' => 'images/action2.png',
-                'title' => 'Complete at home',
-                'desc'  => 'Your lab kit will arrive with complete instructions. Watch the video at any time to see how it works.',
-                'link'  => ['label' => 'View Biomarkers', 'url' => Route::has('user.reports.index') ? route('user.reports.index') : '#'],
+                'title' => 'messages.wte_step2_title',
+                'desc'  => 'messages.wte_step2_desc',
+                'link'  => ['label' => 'messages.wte_step2_link', 'url' => Route::has('user.reports.index') ? route('user.reports.index') : '#'],
             ],
             [
                 'num'   => 3,
                 'image' => 'images/action3.png',
-                'title' => 'Ship your sample',
-                'desc'  => 'Your lab kit will include everything you need to easily ship your sample to be processed.',
+                'title' => 'messages.wte_step3_title',
+                'desc'  => 'messages.wte_step3_desc',
                 'link'  => null,
             ],
             [
                 'num'   => 4,
                 'image' => 'images/action4.png',
-                'title' => 'View your results',
-                'desc'  => 'Once you ship the kit back, please allow up to 4 days for results to be posted. You will receive a notification when your results are ready.',
+                'title' => 'messages.wte_step4_title',
+                'desc'  => 'messages.wte_step4_desc',
                 'link'  => null,
             ],
         ];
@@ -473,18 +473,18 @@
         <div class="wte-card">
             <div class="wte-img-placeholder" style="background:rgba(255,255,255,0.02); display: flex; align-items: center; justify-content: center; overflow: hidden;">
                 @if(!empty($wte['image']))
-                    <img src="{{ asset($wte['image']) }}" alt="{{ $wte['title'] }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="{{ asset($wte['image']) }}" alt="{{ __($wte['title']) }}" style="width: 100%; height: 100%; object-fit: cover;">
                 @else
                     <span style="font-size: 42px;">📦</span>
                 @endif
             </div>
             <div class="wte-body">
                 <div class="wte-num">{{ $wte['num'] }}</div>
-                <div class="wte-title">{{ $wte['title'] }}</div>
-                <div class="wte-desc">{!! $wte['desc'] !!}</div>
+                <div class="wte-title">{{ __($wte['title']) }}</div>
+                <div class="wte-desc">{!! __($wte['desc']) !!}</div>
                 @if($wte['link'])
                     <a href="{{ $wte['link']['url'] }}" class="wte-link">
-                        {{ $wte['link']['label'] }} <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px"></i>
+                        {{ __($wte['link']['label']) }} <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px"></i>
                     </a>
                 @endif
             </div>
@@ -493,7 +493,7 @@
     </div>
 
     {{-- Action steps --}}
-    <div class="section-label"><i class="fa-solid fa-bolt"></i> Your action steps</div>
+    <div class="section-label"><i class="fa-solid fa-bolt"></i> {{ __('messages.your_action_steps') }}</div>
 
     <div class="ai-steps-list">
         @foreach($steps as $step)
@@ -512,25 +512,21 @@
 
             {{-- Content --}}
             <div class="ai-step-content">
-                <div class="ai-step-title-main">{{ $step['title'] }}</div>
-                <div class="ai-step-desc-main">{{ $step['desc'] }}</div>
+                <div class="ai-step-title-main">{{ __($step['title']) }}</div>
+                <div class="ai-step-desc-main">{{ __($step['desc']) }}</div>
             </div>
 
             {{-- Right --}}
             <div class="ai-step-right">
                 @if(!$step['done'] && isset($step['time']))
                 <div class="ai-step-time">
-                    <i class="fa-regular fa-clock"></i> ~{{ $step['time'] }}
+                    <i class="fa-regular fa-clock"></i> ~{{ __($step['time']) }}
                 </div>
                 @endif
 
                 @if($step['done'])
                     <a href="{{ $step['btn_url'] }}" class="ai-step-btn">
-                        <i class="fa-solid fa-check"></i> {{ $step['done_label'] }}
-                    </a>
-                @else
-                    <a href="{{ $step['btn_url'] }}" class="ai-step-btn btn-primary-g">
-                        {{ $step['btn_label'] }} <i class="fa-solid fa-arrow-right"></i>
+                        <i class="fa-solid fa-check"></i> {{ __($step['done_label']) }}
                     </a>
                 @endif
             </div>

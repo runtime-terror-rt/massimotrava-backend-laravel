@@ -100,11 +100,11 @@ input:checked + .kq-opt-label .kq-opt-inner { transform:scale(1) }
 <div class="kq-page">
 
     <a href="{{ route('user.actionitem.index') }}" class="kq-back">
-        <i class="fa-solid fa-arrow-left"></i> Back to Action Items
+        <i class="fa-solid fa-arrow-left"></i> {{ __('messages.back_to_action_items') }}
     </a>
 
-    <div class="kq-title">Kit Questionnaire</div>
-    <div class="kq-sub">Answer 5 questions specific to your kit. This helps us interpret your results more accurately. (~5 minutes)</div>
+    <div class="kq-title">{{ __('messages.kq_title') }}</div>
+    <div class="kq-sub">{{ __('messages.kq_sub') }}</div>
 
     {{-- Progress --}}
     <div class="kq-prog-wrap">
@@ -128,17 +128,22 @@ input:checked + .kq-opt-label .kq-opt-inner { transform:scale(1) }
 
         {{-- Q1: Fasting --}}
         <div class="kq-card">
-            <div class="kq-q-num">Question 1 of 5</div>
-            <div class="kq-q-text">Were you fasting when you collected your sample?</div>
-            <div class="kq-q-hint">Fasting means no food or drink (except water) for at least 8 hours before collection.</div>
+            <div class="kq-q-num">{{ __('messages.kq_q1_num') }}</div>
+            <div class="kq-q-text">{{ __('messages.kq_q1_text') }}</div>
+            <div class="kq-q-hint">{{ __('messages.kq_q1_hint') }}</div>
             <div class="kq-opt-grid">
-                @foreach(['Yes, I was fasting (8+ hours)' => 'yes', 'No, I was not fasting' => 'no', 'I fasted for less than 8 hours' => 'partial', 'Not sure' => 'unsure'] as $label => $val)
+                @foreach([
+                    'messages.kq_q1_opt_yes' => 'yes', 
+                    'messages.kq_q1_opt_no' => 'no', 
+                    'messages.kq_q1_opt_partial' => 'partial', 
+                    'messages.kq_q1_opt_unsure' => 'unsure'
+                ] as $labelKey => $val)
                 <div class="kq-opt-item">
                     <input type="radio" name="fasting_status" id="fast_{{ $loop->index }}" value="{{ $val }}"
                            {{ old('fasting_status', auth()->user()->kit_questionnaire['fasting_status'] ?? '') === $val ? 'checked' : '' }}>
                     <label for="fast_{{ $loop->index }}" class="kq-opt-label">
                         <span class="kq-opt-dot"><span class="kq-opt-inner"></span></span>
-                        {{ $label }}
+                        {{ __($labelKey) }}
                     </label>
                 </div>
                 @endforeach
@@ -147,17 +152,22 @@ input:checked + .kq-opt-label .kq-opt-inner { transform:scale(1) }
 
         {{-- Q2: Collection time --}}
         <div class="kq-card">
-            <div class="kq-q-num">Question 2 of 5</div>
-            <div class="kq-q-text">What time of day did you collect your sample?</div>
-            <div class="kq-q-hint">The time of collection can affect certain hormone and cortisol levels.</div>
+            <div class="kq-q-num">{{ __('messages.kq_q2_num') }}</div>
+            <div class="kq-q-text">{{ __('messages.kq_q2_text') }}</div>
+            <div class="kq-q-hint">{{ __('messages.kq_q2_hint') }}</div>
             <div class="kq-opt-grid">
-                @foreach(['Early morning (6–9 AM)' => 'early_morning', 'Morning (9 AM–12 PM)' => 'morning', 'Afternoon (12–5 PM)' => 'afternoon', 'Evening (5 PM+)' => 'evening'] as $label => $val)
+                @foreach([
+                    'messages.kq_q2_opt_early_morning' => 'early_morning', 
+                    'messages.kq_q2_opt_morning' => 'morning', 
+                    'messages.kq_q2_opt_afternoon' => 'afternoon', 
+                    'messages.kq_q2_opt_evening' => 'evening'
+                ] as $labelKey => $val)
                 <div class="kq-opt-item">
                     <input type="radio" name="collection_time" id="time_{{ $loop->index }}" value="{{ $val }}"
                            {{ old('collection_time', auth()->user()->kit_questionnaire['collection_time'] ?? '') === $val ? 'checked' : '' }}>
                     <label for="time_{{ $loop->index }}" class="kq-opt-label">
                         <span class="kq-opt-dot"><span class="kq-opt-inner"></span></span>
-                        {{ $label }}
+                        {{ __($labelKey) }}
                     </label>
                 </div>
                 @endforeach
@@ -166,25 +176,25 @@ input:checked + .kq-opt-label .kq-opt-inner { transform:scale(1) }
 
         {{-- Q3: Medications --}}
         <div class="kq-card">
-            <div class="kq-q-num">Question 3 of 5</div>
-            <div class="kq-q-text">Are you currently taking any medications or supplements?</div>
-            <div class="kq-q-hint">Some medications can influence biomarker readings. Select all that apply.</div>
+            <div class="kq-q-num">{{ __('messages.kq_q3_num') }}</div>
+            <div class="kq-q-text">{{ __('messages.kq_q3_text') }}</div>
+            <div class="kq-q-hint">{{ __('messages.kq_q3_hint') }}</div>
             <div class="kq-opt-grid">
                 @php $meds = [
-                    'Blood pressure medication' => 'bp_meds',
-                    'Cholesterol medication (statins)' => 'statins',
-                    'Thyroid medication' => 'thyroid_meds',
-                    'Hormone therapy / contraceptives' => 'hormones',
-                    'Vitamin/mineral supplements' => 'supplements',
-                    'None of the above' => 'none',
+                    'messages.kq_q3_opt_bp' => 'bp_meds',
+                    'messages.kq_q3_opt_statins' => 'statins',
+                    'messages.kq_q3_opt_thyroid' => 'thyroid_meds',
+                    'messages.kq_q3_opt_hormones' => 'hormones',
+                    'messages.kq_q3_opt_supplements' => 'supplements',
+                    'messages.kq_q3_opt_none' => 'none',
                 ] @endphp
-                @foreach($meds as $label => $val)
+                @foreach($meds as $labelKey => $val)
                 <div class="kq-opt-item">
                     <input type="checkbox" name="medications[]" id="med_{{ $loop->index }}" value="{{ $val }}"
                            {{ in_array($val, old('medications', auth()->user()->kit_questionnaire['medications'] ?? [])) ? 'checked' : '' }}>
                     <label for="med_{{ $loop->index }}" class="kq-opt-label">
                         <span class="kq-opt-dot kq-opt-dot-sq"><span class="kq-opt-inner kq-opt-inner-sq"></span></span>
-                        {{ $label }}
+                        {{ __($labelKey) }}
                     </label>
                 </div>
                 @endforeach
@@ -193,17 +203,22 @@ input:checked + .kq-opt-label .kq-opt-inner { transform:scale(1) }
 
         {{-- Q4: Recent illness --}}
         <div class="kq-card">
-            <div class="kq-q-num">Question 4 of 5</div>
-            <div class="kq-q-text">Have you had any recent illness or infection in the past 2 weeks?</div>
-            <div class="kq-q-hint">Illness can temporarily affect many biomarkers including white blood cell count and inflammatory markers.</div>
+            <div class="kq-q-num">{{ __('messages.kq_q4_num') }}</div>
+            <div class="kq-q-text">{{ __('messages.kq_q4_text') }}</div>
+            <div class="kq-q-hint">{{ __('messages.kq_q4_hint') }}</div>
             <div class="kq-opt-grid">
-                @foreach(['Yes, I was recently ill' => 'yes', 'No, I have been healthy' => 'no', 'I had mild symptoms (cold, allergies)' => 'mild', 'I am currently unwell' => 'current'] as $label => $val)
+                @foreach([
+                    'messages.kq_q4_opt_yes' => 'yes', 
+                    'messages.kq_q4_opt_no' => 'no', 
+                    'messages.kq_q4_opt_mild' => 'mild', 
+                    'messages.kq_q4_opt_current' => 'current'
+                ] as $labelKey => $val)
                 <div class="kq-opt-item">
                     <input type="radio" name="recent_illness" id="ill_{{ $loop->index }}" value="{{ $val }}"
                            {{ old('recent_illness', auth()->user()->kit_questionnaire['recent_illness'] ?? '') === $val ? 'checked' : '' }}>
                     <label for="ill_{{ $loop->index }}" class="kq-opt-label">
                         <span class="kq-opt-dot"><span class="kq-opt-inner"></span></span>
-                        {{ $label }}
+                        {{ __($labelKey) }}
                     </label>
                 </div>
                 @endforeach
@@ -212,11 +227,11 @@ input:checked + .kq-opt-label .kq-opt-inner { transform:scale(1) }
 
         {{-- Q5: Additional notes --}}
         <div class="kq-card">
-            <div class="kq-q-num">Question 5 of 5</div>
-            <div class="kq-q-text">Is there anything else you'd like our lab team to know?</div>
-            <div class="kq-q-hint">Optional — add any additional context that might help us interpret your results accurately.</div>
+            <div class="kq-q-num">{{ __('messages.kq_q5_num') }}</div>
+            <div class="kq-q-text">{{ __('messages.kq_q5_text') }}</div>
+            <div class="kq-q-hint">{{ __('messages.kq_q5_hint') }}</div>
             <textarea name="additional_notes" class="kq-textarea"
-                      placeholder="e.g. I had a strenuous workout the day before, I'm on a ketogenic diet, I donated blood recently…"
+                      placeholder="{{ __('messages.kq_q5_placeholder') }}"
                       oninput="kqUpdateProgress()">{{ old('additional_notes', auth()->user()->kit_questionnaire['additional_notes'] ?? '') }}</textarea>
         </div>
 
@@ -224,14 +239,14 @@ input:checked + .kq-opt-label .kq-opt-inner { transform:scale(1) }
         <div class="kq-footer">
             <div style="font-size:13px;color:#64748b">
                 <i class="fa-solid fa-lock" style="color:#a78bfa;margin-right:6px"></i>
-                Your responses are confidential and only used to improve result accuracy.
+                {{ __('messages.kq_footer_confidential') }}
             </div>
             <div style="display:flex;gap:10px">
                 <a href="{{ route('user.actionitem.index') }}" class="btn-back-kq">
-                    <i class="fa-solid fa-arrow-left"></i> Back
+                    <i class="fa-solid fa-arrow-left"></i> {{ __('messages.back') }}
                 </a>
                 <button type="submit" class="btn-submit-kq">
-                    <i class="fa-solid fa-check"></i> Submit Questionnaire
+                    <i class="fa-solid fa-check"></i> {{ __('messages.submit_questionnaire') }}
                 </button>
             </div>
         </div>

@@ -1426,6 +1426,40 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
 #vyrEcosystemArticleModal div::-webkit-scrollbar { width: 6px; }
 #vyrEcosystemArticleModal div::-webkit-scrollbar-track { background: #111622; }
 #vyrEcosystemArticleModal div::-webkit-scrollbar-thumb { background: #1c2333; border-radius: 10px; }
+
+{{-- ============================================================
+   PATCH: add this CSS inside your existing <style> block
+   (e.g. right after the .nav-toggle rule, or anywhere in
+   the NAVBAR section)
+   ============================================================ --}}
+
+/* Auth links shown inside mobile dropdown — hidden on desktop */
+.nav-links-auth{
+  display:none;
+}
+
+/* Desktop-only auth buttons in the top bar — hidden on mobile */
+.nav-auth-desktop{
+  display:inline-flex;
+}
+
+@media(max-width:768px){
+  .nav-auth-desktop{
+    display:none; /* hide top-bar Login/Register on mobile, they move into the dropdown */
+  }
+  .nav-links-auth{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    margin-top:16px;
+    padding-top:16px;
+    border-top:1px solid var(--border);
+  }
+  .nav-links-auth .btn{
+    width:100%;
+    justify-content:center;
+  }
+}
 </style>
 </head>
 <body>
@@ -1457,7 +1491,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
 
                 @if($latestCampaign->end_date)
                     <span style="color:#64748b; font-family:'Plus Jakarta Sans',sans-serif; font-size:10.5px; font-weight:600; flex-shrink:0;">
-                        (Ends: {{ \Carbon\Carbon::parse($latestCampaign->end_date)->format('M d') }})
+                        ({{ __('messages.campaign_ends') }}: {{ \Carbon\Carbon::parse($latestCampaign->end_date)->format('M d') }})
                     </span>
                 @endif
             </div>
@@ -1465,7 +1499,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
             @if($latestCampaign->action_url)
                 <a href="{{ $latestCampaign->action_url }}" target="_blank" class="vyr-announce-pill-btn"
                    style="background:rgba(34,211,238,0.1); border:1px solid rgba(34,211,238,0.25); color:#22d3ee; padding:2px 9px; font-family:'Plus Jakarta Sans',sans-serif; font-size:10px; font-weight:700; text-decoration:none; border-radius:20px; text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap; flex-shrink:0; display:inline-flex; align-items:center; gap:3px; line-height:16px;">
-                    Claim <i class="fa-solid fa-arrow-right" style="font-size:7.5px;"></i>
+                    {{ __('messages.btn_claim') }} <i class="fa-solid fa-arrow-right" style="font-size:7.5px;"></i>
                 </a>
             @endif
 
@@ -1489,18 +1523,69 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
   <div class="container nav-inner">
 
     <div class="logo">
-        <img src="{{ asset('images/logo.avif') }}" alt="Massimo Logo" 
+        <img src="{{ asset('images/logo.avif') }}" alt="{{ __('messages.logo_alt') }}" 
          style="position: absolute !important; top: 15px !important; left: 6% !important; transform: translateX(-50%) !important; height: 38px !important; width: auto !important; object-fit: contain !important; max-width: 85% !important;">
   
-    </div>    <div class="nav-links">
-      <a href="#how">What We Test <i class="fa-solid fa-chevron-down"></i></a>
-      <a href="#pricing">Pricing</a>
-      <a href="#about">About Us</a>
-      <a href="#partners">Creator Partnerships</a>
+    </div>    
+    <div class="nav-links">
+      <a href="#how">{{ __('messages.nav_what_we_test') }} <i class="fa-solid fa-chevron-down"></i></a>
+      <a href="#pricing">{{ __('messages.nav_pricing') }}</a>
+      <a href="#about">{{ __('messages.nav_about_us') }}</a>
+      <a href="#partners">{{ __('messages.nav_partnerships') }}</a>
+    
+      {{-- Mobile-only auth links: hidden on desktop via CSS, shown inside the dropdown on mobile --}}
+      <div class="nav-links-auth">
+        <a href="{{route('login')}}" class="btn btn-ghost">{{ __('messages.btn_login') }} <i class="fa-solid fa-arrow-right-to-bracket"></i></a>
+        <a href="{{route('register')}}" class="btn btn-primary">{{ __('messages.btn_get_started') }}</a>
+      </div>
     </div>
+    
     <div class="nav-actions">
-      <a href="{{route('login')}}" class="btn btn-ghost">Login <i class="fa-solid fa-arrow-right-to-bracket"></i></a>
-      <a href="{{route('register')}}" class="btn btn-primary">Get Vyralabs</a>
+      <div class="lang-dropdown" style="position: relative; z-index: 999999 !important;">
+        <button class="lang-btn" onclick="toggleLangMenu(event)"
+          style="background: var(--surface-hover, rgba(0, 0, 0, 0.04)); border: 1px solid var(--border, rgba(0, 0, 0, 0.08)); color: var(--text, #1e293b); padding: 6px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; transition: 0.2s;">
+    
+          @if(App::getLocale() === 'it')
+            <img src="https://flagcdn.com/16x12/it.png" width="16" height="12" alt="Italy Flag" style="border-radius: 2px; object-fit: cover;">
+            <span>IT</span>
+          @elseif(App::getLocale() === 'de')
+            <img src="https://flagcdn.com/16x12/de.png" width="16" height="12" alt="Germany Flag" style="border-radius: 2px; object-fit: cover;">
+            <span>DE</span>
+          @else
+            <img src="https://flagcdn.com/16x12/gb.png" width="16" height="12" alt="UK Flag" style="border-radius: 2px; object-fit: cover;">
+            <span>EN</span>
+          @endif
+    
+          <i class="fa-solid fa-chevron-down" style="font-size: 10px; color: var(--text-muted, #94a3b8); transition: transform 0.2s;" id="langChevron"></i>
+        </button>
+    
+        <ul class="custom-lang-menu" id="customLangMenu"
+          style="display: none; position: absolute; right: 0; top: calc(100% + 6px); min-width: 140px; background: var(--surface, #ffffff); border: 1px solid var(--border, #e2e8f0); border-radius: 8px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); padding: 4px; list-style: none; margin: 0; z-index: 999;">
+          <li>
+            <a href="{{ route('lang.switch', 'it') }}" style="color: {{ App::getLocale() === 'it' ? 'var(--accent, #6366f1)' : 'var(--text, #334155)' }}; font-size: 13px; padding: 8px 12px; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; background: {{ App::getLocale() === 'it' ? 'rgba(99, 102, 241, 0.08)' : 'transparent' }}; font-weight: {{ App::getLocale() === 'it' ? '600' : 'normal' }};">
+              <img src="https://flagcdn.com/16x12/it.png" width="16" height="12" alt="Italiano" style="border-radius: 1px; object-fit: cover;">
+              Italiano
+            </a>
+          </li>
+          <li>
+            <a href="{{ route('lang.switch', 'en') }}" style="color: {{ App::getLocale() === 'en' ? 'var(--accent, #6366f1)' : 'var(--text, #334155)' }}; font-size: 13px; padding: 8px 12px; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; background: {{ App::getLocale() === 'en' ? 'rgba(99, 102, 241, 0.08)' : 'transparent' }}; font-weight: {{ App::getLocale() === 'en' ? '600' : 'normal' }};">
+              <img src="https://flagcdn.com/16x12/gb.png" width="16" height="12" alt="English" style="border-radius: 1px; object-fit: cover;">
+              English
+            </a>
+          </li>
+          <li>
+            <a href="{{ route('lang.switch', 'de') }}" style="color: {{ App::getLocale() === 'de' ? 'var(--accent, #6366f1)' : 'var(--text, #334155)' }}; font-size: 13px; padding: 8px 12px; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; background: {{ App::getLocale() === 'de' ? 'rgba(99, 102, 241, 0.08)' : 'transparent' }}; font-weight: {{ App::getLocale() === 'de' ? '600' : 'normal' }};">
+              <img src="https://flagcdn.com/16x12/de.png" width="16" height="12" alt="Deutsch" style="border-radius: 1px; object-fit: cover;">
+              Deutsch
+            </a>
+          </li>
+        </ul>
+      </div>
+    
+      {{-- Desktop-only auth links --}}
+      <a href="{{route('login')}}" class="btn btn-ghost nav-auth-desktop">{{ __('messages.btn_login') }} <i class="fa-solid fa-arrow-right-to-bracket"></i></a>
+      <a href="{{route('register')}}" class="btn btn-primary nav-auth-desktop">{{ __('messages.btn_get_started') }}</a>
+    
       <button class="nav-toggle"><i class="fa-solid fa-bars"></i></button>
     </div>
   </div>
@@ -1519,38 +1604,38 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
   <div class="container hero-grid">
     <div class="hero-copy">
       <div class="badge-row" style="animation:fadeUp .5s ease both">
-        <span class="badge"><i class="fa-solid fa-circle-check"></i> Clinical Accuracy Guarantee</span>
-        <span class="badge"><i class="fa-solid fa-shield-halved"></i> CLIA Certified &amp; CAP Accredited</span>
+        <span class="badge"><i class="fa-solid fa-circle-check"></i> {{ __('messages.hero_badge_accuracy') }}</span>
+        <span class="badge"><i class="fa-solid fa-shield-halved"></i> {{ __('messages.hero_badge_certified') }}</span>
       </div>
       <h1 style="animation:fadeUp .55s ease both .08s">
-        The World's Easiest<br><span class="grad">Performance Test</span>
+        {{ __('messages.hero_title_start') }}<br><span class="grad">{{ __('messages.hero_title_grad') }}</span>
       </h1>
-      <p style="animation:fadeUp .55s ease both .16s">Painless at-home blood testing built for creators, athletes, and anyone optimizing their body. Actionable results in less than 72 hours.</p>
+      <p style="animation:fadeUp .55s ease both .16s">{{ __('messages.hero_description') }}</p>
       <div class="hero-cta-row" style="animation:fadeUp .55s ease both .22s">
-        <a href="#pricing" class="btn btn-primary btn-lg">Try now with 20% off <span style="opacity:.65;font-style:italic;font-weight:500">risk free</span></a>
+        <a href="#pricing" class="btn btn-primary btn-lg">{{ __('messages.hero_btn_try_now') }} <span style="opacity:.65;font-style:italic;font-weight:500">{{ __('messages.hero_btn_risk_free') }}</span></a>
       </div>
       <div class="hero-trustline" style="animation:fadeUp .55s ease both .28s">
-        <div><i class="fa-solid fa-check"></i> HSA / FSA Eligible</div>
-        <div><i class="fa-solid fa-droplet"></i> Millions of results delivered worldwide</div>
-        <div><span class="stars">★★★★★</span>&nbsp; 4.8 / 5 from verified customers</div>
+        <div><i class="fa-solid fa-check"></i> {{ __('messages.trust_hsa_fsa') }}</div>
+        <div><i class="fa-solid fa-droplet"></i> {{ __('messages.trust_millions_delivered') }}</div>
+        <div><span class="stars">★★★★★</span>&nbsp; {{ __('messages.trust_rating') }}</div>
       </div>
       <div class="trust-strip" style="animation:fadeUp .55s ease both .36s">
-        <div class="trust-item"><i class="fa-solid fa-shield-halved"></i> HIPAA Aligned</div>
-        <div class="trust-item"><i class="fa-solid fa-globe"></i> CLIA Certified</div>
-        <div class="trust-item"><i class="fa-solid fa-award"></i> CAP Accredited</div>
-        <div class="trust-item"><i class="fa-solid fa-location-dot"></i> FDA Cleared</div>
+        <div class="trust-item"><i class="fa-solid fa-shield-halved"></i> {{ __('messages.strip_hipaa') }}</div>
+        <div class="trust-item"><i class="fa-solid fa-globe"></i> {{ __('messages.strip_clia') }}</div>
+        <div class="trust-item"><i class="fa-solid fa-award"></i> {{ __('messages.strip_cap') }}</div>
+        <div class="trust-item"><i class="fa-solid fa-location-dot"></i> {{ __('messages.strip_fda') }}</div>
       </div>
     </div>
 
     <div class="hero-visual" style="animation:fadeUp .7s ease both .1s">
-      <div class="float-card float-1"><i class="fa-solid fa-shield"></i> Results in 72hrs</div>
-      <div class="float-card float-2"><i class="fa-solid fa-droplet"></i> Painless · 1ml sample</div>
+      <div class="float-card float-1"><i class="fa-solid fa-shield"></i> {{ __('messages.float_results_time') }}</div>
+      <div class="float-card float-2"><i class="fa-solid fa-droplet"></i> {{ __('messages.float_sample_type') }}</div>
       <div class="sphere-wrap">
         <div class="sphere-ring ring-1"></div>
         <div class="sphere-ring ring-2"></div>
         <div class="sphere-ring ring-3"></div>
         <div class="orb-orbit"><div class="orb-dot"></div></div>
-        <div class="sphere-core">vyralabs</div>
+        <div class="sphere-core">{{ __('messages.sphere_core_text') }}</div>
       </div>
     </div>
   </div>
@@ -1560,32 +1645,32 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
 <section class="how-section" id="how">
   <div class="container how-grid">
     <div class="how-visual" data-reveal>
-      <div class="how-visual-orb">vyralabs</div>
+      <div class="how-visual-orb">{{ __('messages.sphere_core_text') }}</div>
     </div>
     <div class="how-steps">
-      <div class="section-eyebrow">How it works</div>
+      <div class="section-eyebrow">{{ __('messages.how_eyebrow') }}</div>
       <div class="how-step" data-reveal>
         <div class="how-num">1</div>
         <div class="how-step-body">
-          <div class="tag">Painless</div>
-          <h3>At-Home Test</h3>
-          <p>A single, near-painless finger prick collects everything we need — no needles, no lab visits, no appointments.</p>
+          <div class="tag">{{ __('messages.how_step1_tag') }}</div>
+          <h3>{{ __('messages.how_step1_title') }}</h3>
+          <p>{{ __('messages.how_step1_desc') }}</p>
         </div>
       </div>
       <div class="how-step" data-reveal delay-1>
         <div class="how-num">2</div>
         <div class="how-step-body">
-          <div class="tag">Free</div>
-          <h3>Send or Get Picked Up</h3>
-          <p>Drop your kit in any mailbox or schedule a free pickup from your home — whichever fits your schedule.</p>
+          <div class="tag">{{ __('messages.how_step2_tag') }}</div>
+          <h3>{{ __('messages.how_step2_title') }}</h3>
+          <p>{{ __('messages.how_step2_desc') }}</p>
         </div>
       </div>
       <div class="how-step" data-reveal delay-2>
         <div class="how-num">3</div>
         <div class="how-step-body">
-          <div class="tag">Results within</div>
-          <h3>3 Days</h3>
-          <p>Get clinically validated results and personalized, AI-powered insights delivered straight to your dashboard.</p>
+          <div class="tag">{{ __('messages.how_step3_tag') }}</div>
+          <h3>{{ __('messages.how_step3_title') }}</h3>
+          <p>{{ __('messages.how_step3_desc') }}</p>
         </div>
       </div>
     </div>
@@ -1596,12 +1681,12 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
 <section class="compare-section">
   <div class="container compare-grid">
     <div data-reveal>
-      <div class="section-eyebrow">Clinical results, a fraction of the blood</div>
-      <h2 class="section-title">Clinical results with a <strong>tenth</strong> of the blood</h2>
-      <p class="section-sub">Traditional labs need a full vial draw across multiple tubes. Vyralabs gets the same clinical-grade insight from a single 1ml sample — no needles, no clinic, no waiting room.</p>
+      <div class="section-eyebrow">{{ __('messages.compare_eyebrow') }}</div>
+      <h2 class="section-title">{{ __('messages.compare_title_start') }} <strong>{{ __('messages.compare_title_strong') }}</strong> {{ __('messages.compare_title_end') }}</h2>
+      <p class="section-sub">{{ __('messages.compare_description') }}</p>
     </div>
     <div class="compare-img-wrap" data-reveal delay-1>
-      <img src="images/bloodtube.png" alt="Blood tube comparison" style="max-width:340px;border-radius:var(--r);filter:drop-shadow(0 0 30px rgba(34,211,238,.15))">
+      <img src="images/bloodtube.png" alt="{{ __('messages.compare_img_alt') }}" style="max-width:340px;border-radius:var(--r);filter:drop-shadow(0 0 30px rgba(34,211,238,.15))">
     </div>
   </div>
 </section>
@@ -1610,21 +1695,21 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
 <section class="insights-section" id="insights">
   <div class="container">
     <div class="insights-head" data-reveal>
-      <h2>Monthly testing for more<br>personalized insights.</h2>
-      <p>Your AI-powered dashboard surfaces real trends, so the insights you get actually reflect your goals — and adapt over time.</p>
+      <h2>{{ __('messages.insights_title_start') }}<br>{{ __('messages.insights_title_end') }}</h2>
+      <p>{{ __('messages.insights_description') }}</p>
     </div>
 
     <div class="insights-cards-grid">
       <!-- Photo -->
       <div class="i-card photo-card" data-reveal>
-        <img src="images/1.webp" alt="Athlete">
+        <img src="images/1.webp" alt="{{ __('messages.insights_athlete_alt') }}">
       </div>
 
       <!-- Ferritin trend -->
       <div class="i-card" data-reveal delay-1>
         <div class="ic-header">
-          <span class="ic-title">Ferritin</span>
-          <span class="ic-badge cyan">Optimal</span>
+          <span class="ic-title">{{ __('messages.biomarker_ferritin') }}</span>
+          <span class="ic-badge cyan">{{ __('messages.badge_optimal') }}</span>
         </div>
         <div class="ferritin-mini-chart">
           <svg viewBox="0 0 200 70" preserveAspectRatio="none">
@@ -1645,17 +1730,23 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
             <circle cx="200" cy="14" r="3.5" fill="#22d3ee" filter="url(#glow)"/>
           </svg>
         </div>
-        <div class="chart-months"><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span></div>
+        <div class="chart-months">
+            <span>{{ __('messages.month_short_aug') }}</span>
+            <span>{{ __('messages.month_short_sep') }}</span>
+            <span>{{ __('messages.month_short_oct') }}</span>
+            <span>{{ __('messages.month_short_nov') }}</span>
+            <span>{{ __('messages.month_short_dec') }}</span>
+        </div>
       </div>
 
       <!-- Score gauge -->
       <div class="i-card" data-reveal delay-2>
         <div class="ic-header">
           <div>
-            <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted2);margin-bottom:3px">vyralabs</div>
-            <span class="ic-title">Longevity Score</span>
+            <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted2);margin-bottom:3px">{{ __('messages.sphere_core_text') }}</div>
+            <span class="ic-title">{{ __('messages.score_longevity_title') }}</span>
           </div>
-          <span class="ic-badge amber">Optimal</span>
+          <span class="ic-badge amber">{{ __('messages.badge_optimal') }}</span>
         </div>
         <div class="gauge-wrap">
           <svg viewBox="0 0 160 160" style="transform:rotate(-90deg)">
@@ -1673,11 +1764,11 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
       <!-- Biomarkers -->
       <div class="i-card" data-reveal delay-3>
         <div class="ic-header">
-          <span class="ic-title">Biomarkers</span>
+          <span class="ic-title">{{ __('messages.biomarkers_title') }}</span>
           <span class="ic-badge green">+12%</span>
         </div>
-        <div style="font-size:16px;font-weight:600;color:#fff;margin-top:6px">Total Testosterone</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:3px">Vitality Indicator</div>
+        <div style="font-size:16px;font-weight:600;color:#fff;margin-top:6px">{{ __('messages.biomarker_testosterone') }}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px">{{ __('messages.indicator_vitality') }}</div>
         <div class="bm-bar-track">
           <div class="seg" style="width:25%;background:#f59e0b"></div>
           <div class="seg" style="width:35%;background:rgba(255,255,255,.06)"></div>
@@ -1688,35 +1779,16 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
 
       <!-- Insight text -->
       <div class="i-card" data-reveal delay-1>
-        <div class="insight-tag"><i class="fa-regular fa-clock"></i> INSIGHT FOR THIS MONTH</div>
+        <div class="insight-tag"><i class="fa-regular fa-clock"></i> {{ __('messages.insight_tag_month') }}</div>
         <p style="font-size:13.5px;color:var(--text);line-height:1.7;margin-bottom:8px">
-          Your ferritin fell by 22%, a trend often seen with increased training volume during marathon preparation.
+          {{ __('messages.insight_body_text_p1') }}
         </p>
         <p style="font-size:13px;color:var(--muted);line-height:1.7">
-          This dip usually appears when your body adjusts to marathon training. 
-          <span class="read-more">Read more</span>
+          {{ __('messages.insight_body_text_p2') }} 
+          <span class="read-more">{{ __('messages.link_read_more') }}</span>
         </p>
-        <div class="ask-chat"><i class="fa-regular fa-comment-dots"></i> Ask more in the chat</div>
+        <div class="ask-chat"><i class="fa-regular fa-comment-dots"></i> {{ __('messages.link_ask_chat') }}</div>
       </div>
-
-      <!-- Supplements -->
-      {{-- <div class="i-card" data-reveal delay-2>
-        <div class="supp-lbl">Supplements</div>
-        <div class="supp-row">
-          <span>Magnesium</span>
-          <span class="supp-freq freq-amber">2x Day</span>
-        </div>
-        <div class="supp-row">
-          <span>Vitamin D</span>
-          <span class="supp-freq freq-cyan">1x Week</span>
-        </div>
-        <div class="card-divider"></div>
-        <div class="supp-lbl">Goals</div>
-        <div class="supp-row">
-          <span>Marathon Training</span>
-          <span class="supp-freq freq-green"><i class="fa-solid fa-circle-check"></i></span>
-        </div>
-      </div> --}}
     </div>
   </div>
 </section>
@@ -1729,12 +1801,12 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
     <!-- Left Column: Title & Count -->
     <div class="bm-left-col" data-reveal>
       <div class="bm-title-wrap">
-        <h2 class="section-title"><i class="fa-solid fa-circle-check" style="color: var(--c3); font-size: 28px;"></i> <strong>One test</strong> optimized for daily impact.</h2>
-        <p class="section-sub">Track core markers for whole-body health.</p>
+        <h2 class="section-title"><i class="fa-solid fa-circle-check" style="color: var(--c3); font-size: 28px;"></i> <strong>{{ __('messages.moving_title_strong') }}</strong> {{ __('messages.moving_title_end') }}</h2>
+        <p class="section-sub">{{ __('messages.moving_sub_title') }}</p>
       </div>
       
       <div class="bm-counter-box">
-        <span class="bm-lbl">Biomarkers</span>
+        <span class="bm-lbl">{{ __('messages.biomarkers_title') }}</span>
         <h3 class="bm-count">25+</h3>
       </div>
     </div>
@@ -1744,7 +1816,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
       <div class="bm-card-wrapper">
         <!-- Background Device Image Placeolder -->
         <div class="bm-image-side">
-          <img src="images/3dbiomarker.jpg" alt="Testing Device" class="bm-main-img">
+          <img src="images/3dbiomarker.jpg" alt="{{ __('messages.device_img_alt') }}" class="bm-main-img">
           <!-- Gradient overlay matching the mockup vibe -->
           <div class="bm-img-overlay"></div>
         </div>
@@ -1755,28 +1827,28 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
             <div class="marquee-vertical-track">
               
               <!-- Original List -->
-              <div class="bm-item-row"><span>Vitamin D</span><span class="ic-badge cyan">Optimal</span></div>
-              <div class="bm-item-row"><span>Testosterone</span><span class="ic-badge cyan">Optimal</span></div>
-              <div class="bm-item-row"><span>TSH</span><span class="ic-badge amber">Out of Range</span></div>
-              <div class="bm-item-row"><span>Free T3</span><span class="ic-badge cyan">Optimal</span></div>
-              <div class="bm-item-row"><span>Creatinine</span><span class="ic-badge cyan">Optimal</span></div>
-              <div class="bm-item-row"><span>Estrogen</span><span class="ic-badge cyan">Optimal</span></div>
-              <div class="bm-item-row"><span>Ferritin</span><span class="ic-badge amber">Out of Range</span></div>
-              <div class="bm-item-row"><span>Progesterone</span><span class="ic-badge cyan">Optimal</span></div>
-              <div class="bm-item-row"><span>Cortisol</span><span class="ic-badge green">Normal</span></div>
-              <div class="bm-item-row"><span>HbA1c</span><span class="ic-badge green">Normal</span></div>
+              <div class="bm-item-row"><span>{{ __('messages.biomarker_vit_d') }}</span><span class="ic-badge cyan">{{ __('messages.badge_optimal') }}</span></div>
+              <div class="bm-item-row"><span>{{ __('messages.biomarker_testosterone') }}</span><span class="ic-badge cyan">{{ __('messages.badge_optimal') }}</span></div>
+              <div class="bm-item-row"><span>{{ __('messages.biomarker_tsh') }}</span><span class="ic-badge amber">{{ __('messages.badge_out_of_range') }}</span></div>
+              <div class="bm-item-row"><span>{{ __('messages.biomarker_free_t3') }}</span><span class="ic-badge cyan">{{ __('messages.badge_optimal') }}</span></div>
+              <div class="bm-item-row"><span>{{ __('messages.biomarker_creatinine') }}</span><span class="ic-badge cyan">{{ __('messages.badge_optimal') }}</span></div>
+              <div class="bm-item-row"><span>{{ __('messages.biomarker_estrogen') }}</span><span class="ic-badge cyan">{{ __('messages.badge_optimal') }}</span></div>
+              <div class="bm-item-row"><span>{{ __('messages.biomarker_ferritin') }}</span><span class="ic-badge amber">{{ __('messages.badge_out_of_range') }}</span></div>
+              <div class="bm-item-row"><span>{{ __('messages.biomarker_progesterone') }}</span><span class="ic-badge cyan">{{ __('messages.badge_optimal') }}</span></div>
+              <div class="bm-item-row"><span>{{ __('messages.biomarker_cortisol') }}</span><span class="ic-badge green">{{ __('messages.badge_normal') }}</span></div>
+              <div class="bm-item-row"><span>{{ __('messages.biomarker_hba1c') }}</span><span class="ic-badge green">{{ __('messages.badge_normal') }}</span></div>
 
               <!-- Duplicate List for Seamless Infinite Loop -->
-              <div class="bm-item-row"><span>Vitamin D</span><span class="ic-badge cyan">Optimal</span></div>
-              <div class="bm-item-row"><span>Testosterone</span><span class="ic-badge cyan">Optimal</span></div>
-              <div class="bm-item-row"><span>TSH</span><span class="ic-badge amber">Out of Range</span></div>
-              <div class="bm-item-row"><span>Free T3</span><span class="ic-badge cyan">Optimal</span></div>
-              <div class="bm-item-row"><span>Creatinine</span><span class="ic-badge cyan">Optimal</span></div>
-              <div class="bm-item-row"><span>Estrogen</span><span class="ic-badge cyan">Optimal</span></div>
-              <div class="bm-item-row"><span>Ferritin</span><span class="ic-badge amber">Out of Range</span></div>
-              <div class="bm-item-row"><span>Progesterone</span><span class="ic-badge cyan">Optimal</span></div>
-              <div class="bm-item-row"><span>Cortisol</span><span class="ic-badge green">Normal</span></div>
-              <div class="bm-item-row"><span>HbA1c</span><span class="ic-badge green">Normal</span></div>
+              <div class="bm-item-row"><span>{{ __('messages.biomarker_vit_d') }}</span><span class="ic-badge cyan">{{ __('messages.badge_optimal') }}</span></div>
+              <div class="bm-item-row"><span>{{ __('messages.biomarker_testosterone') }}</span><span class="ic-badge cyan">{{ __('messages.badge_optimal') }}</span></div>
+              <div class="bm-item-row"><span>{{ __('messages.biomarker_tsh') }}</span><span class="ic-badge amber">{{ __('messages.badge_out_of_range') }}</span></div>
+              <div class="bm-item-row"><span>{{ __('messages.biomarker_free_t3') }}</span><span class="ic-badge cyan">{{ __('messages.badge_optimal') }}</span></div>
+              <div class="bm-item-row"><span>{{ __('messages.biomarker_creatinine') }}</span><span class="ic-badge cyan">{{ __('messages.badge_optimal') }}</span></div>
+              <div class="bm-item-row"><span>{{ __('messages.biomarker_estrogen') }}</span><span class="ic-badge cyan">{{ __('messages.badge_optimal') }}</span></div>
+              <div class="bm-item-row"><span>{{ __('messages.biomarker_ferritin') }}</span><span class="ic-badge amber">{{ __('messages.badge_out_of_range') }}</span></div>
+              <div class="bm-item-row"><span>{{ __('messages.biomarker_progesterone') }}</span><span class="ic-badge cyan">{{ __('messages.badge_optimal') }}</span></div>
+              <div class="bm-item-row"><span>{{ __('messages.biomarker_cortisol') }}</span><span class="ic-badge green">{{ __('messages.badge_normal') }}</span></div>
+              <div class="bm-item-row"><span>{{ __('messages.biomarker_hba1c') }}</span><span class="ic-badge green">{{ __('messages.badge_normal') }}</span></div>
 
             </div>
           </div>
@@ -1787,7 +1859,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
     <!-- Right Column: View All CTA -->
     <div class="bm-right-col" data-reveal delay-2>
       <a href="#pricing" class="view-all-bm-btn">
-        <span>View All Biomarkers</span>
+        <span>{{ __('messages.btn_view_all_biomarkers') }}</span>
         <i class="fa-solid fa-arrow-up-right-from-square"></i>
       </a>
     </div>
@@ -1800,9 +1872,9 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
         
         <div class="vyr-stream-header-wrapper" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 45px; flex-wrap: wrap; gap: 20px;">
             <div class="vyr-header-left">
-                <div class="section-eyebrow" style="font-size: 11px; font-weight: 700; color: #22d3ee; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px;">INSIGHTS & GUIDES</div>
+                <div class="section-eyebrow" style="font-size: 11px; font-weight: 700; color: #22d3ee; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px;">{{ __('messages.stream_eyebrow') }}</div>
                 <h2 class="section-title" style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 32px; font-weight: 700; color: #fff; margin: 0; line-height: 1.2;">
-                    Optimize Your <strong>Performance Stream</strong>
+                    {{ __('messages.stream_title_start') }} <strong>{{ __('messages.stream_title_strong') }}</strong>
                 </h2>
             </div>
             
@@ -1836,7 +1908,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
                                                 style="width:100%;height:100%;position:absolute;top:0;left:0;border:none;z-index:1;"
                                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                                 allowfullscreen>
-                                            </iframe>
+                                            </table>
                                             <div class="vyr-iframe-click-shield" style="position:absolute;inset:0;z-index:2;background:transparent;cursor:pointer;"></div>
                                         @else
                                             <img src="{{ asset($content->featured_image) }}" style="width: 100%; height: 100%; object-fit: cover;">
@@ -1884,11 +1956,11 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
 
                                     @if($content->type === 'post')
                                         <button type="button" class="vyr-hyperlink-node-btn vyr-article-trigger" style="color: #22d3ee; background: none; border: none; cursor: pointer;" data-article-title="{{ $content->title }}" data-article-body="{{ $content->body }}" data-article-date="{{ $content->published_at ? \Carbon\Carbon::parse($content->published_at)->format('M d, Y') : $content->created_at->format('M d, Y') }}">
-                                            Read Insights <i class="fa-solid fa-arrow-right" style="font-size: 11px;"></i>
+                                            {{ __('messages.stream_btn_read') }} <i class="fa-solid fa-arrow-right" style="font-size: 11px;"></i>
                                         </button>
                                     @else
                                         <button type="button" class="vyr-hyperlink-node-btn vyr-text-modal-trigger-btn" style="color: #a78bfa; background: none; border: none; cursor: pointer;" data-video-trigger data-stream-url="{{ $content->video_url }}">
-                                            Watch Stream <i class="fa-solid fa-circle-play" style="font-size: 12px;"></i>
+                                            {{ __('messages.stream_btn_watch') }} <i class="fa-solid fa-circle-play" style="font-size: 12px;"></i>
                                         </button>
                                     @endif
                                 </div>
@@ -1897,7 +1969,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
                     @empty
                         <div class="vyr-empty-state-fallback" style="width: 100%; text-align: center; padding: 60px; border: 1px dashed rgba(255,255,255,0.06); border-radius: 16px; color: #94a3b8;">
                             <i class="fa-solid fa-cubes-stacked" style="font-size: 32px; margin-bottom: 12px; opacity: 0.3;"></i>
-                            <p style="margin: 0; font-size: 14px;">No resource packages deployed yet.</p>
+                            <p style="margin: 0; font-size: 14px;">{{ __('messages.stream_empty_state') }}</p>
                         </div>
                     @endforelse
 
@@ -2517,6 +2589,29 @@ document.addEventListener("DOMContentLoaded", function () {
               });
           });
       });
+  });
+
+  function toggleLangMenu(event) {
+    event.stopPropagation();
+    const menu = document.getElementById('customLangMenu');
+    const chevron = document.getElementById('langChevron');
+    
+    if (menu.style.display === 'none' || menu.style.display === '') {
+      menu.style.display = 'block';
+      chevron.style.transform = 'rotate(180deg)';
+    } else {
+      menu.style.display = 'none';
+      chevron.style.transform = 'rotate(0deg)';
+    }
+  }
+
+  document.addEventListener('click', function() {
+    const menu = document.getElementById('customLangMenu');
+    const chevron = document.getElementById('langChevron');
+    if (menu) {
+      menu.style.display = 'none';
+      if(chevron) chevron.style.transform = 'rotate(0deg)';
+    }
   });
 </script>
 </body>

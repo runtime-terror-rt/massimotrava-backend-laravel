@@ -70,12 +70,20 @@
 
 @media(max-width:768px){.pd-grid{grid-template-columns:1fr}.pd-header{flex-direction:column;align-items:flex-start}}
 </style>
-
+@php
+    $statusMap = [
+        'pending'   => 'messages.status_pending',
+        'scheduled' => 'messages.status_scheduled',
+        'collected' => 'messages.status_collected',
+        'cancelled' => 'messages.status_cancelled',
+    ];
+    $currentStatusKey = $statusMap[$req->status] ?? 'messages.status_pending';
+@endphp
 <div class="pd">
 
     {{-- Back --}}
     <a href="{{ route('user.pickup.index') }}" class="pd-back">
-        <i class="fa-solid fa-arrow-left"></i> Back to My Requests
+        <i class="fa-solid fa-arrow-left"></i> {{ __('messages.back_to_my_requests') }}
     </a>
 
     {{-- Flash --}}
@@ -90,8 +98,8 @@
         <div class="pd-header-left">
             <div class="pd-kit-icon">{{ $req->kit_icon ?? '🧬' }}</div>
             <div>
-                <div class="pd-kit-name">{{ $req->kit_name ?? 'Test Kit' }}</div>
-                <div class="pd-kit-id">#KIT-{{ str_pad($req->id, 4, '0', STR_PAD_LEFT) }} · Submitted {{ $req->created_at->format('M d, Y') }}</div>
+                <div class="pd-kit-name">{{ $req->kit_name ?? __('messages.test_kit') }}</div>
+                <div class="pd-kit-id">#KIT-{{ str_pad($req->id, 4, '0', STR_PAD_LEFT) }} · {{ __('messages.submitted_on') }} {{ $req->created_at->format('M d, Y') }}</div>
             </div>
         </div>
         @php
@@ -103,14 +111,20 @@
                 default     => 'b-pending',
             };
         @endphp
-        <span class="badge {{ $badgeClass }}">● {{ ucfirst($req->status) }}</span>
+        <span class="badge {{ $badgeClass }}">● {{ __($currentStatusKey) }}</span>
     </div>
 
     {{-- Scheduled info alert --}}
     @if($req->status === 'scheduled' && $req->pickup_date)
     <div class="info-alert">
         <i class="fa-solid fa-calendar-check"></i>
-        <span>Your pickup is scheduled for <strong style="color:#e2e8f0">{{ \Carbon\Carbon::parse($req->pickup_date)->format('D, M d, Y') }}</strong> between <strong style="color:#e2e8f0">{{ $req->time_slot }}</strong>. Please ensure someone is available at the address.</span>
+        <span>
+            {{ __('messages.pickup_scheduled_alert_prefix') }} 
+            <strong style="color:#e2e8f0">{{ \Carbon\Carbon::parse($req->pickup_date)->format('D, M d, Y') }}</strong> 
+            {{ __('messages.pickup_scheduled_alert_middle') }} 
+            <strong style="color:#e2e8f0">{{ $req->time_slot }}</strong>. 
+            {{ __('messages.pickup_scheduled_alert_suffix') }}
+        </span>
     </div>
     @endif
 
@@ -119,30 +133,30 @@
 
         {{-- Pickup Details --}}
         <div class="pd-card">
-            <div class="pd-card-title"><i class="fa-solid fa-box"></i> Pickup Details</div>
+            <div class="pd-card-title"><i class="fa-solid fa-box"></i> {{ __('messages.pickup_details') }}</div>
             <div class="info-row">
-                <span class="info-label">Kit Type</span>
+                <span class="info-label">{{ __('messages.kit_type') }}</span>
                 <span class="info-val">{{ $req->kit_name ?? '—' }}</span>
             </div>
             <div class="info-row">
-                <span class="info-label">Pickup Date</span>
+                <span class="info-label">{{ __('messages.pickup_date') }}</span>
                 <span class="info-val">{{ $req->pickup_date ? \Carbon\Carbon::parse($req->pickup_date)->format('D, M d, Y') : '—' }}</span>
             </div>
             <div class="info-row">
-                <span class="info-label">Time Slot</span>
+                <span class="info-label">{{ __('messages.time_slot') }}</span>
                 <span class="info-val">{{ $req->time_slot ?? '—' }}</span>
             </div>
             <div class="info-row">
-                <span class="info-label">Address</span>
+                <span class="info-label">{{ __('messages.address') }}</span>
                 <span class="info-val" style="max-width:220px">{{ $req->address ?? '—' }}</span>
             </div>
             <div class="info-row">
-                <span class="info-label">Submitted</span>
+                <span class="info-label">{{ __('messages.submitted') }}</span>
                 <span class="info-val">{{ $req->created_at->format('M d, Y · h:i A') }}</span>
             </div>
             @if($req->updated_at && $req->updated_at->ne($req->created_at))
             <div class="info-row">
-                <span class="info-label">Last Updated</span>
+                <span class="info-label">{{ __('messages.last_updated') }}</span>
                 <span class="info-val">{{ $req->updated_at->format('M d, Y · h:i A') }}</span>
             </div>
             @endif
@@ -150,12 +164,12 @@
 
         {{-- Timeline --}}
         <div class="pd-card">
-            <div class="pd-card-title"><i class="fa-solid fa-timeline"></i> Request Timeline</div>
+            <div class="pd-card-title"><i class="fa-solid fa-timeline"></i> {{ __('messages.request_timeline') }}</div>
             <ul class="timeline">
                 <li class="tl-item">
                     <div class="tl-dot tl-dot-cyan"><i class="fa-solid fa-plus"></i></div>
                     <div>
-                        <div class="tl-title">Request Submitted</div>
+                        <div class="tl-title">{{ __('messages.tl_submitted_title') }}</div>
                         <div class="tl-sub">{{ $req->created_at->format('M d, Y · h:i A') }}</div>
                     </div>
                 </li>
@@ -165,13 +179,13 @@
                     @if($req->status === 'cancelled')
                         <div class="tl-dot tl-dot-red"><i class="fa-solid fa-xmark"></i></div>
                         <div>
-                            <div class="tl-title">Request Cancelled</div>
+                            <div class="tl-title">{{ __('messages.tl_cancelled_title') }}</div>
                             <div class="tl-sub">{{ $req->updated_at->format('M d, Y · h:i A') }}</div>
                         </div>
                     @else
                         <div class="tl-dot tl-dot-violet"><i class="fa-solid fa-calendar-check"></i></div>
                         <div>
-                            <div class="tl-title">Pickup Scheduled</div>
+                            <div class="tl-title">{{ __('messages.tl_scheduled_title') }}</div>
                             <div class="tl-sub">
                                 {{ $req->pickup_date ? \Carbon\Carbon::parse($req->pickup_date)->format('M d, Y') : '' }}
                                 @if($req->time_slot) · {{ $req->time_slot }} @endif
@@ -185,8 +199,8 @@
                 <li class="tl-item">
                     <div class="tl-dot tl-dot-green"><i class="fa-solid fa-circle-check"></i></div>
                     <div>
-                        <div class="tl-title">Sample Collected ✓</div>
-                        <div class="tl-sub">Your kit has been sent to the laboratory</div>
+                        <div class="tl-title">{{ __('messages.tl_collected_title') }}</div>
+                        <div class="tl-sub">{{ __('messages.tl_collected_sub') }}</div>
                     </div>
                 </li>
                 @endif
@@ -195,8 +209,8 @@
                 <li class="tl-item">
                     <div class="tl-dot tl-dot-gray"><i class="fa-solid fa-flask"></i></div>
                     <div>
-                        <div class="tl-title" style="color:#475569">Awaiting Collection</div>
-                        <div class="tl-sub">Courier will collect your sample</div>
+                        <div class="tl-title" style="color:#475569">{{ __('messages.tl_awaiting_title') }}</div>
+                        <div class="tl-sub">{{ __('messages.tl_awaiting_sub') }}</div>
                     </div>
                 </li>
                 @endif
@@ -205,11 +219,11 @@
 
         {{-- Notes --}}
         <div class="pd-card">
-            <div class="pd-card-title"><i class="fa-solid fa-note-sticky"></i> Your Notes</div>
-            <div class="notes-box">{{ $req->notes ?? 'No special instructions provided.' }}</div>
+            <div class="pd-card-title"><i class="fa-solid fa-note-sticky"></i> {{ __('messages.your_notes') }}</div>
+            <div class="notes-box">{{ $req->notes ?? __('messages.no_special_instructions') }}</div>
 
             @if($req->admin_notes)
-            <div class="pd-card-title" style="margin-top:20px"><i class="fa-solid fa-headset"></i> Message from Team</div>
+            <div class="pd-card-title" style="margin-top:20px"><i class="fa-solid fa-headset"></i> {{ __('messages.message_from_team') }}</div>
             <div class="notes-box" style="border-color:rgba(34,211,238,0.15);background:rgba(34,211,238,0.03);color:#e2e8f0">
                 {{ $req->admin_notes }}
             </div>
@@ -218,15 +232,15 @@
 
         {{-- What's Next --}}
         <div class="pd-card">
-            <div class="pd-card-title"><i class="fa-solid fa-circle-info"></i> What's Next?</div>
+            <div class="pd-card-title"><i class="fa-solid fa-circle-info"></i> {{ __('messages.whats_next_title') }}</div>
             @if($req->status === 'pending')
-                <p style="font-size:13px;color:#94a3b8;line-height:1.7;margin:0">Your request is being reviewed. Our team will schedule a courier for your preferred time slot shortly. You'll be able to see the confirmed date here once scheduled.</p>
+                <p style="font-size:13px;color:#94a3b8;line-height:1.7;margin:0">{{ __('messages.wn_pending_text') }}</p>
             @elseif($req->status === 'scheduled')
-                <p style="font-size:13px;color:#94a3b8;line-height:1.7;margin:0">A courier has been assigned for your pickup. Please ensure someone is available at your address during the selected time slot. Have your kit ready for collection.</p>
+                <p style="font-size:13px;color:#94a3b8;line-height:1.7;margin:0">{{ __('messages.wn_scheduled_text') }}</p>
             @elseif($req->status === 'collected')
-                <p style="font-size:13px;color:#94a3b8;line-height:1.7;margin:0">Your sample has been collected and sent to our laboratory. Results will be processed and made available in your dashboard. Processing typically takes 3–5 business days.</p>
+                <p style="font-size:13px;color:#94a3b8;line-height:1.7;margin:0">{{ __('messages.wn_collected_text') }}</p>
             @elseif($req->status === 'cancelled')
-                <p style="font-size:13px;color:#94a3b8;line-height:1.7;margin:0">This pickup request has been cancelled. If you'd like to schedule a new pickup, you can submit a new request from the Pickup Requests page.</p>
+                <p style="font-size:13px;color:#94a3b8;line-height:1.7;margin:0">{{ __('messages.wn_cancelled_text') }}</p>
             @endif
         </div>
 
@@ -237,16 +251,16 @@
     <div class="pd-actions">
         <div class="pd-actions-label">
             <i class="fa-solid fa-sliders" style="color:#22d3ee;margin-right:6px"></i>
-            Manage this request
+            {{ __('messages.manage_this_request') }}
         </div>
         <div class="pd-actions-btns">
             <button class="act-btn ab-violet" onclick="openUserReschedModal({{ $req->id }}, '{{ $req->pickup_date }}', '{{ $req->time_slot }}')">
-                <i class="fa-solid fa-calendar-pen"></i> Reschedule
+                <i class="fa-solid fa-calendar-pen"></i> {{ __('messages.reschedule') }}
             </button>
-            <form action="{{ route('user.pickup.cancel', $req->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this pickup request?')">
+            <form action="{{ route('user.pickup.cancel', $req->id) }}" method="POST" onsubmit="return confirm('{{ __('messages.cancel_pickup_confirm') }}')">
                 @csrf @method('PATCH')
                 <button type="submit" class="act-btn ab-danger">
-                    <i class="fa-solid fa-xmark"></i> Cancel Request
+                    <i class="fa-solid fa-xmark"></i> {{ __('messages.cancel_request') }}
                 </button>
             </form>
         </div>
@@ -254,68 +268,68 @@
     @endif
 
 </div>
-
 @endsection
 
 @push('modals')
-<style>
-.usr-det-overlay {
-    display:none;position:fixed;inset:0;width:100vw;height:100vh;
-    background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-    z-index:999999;align-items:center;justify-content:center;
-}
-.usr-det-overlay.open { display:flex }
-.usr-det-modal {
-    background:#111827;border:1px solid rgba(255,255,255,0.08);border-radius:20px;
-    padding:28px 32px;width:100%;max-width:460px;position:relative;
-    box-shadow:0 25px 60px rgba(0,0,0,0.6);
-}
-.usr-det-title { font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#fff;margin-bottom:20px }
-.usr-det-close { position:absolute;top:16px;right:16px;background:none;border:none;color:#64748b;font-size:18px;cursor:pointer }
-.usr-det-close:hover { color:#f1f5f9 }
-.usr-det-fg { margin-bottom:18px }
-.usr-det-label { font-size:12px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;display:block }
-.usr-det-input { width:100%;padding:11px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#f1f5f9;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s }
-.usr-det-input:focus { border-color:rgba(34,211,238,0.4) }
-.usr-det-input option { background:#1e293b;color:#f1f5f9 }
-.usr-det-row { display:grid;grid-template-columns:1fr 1fr;gap:14px }
-.usr-det-footer { display:flex;justify-content:flex-end;gap:10px;margin-top:24px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.05) }
-.usr-det-cancel { padding:10px 20px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#94a3b8;font-size:13px;font-weight:600;cursor:pointer }
-.usr-det-submit { padding:10px 24px;border-radius:10px;border:none;background:linear-gradient(135deg,#10b981,#06b6d4);color:#000;font-size:13px;font-weight:800;cursor:pointer }
-</style>
+    <style>
+        .usr-det-overlay {
+            display:none;position:fixed;inset:0;width:100vw;height:100vh;
+            background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+            z-index:999999;align-items:center;justify-content:center;
+        }
+        .usr-det-overlay.open { display:flex }
+        .usr-det-modal {
+            background:#111827;border:1px solid rgba(255,255,255,0.08);border-radius:20px;
+            padding:28px 32px;width:100%;max-width:460px;position:relative;
+            box-shadow:0 25px 60px rgba(0,0,0,0.6);
+        }
+        .usr-det-title { font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#fff;margin-bottom:20px }
+        .usr-det-close { position:absolute;top:16px;right:16px;background:none;border:none;color:#64748b;font-size:18px;cursor:pointer }
+        .usr-det-close:hover { color:#f1f5f9 }
+        .usr-det-fg { margin-bottom:18px }
+        .usr-det-label { font-size:12px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;display:block }
+        .usr-det-input { width:100%;padding:11px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#f1f5f9;font-size:13.5px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s }
+        .usr-det-input:focus { border-color:rgba(34,211,238,0.4) }
+        .usr-det-input option { background:#1e293b;color:#f1f5f9 }
+        .usr-det-row { display:grid;grid-template-columns:1fr 1fr;gap:14px }
+        .usr-det-footer { display:flex;justify-content:flex-end;gap:10px;margin-top:24px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.05) }
+        .usr-det-cancel { padding:10px 20px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#94a3b8;font-size:13px;font-weight:600;cursor:pointer }
+        .usr-det-submit { padding:10px 24px;border-radius:10px;border:none;background:linear-gradient(135deg,#10b981,#06b6d4);color:#000;font-size:13px;font-weight:800;cursor:pointer }
+    </style>
 
-<div class="usr-det-overlay" id="usrDetReschedModal">
-    <div class="usr-det-modal">
-        <button class="usr-det-close" onclick="closeUserReschedModal()"><i class="fa-solid fa-xmark"></i></button>
-        <div class="usr-det-title">📅 Reschedule Pickup</div>
-        <form id="usrDetReschedForm" method="POST">
-            @csrf @method('PATCH')
-            <div class="usr-det-row">
-                <div class="usr-det-fg" style="margin-bottom:0">
-                    <label class="usr-det-label">New Date</label>
-                    <input type="date" name="pickup_date" id="usrDetDate" class="usr-det-input" min="{{ date('Y-m-d', strtotime('+1 day')) }}" required>
+    <div class="usr-det-overlay" id="usrDetReschedModal">
+        <div class="usr-det-modal">
+            <button class="usr-det-close" onclick="closeUserReschedModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="usr-det-title">📅 {{ __('messages.modal_reschedule_title') }}</div>
+            <form id="usrDetReschedForm" method="POST">
+                @csrf @method('PATCH')
+                <div class="usr-det-row">
+                    <div class="usr-det-fg" style="margin-bottom:0">
+                        <label class="usr-det-label">{{ __('messages.modal_new_date') }}</label>
+                        <input type="date" name="pickup_date" id="usrDetDate" class="usr-det-input" min="{{ date('Y-m-d', strtotime('+1 day')) }}" required>
+                    </div>
+                    <div class="usr-det-fg" style="margin-bottom:0">
+                        <label class="usr-det-label">{{ __('messages.modal_time_slot') }}</label>
+                        <select name="time_slot" id="usrDetSlot" class="usr-det-input" required>
+                            <option value="">{{ __('messages.modal_select_slot') }}</option>
+                            <option value="08:00 – 10:00 AM">08:00 – 10:00 AM</option>
+                            <option value="10:00 – 12:00 PM">10:00 – 12:00 PM</option>
+                            <option value="12:00 – 02:00 PM">12:00 – 02:00 PM</option>
+                            <option value="02:00 – 04:00 PM">02:00 – 04:00 PM</option>
+                            <option value="04:00 – 06:00 PM">04:00 – 06:00 PM</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="usr-det-fg" style="margin-bottom:0">
-                    <label class="usr-det-label">Time Slot</label>
-                    <select name="time_slot" id="usrDetSlot" class="usr-det-input" required>
-                        <option value="">Select slot</option>
-                        <option value="08:00 – 10:00 AM">08:00 – 10:00 AM</option>
-                        <option value="10:00 – 12:00 PM">10:00 – 12:00 PM</option>
-                        <option value="12:00 – 02:00 PM">12:00 – 02:00 PM</option>
-                        <option value="02:00 – 04:00 PM">02:00 – 04:00 PM</option>
-                        <option value="04:00 – 06:00 PM">04:00 – 06:00 PM</option>
-                    </select>
+                <div class="usr-det-footer">
+                    <button type="button" class="usr-det-cancel" onclick="closeUserReschedModal()">{{ __('messages.cancel') }}</button>
+                    <button type="submit" class="usr-det-submit">
+                        <i class="fa-solid fa-calendar-check" style="margin-right:6px"></i>{{ __('messages.confirm') }}
+                    </button>
                 </div>
-            </div>
-            <div class="usr-det-footer">
-                <button type="button" class="usr-det-cancel" onclick="closeUserReschedModal()">Cancel</button>
-                <button type="submit" class="usr-det-submit">
-                    <i class="fa-solid fa-calendar-check" style="margin-right:6px"></i>Confirm
-                </button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-</div>
+@endpush
 
 <script>
 function openUserReschedModal(id, date, slot) {
@@ -332,4 +346,3 @@ document.getElementById('usrDetReschedModal').addEventListener('click', function
     if (e.target === this) closeUserReschedModal();
 });
 </script>
-@endpush

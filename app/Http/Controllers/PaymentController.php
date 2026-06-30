@@ -149,7 +149,7 @@ class PaymentController extends Controller
             return view('admin.plans.show', compact('plan', 'features'));
         } catch (\Exception $e) {
             \Log::error('Failed to show plan: ' . $e->getMessage());
-            return redirect()->route('admin.plans.index')->with('error', 'Plan not found.');
+            return redirect()->route('admin.payments.index')->with('error', 'Plan not found.');
         }
     }
 
@@ -165,7 +165,7 @@ class PaymentController extends Controller
             return view('admin.plans.edit', compact('plan', 'featuresString'));
         } catch (\Exception $e) {
             \Log::error('Failed to edit plan: ' . $e->getMessage());
-            return redirect()->route('admin.plans.index')->with('error', 'Plan not found.');
+            return redirect()->route('admin.payments.index')->with('error', 'Plan not found.');
         }
     }
 
@@ -178,10 +178,10 @@ class PaymentController extends Controller
             $plan = SubscriptionPlan::findOrFail($id);
             $plan->delete();
 
-            return redirect()->route('admin.plans.index')->with('success', 'Plan deleted successfully.');
+            return redirect()->route('admin.payments.index')->with('success', 'Plan deleted successfully.');
         } catch (\Exception $e) {
             \Log::error('Failed to delete plan: ' . $e->getMessage());
-            return redirect()->route('admin.plans.index')->with('error', 'Error: ' . $e->getMessage());
+            return redirect()->route('admin.payments.index')->with('error', 'Error: ' . $e->getMessage());
         }
     }
 }

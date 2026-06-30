@@ -18,7 +18,7 @@ class PickupRequestController extends Controller
             'scheduled' => PickupRequest::where('user_id', auth()->id())->where('status','scheduled')->count(),
             'collected' => PickupRequest::where('user_id', auth()->id())->where('status','collected')->count(),
         ];
-        return view('user.pickup.pickup-requests', compact('pickupRequests','stats'));
+        return view('user.pickup.index', compact('pickupRequests','stats'));
     }
 
     public function store(Request $request)

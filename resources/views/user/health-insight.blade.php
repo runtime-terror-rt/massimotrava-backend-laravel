@@ -121,18 +121,18 @@
     {{-- ── Top bar ── --}}
     <div class="hi-topbar">
         <div>
-            <div class="hi-title">Insights</div>
-            <div class="hi-sub">Showing insights from your latest test</div>
+            <div class="hi-title">{{ __('insights.title') }}</div>
+            <div class="hi-sub">{{ __('insights.sub_title') }}</div>
         </div>
         <div class="analysis-badge">
-            <span></span> Analysis complete
+            <span></span> {{ __('insights.analysis_complete') }}
         </div>
     </div>
 
     {{-- ── Alert Banner ── --}}
     <div class="alert-banner">
         <i class="fa-solid fa-circle-info"></i>
-        <span><b>Update:</b> Your sample was received at the lab yesterday. Results are finalized.</span>
+        <span><b>{{ __('insights.update_label') }}:</b> {{ __('insights.alert_received_text') }}</span>
     </div>
 
     {{-- ── Main Grid: Score + Summary ── --}}
@@ -140,14 +140,14 @@
 
         {{-- Longevity Score Card --}}
         <div class="score-card">
-            <div class="sc-label">Longevity Score</div>
+            <div class="sc-label">{{ __('insights.longevity_score') }}</div>
             <div class="sc-num-row">
                 <div class="sc-big">{{ $longevityScore ?? 84 }}</div>
                 <div class="sc-denom">/100</div>
             </div>
             <div class="sc-meta-row">
-                <span class="sc-since">Since <b>{{ $scoreSince ?? 'Oct 2025' }}</b></span>
-                <span class="sc-improve">↑ +{{ $scoreImprovement ?? 12 }} improvement</span>
+                <span class="sc-since">{{ __('insights.since') }} <b>{{ $scoreSince ?? 'Oct 2025' }}</b></span>
+                <span class="sc-improve">↑ +{{ $scoreImprovement ?? 12 }} {{ __('insights.improvement') }}</span>
             </div>
 
             {{-- Mini Chart --}}
@@ -165,48 +165,46 @@
                     <polyline points="0,58 47,52 94,46 141,40 188,30 235,22 280,14"
                         fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     <circle cx="280" cy="14" r="4" fill="#10b981" stroke="#0d1117" stroke-width="2"/>
-                    <text x="2" y="70" font-size="9" fill="#475569" font-family="Inter">Oct</text>
-                    <text x="43" y="70" font-size="9" fill="#475569" font-family="Inter">Nov</text>
-                    <text x="90" y="70" font-size="9" fill="#475569" font-family="Inter">Dec</text>
-                    <text x="137" y="70" font-size="9" fill="#475569" font-family="Inter">Jan</text>
-                    <text x="184" y="70" font-size="9" fill="#475569" font-family="Inter">Feb</text>
-                    <text x="231" y="70" font-size="9" fill="#475569" font-family="Inter">Mar</text>
-                    <text x="236" y="12" font-size="9" fill="#10b981" font-family="Inter" font-weight="700">Now {{ $longevityScore ?? 84 }}</text>
-                    <text x="2" y="56" font-size="9" fill="#64748b" font-family="Inter">Prev {{ $previousScore ?? 74 }}</text>
+                    <text x="2" y="70" font-size="9" fill="#475569" font-family="Inter">{{ __('insights.month_oct') }}</text>
+                    <text x="43" y="70" font-size="9" fill="#475569" font-family="Inter">{{ __('insights.month_nov') }}</text>
+                    <text x="90" y="70" font-size="9" fill="#475569" font-family="Inter">{{ __('insights.month_dec') }}</text>
+                    <text x="137" y="70" font-size="9" fill="#475569" font-family="Inter">{{ __('insights.month_jan') }}</text>
+                    <text x="184" y="70" font-size="9" fill="#475569" font-family="Inter">{{ __('insights.month_feb') }}</text>
+                    <text x="231" y="70" font-size="9" fill="#475569" font-family="Inter">{{ __('insights.month_mar') }}</text>
+                    <text x="236" y="12" font-size="9" fill="#10b981" font-family="Inter" font-weight="700">{{ __('insights.chart_now', ['score' => $longevityScore ?? 84]) }}</text>
+                    <text x="2" y="56" font-size="9" fill="#64748b" font-family="Inter">{{ __('insights.chart_prev', ['score' => $previousScore ?? 74]) }}</text>
                 </svg>
             </div>
 
-            <div class="sc-message">"Your longevity score has steadily improved over the past 6 months."</div>
+            <div class="sc-message">"{{ __('insights.score_message') }}"</div>
             <div class="sc-kit-meta">
-                Based on {{ $testDate ?? 'Mar 25, 2026' }} test
-                · kit #{{ $kitNumber ?? '23281' }}
-                · Updated {{ $updatedAgo ?? '2 days ago' }}
+                {{ __('insights.kit_meta_text', ['date' => $testDate ?? 'Mar 25, 2026', 'kit' => $kitNumber ?? '23281', 'ago' => $updatedAgo ?? '2 days ago']) }}
             </div>
         </div>
 
         {{-- Summary + Focus --}}
         <div class="summary-card">
             <div class="summary-headline">
-                Your overall health is <span class="imp">improving</span>, but your
-                <span class="warn">LDL Cholesterol needs attention.</span>
+                {{ __('insights.summary_headline_start') }} <span class="imp">{{ __('insights.summary_headline_imp') }}</span>{{ __('insights.summary_headline_mid') }}
+                <span class="warn">{{ __('insights.summary_headline_warn') }}</span>
             </div>
 
             {{-- Primary Focus --}}
             <div>
                 <div class="focus-tag">
                     <span style="font-size:16px">🎯</span>
-                    <span class="focus-tag-label" style="color:#f87171">Primary Focus</span>
-                    <span class="focus-tag-sub">Compared to your last test (Jan 2026)</span>
+                    <span class="focus-tag-label" style="color:#f87171">{{ __('insights.primary_focus') }}</span>
+                    <span class="focus-tag-sub">{{ __('insights.compare_baseline_text') }}</span>
                 </div>
                 <div class="marker-row">
                     <div class="marker-icon mi-red">🫀</div>
                     <div class="marker-info">
-                        <div class="marker-name">LDL Cholesterol</div>
-                        <div class="marker-status">Needs attention</div>
+                        <div class="marker-name">{{ __('insights.biomarker_ldl') }}</div>
+                        <div class="marker-status">{{ __('insights.status_needs_attention') }}</div>
                     </div>
                     <div class="marker-right">
-                        <span class="priority-badge pb-high">High Priority</span>
-                        <span class="change-badge cb-up">+8% increase</span>
+                        <span class="priority-badge pb-high">{{ __('insights.priority_high') }}</span>
+                        <span class="change-badge cb-up">+8% {{ __('insights.badge_increase') }}</span>
                     </div>
                 </div>
             </div>
@@ -215,18 +213,18 @@
             <div>
                 <div class="focus-tag">
                     <span style="font-size:16px">📈</span>
-                    <span class="focus-tag-label" style="color:#10b981">Improving</span>
-                    <span class="focus-tag-sub">Compared to your last test (Jan 2026)</span>
+                    <span class="focus-tag-label" style="color:#10b981">{{ __('insights.improving') }}</span>
+                    <span class="focus-tag-sub">{{ __('insights.compare_baseline_text') }}</span>
                 </div>
                 <div class="marker-row">
                     <div class="marker-icon mi-green">☀️</div>
                     <div class="marker-info">
-                        <div class="marker-name">Vitamin D</div>
-                        <div class="marker-status">Improving</div>
+                        <div class="marker-name">{{ __('insights.biomarker_vit_d') }}</div>
+                        <div class="marker-status">{{ __('insights.improving') }}</div>
                     </div>
                     <div class="marker-right">
-                        <span class="priority-badge pb-good">Good</span>
-                        <span class="change-badge cb-down">+4% increase</span>
+                        <span class="priority-badge pb-good">{{ __('insights.priority_good') }}</span>
+                        <span class="change-badge cb-down">+4% {{ __('insights.badge_increase') }}</span>
                     </div>
                 </div>
             </div>
@@ -235,17 +233,17 @@
             <div>
                 <div class="focus-tag">
                     <span style="font-size:16px">⚡</span>
-                    <span class="focus-tag-label" style="color:#22d3ee">Stable / Monitor</span>
-                    <span class="focus-tag-sub">Compared to your last test (Jan 2026)</span>
+                    <span class="focus-tag-label" style="color:#22d3ee">{{ __('insights.stable_monitor') }}</span>
+                    <span class="focus-tag-sub">{{ __('insights.compare_baseline_text') }}</span>
                 </div>
                 <div class="marker-row">
                     <div class="marker-icon mi-blue">🧬</div>
                     <div class="marker-info">
-                        <div class="marker-name">Testosterone</div>
-                        <div class="marker-status">Stable</div>
+                        <div class="marker-name">{{ __('insights.biomarker_testosterone') }}</div>
+                        <div class="marker-status">{{ __('insights.status_stable') }}</div>
                     </div>
                     <div class="marker-right">
-                        <span class="priority-badge pb-stable">Stable</span>
+                        <span class="priority-badge pb-stable">{{ __('insights.priority_stable') }}</span>
                     </div>
                 </div>
             </div>
@@ -254,55 +252,55 @@
 
     {{-- ── Smart Insights ── --}}
     <div class="sec-head">
-        <div class="sec-title">💡 Smart Insights</div>
+        <div class="sec-title">💡 {{ __('insights.section_smart_insights') }}</div>
     </div>
     <div class="insights-grid">
 
         <div class="insight-card priority">
             <div class="ic-top">
-                <div class="ic-title">LDL Cholesterol has increased since your last test</div>
-                <span class="priority-badge pb-high">High Priority</span>
+                <div class="ic-title">{{ __('insights.smart_ldl_title_1') }}</div>
+                <span class="priority-badge pb-high">{{ __('insights.priority_high') }}</span>
             </div>
-            <div class="ic-body">High LDL can increase long-term heart disease risk. Dietary adjustments now can make a meaningful difference within 8 weeks.</div>
+            <div class="ic-body">{{ __('insights.smart_ldl_body_1') }}</div>
             <div class="ic-impact">
                 <div class="ic-impact-dot"></div>
-                High Impact: Direct link to cardiovascular longevity
+                {{ __('insights.impact_cardio_longevity') }}
             </div>
         </div>
 
         <div class="insight-card priority">
             <div class="ic-top">
-                <div class="ic-title">LDL is trending upward — act before it peaks</div>
-                <span class="priority-badge pb-high">High Priority</span>
+                <div class="ic-title">{{ __('insights.smart_ldl_title_2') }}</div>
+                <span class="priority-badge pb-high">{{ __('insights.priority_high') }}</span>
             </div>
-            <div class="ic-body">Reduce saturated fats, add soluble fiber, and consider omega-3 supplementation. Retest in 3 months to track progress.</div>
+            <div class="ic-body">{{ __('insights.smart_ldl_body_2') }}</div>
             <div class="ic-impact">
                 <div class="ic-impact-dot"></div>
-                High Impact: Direct link to cardiovascular longevity
+                {{ __('insights.impact_cardio_longevity') }}
             </div>
         </div>
 
         <div class="insight-card">
             <div class="ic-top">
-                <div class="ic-title">Vitamin D is recovering well</div>
-                <span class="priority-badge pb-good">Good</span>
+                <div class="ic-title">{{ __('insights.smart_vit_d_title') }}</div>
+                <span class="priority-badge pb-good">{{ __('insights.priority_good') }}</span>
             </div>
-            <div class="ic-body">Your Vitamin D has improved +4% since last test. Morning sunlight and your supplement routine are working — keep it up.</div>
+            <div class="ic-body">{{ __('insights.smart_vit_d_body') }}</div>
             <div class="ic-impact">
                 <div class="ic-impact-dot"></div>
-                Supports immune function and bone density
+                {{ __('insights.impact_immune_bone') }}
             </div>
         </div>
 
         <div class="insight-card">
             <div class="ic-top">
-                <div class="ic-title">Testosterone remains in a strong range</div>
-                <span class="priority-badge pb-stable">Stable</span>
+                <div class="ic-title">{{ __('insights.smart_testosterone_title') }}</div>
+                <span class="priority-badge pb-stable">{{ __('insights.priority_stable') }}</span>
             </div>
-            <div class="ic-body">No change needed. Your current sleep, training, and nutrition routine is maintaining excellent hormonal balance.</div>
+            <div class="ic-body">{{ __('insights.smart_testosterone_body') }}</div>
             <div class="ic-impact">
                 <div class="ic-impact-dot"></div>
-                Supports energy, metabolism, and longevity
+                {{ __('insights.impact_energy_metabolism') }}
             </div>
         </div>
 
@@ -310,14 +308,14 @@
 
     {{-- ── Biomarker Trends ── --}}
     <div class="sec-head">
-        <div class="sec-title">📊 Biomarker Trends</div>
+        <div class="sec-title">📊 {{ __('insights.section_biomarker_trends') }}</div>
     </div>
     <div class="trends-grid">
 
         <div class="trend-card tc-low">
-            <div class="tc-badge tcb-low">● Low</div>
-            <div class="tc-name">Vitamin D</div>
-            <div class="tc-sub">Improving</div>
+            <div class="tc-badge tcb-low">● {{ __('insights.badge_low') }}</div>
+            <div class="tc-name">{{ __('insights.biomarker_vit_d') }}</div>
+            <div class="tc-sub">{{ __('insights.improving') }}</div>
             <div class="tc-pct" style="color:#f59e0b">↑ +12%</div>
             <div class="tc-chart">
                 <svg viewBox="0 0 120 42" xmlns="http://www.w3.org/2000/svg">
@@ -328,9 +326,9 @@
         </div>
 
         <div class="trend-card tc-optimal">
-            <div class="tc-badge tcb-opt">● Optimal</div>
-            <div class="tc-name">Cortisol</div>
-            <div class="tc-sub">Improving</div>
+            <div class="tc-badge tcb-opt">● {{ __('insights.badge_optimal') }}</div>
+            <div class="tc-name">{{ __('insights.biomarker_cortisol') }}</div>
+            <div class="tc-sub">{{ __('insights.improving') }}</div>
             <div class="tc-pct" style="color:#10b981">↑ +12%</div>
             <div class="tc-chart">
                 <svg viewBox="0 0 120 42" xmlns="http://www.w3.org/2000/svg">
@@ -341,9 +339,9 @@
         </div>
 
         <div class="trend-card tc-low">
-            <div class="tc-badge tcb-low">● Needs Attention</div>
-            <div class="tc-name">LDL Cholesterol</div>
-            <div class="tc-sub">Rising</div>
+            <div class="tc-badge tcb-low">● {{ __('insights.status_needs_attention') }}</div>
+            <div class="tc-name">{{ __('insights.biomarker_ldl') }}</div>
+            <div class="tc-sub">{{ __('insights.trend_rising') }}</div>
             <div class="tc-pct" style="color:#f87171">↑ +8%</div>
             <div class="tc-chart">
                 <svg viewBox="0 0 120 42" xmlns="http://www.w3.org/2000/svg">
@@ -354,10 +352,10 @@
         </div>
 
         <div class="trend-card tc-optimal">
-            <div class="tc-badge tcb-opt">● Optimal</div>
-            <div class="tc-name">Testosterone</div>
-            <div class="tc-sub">Stable</div>
-            <div class="tc-pct" style="color:#10b981">→ Stable</div>
+            <div class="tc-badge tcb-opt">● {{ __('insights.badge_optimal') }}</div>
+            <div class="tc-name">{{ __('insights.biomarker_testosterone') }}</div>
+            <div class="tc-sub">{{ __('insights.status_stable') }}</div>
+            <div class="tc-pct" style="color:#10b981">→ {{ __('insights.status_stable') }}</div>
             <div class="tc-chart">
                 <svg viewBox="0 0 120 42" xmlns="http://www.w3.org/2000/svg">
                     <polyline points="0,22 20,24 40,20 60,22 80,21 100,23 120,21"
@@ -372,13 +370,13 @@
     <div class="retest-card">
         <div>
             <div class="rt-eyebrow">
-                <i class="fa-regular fa-calendar-check"></i> Retest Reminder
+                <i class="fa-regular fa-calendar-check"></i> {{ __('insights.retest_reminder_title') }}
             </div>
-            <div class="rt-title">Retest in 3 months to track Vitamin D improvement</div>
-            <div class="rt-body">Regular testing helps you see if lifestyle changes are effectively lowering your LDL Cholesterol and improving Vitamin D levels.</div>
+            <div class="rt-title">{{ __('insights.retest_headline') }}</div>
+            <div class="rt-body">{{ __('insights.retest_body_text') }}</div>
         </div>
         <button class="rt-btn" onclick="sendRetestMessage()">
-            <i class="fa-solid fa-paper-plane" style="margin-right:6px"></i> Send Message
+            <i class="fa-solid fa-paper-plane" style="margin-right:6px"></i> {{ __('insights.btn_send_message') }}
         </button>
     </div>
 

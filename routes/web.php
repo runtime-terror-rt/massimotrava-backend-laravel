@@ -52,7 +52,7 @@ Route::prefix('user')->name('user.')->middleware(['auth'])->group(function () {
     Route::get('/pickup-requests', [PickupRequestController::class, 'index'])->name('pickup.index');
     Route::post('/pickup-requests', [PickupRequestController::class, 'store'])->name('pickup.store');
     Route::get('/pickup-requests/{id}', [PickupRequestController::class, 'show'])->name('pickup.show');
-    Route::patch('/pickup-requests/{id}/reschedule', [PickupRequestController::class, 'reschedule'])->name('pickup.reschedule');
+    Route::patch('/user/pickup/{id}/reschedule', [PickupRequestController::class, 'reschedule'])->name('pickup.reschedule');
     Route::patch('/pickup-requests/{id}/cancel', [PickupRequestController::class, 'cancel'])->name('pickup.cancel');
 
     Route::get('retests', [ScheduleRetestController::class, 'index'])->name('retests.index');
