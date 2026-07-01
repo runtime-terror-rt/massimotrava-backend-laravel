@@ -6,6 +6,7 @@ use App\Models\Campaign;
 use App\Models\Content;
 use App\Models\Faq;
 use App\Models\Lab;
+use App\Models\Review;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -22,6 +23,7 @@ class UserController extends Controller
 
     public function userHome()
     {
+        $reviews = Review::where('status', 1)->latest()->get();
         $campaigns = Campaign::where('status', 'active')->orderBy('id', 'desc')->get();
         $faqs = Faq::where('is_active', true)->orderBy('id', 'desc')->get();
         $contents = Content::where('status', 'published')
@@ -30,7 +32,7 @@ class UserController extends Controller
 
         $data = SubscriptionPlan::where('status', true)->latest()->get();
 
-        return view('user.home', compact('contents', 'faqs', 'campaigns', 'data'));
+        return view('user.home', compact('contents', 'faqs', 'campaigns', 'data', 'reviews'));
     }
     
 

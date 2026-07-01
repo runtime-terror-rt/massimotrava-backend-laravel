@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forgot Password</title>
-
+    <link rel="icon" type="image/jpeg" href="{{ asset('images/favicon.png') }}">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -20,8 +20,14 @@
 
 <div class="auth-wrapper">
     <div class="auth-card">
+        <a href="{{ url('/') }}" class="sidebar-brand" style="position: relative; height: 60px; display: block;">
+            <img src="{{ asset('images/logo.avif') }}" alt="Logo"
+                style="position: absolute !important; top: 15px !important; left: 50% !important;
+                        transform: translateX(-50%) !important; height: 38px !important;
+                        width: auto !important; object-fit: contain !important; max-width: 85% !important;">
+        </a>
 
-        <div class="auth-header">
+        <div class="auth-header" style="margin-top: 30px;">
             <div class="auth-logo"><i class="fas fa-lock-open"></i></div>
             <h1 class="auth-title">Reset Password</h1>
             <p class="auth-subtitle" id="subtitle">Enter your email to receive an OTP</p>

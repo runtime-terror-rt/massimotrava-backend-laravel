@@ -3,7 +3,7 @@
 @section('title', __('messages.kit_management') . ' - Massimotrava')
 @section('page_title_key', 'sb_kit_manager')
 @section('content')
-<div class="container-fluid px-4 py-4" style="background-color: var(--surface-2); min-height: 100vh; color: var(--text); transition: background-color 0.3s, color 0.3s;">
+<div class="container-fluid px-4 py-4" style="background-color: var(--bg); min-height: 100vh; color: var(--text); transition: background-color 0.3s, color 0.3s;">
     
     {{-- Header Section --}}
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-2">
@@ -40,7 +40,7 @@
     {{-- Main Data Table Card --}}
     <div class="card border-0 overflow-hidden shadow-sm" style="background: var(--surface); border-radius: 12px; border: 1px solid var(--border) !important; font-family: 'DM Sans', sans-serif; transition: background-color 0.3s, border-color 0.3s;">
         <div class="table-responsive">
-            <table class="table table-hover mb-0 align-middle" style="color: var(--text);">
+            <table class="table mb-0 align-middle" style="color: var(--text); --bs-table-bg: transparent;">
                 <thead style="background: var(--surface-2);">
                     <tr style="color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border);">
                         <th class="px-4 py-3 border-0" style="color: var(--text);">{{ __('messages.activation_code') }}</th>
@@ -82,11 +82,11 @@
                             {{-- Status Badge --}}
                             <td class="px-4 py-3">
                                 @if($kit->status)
-                                    <span class="badge px-2.5 py-1.5" style="background: rgba(16, 185, 129, 0.1); color: var(--accent-3); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 20px;">
+                                    <span class="badge" style="padding: 6px 10px; background: rgba(16, 185, 129, 0.1); color: var(--accent-3); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 20px;">
                                         ● {{ __('messages.status_active') }}
                                     </span>
                                 @else
-                                    <span class="badge px-2.5 py-1.5" style="background: rgba(244, 63, 94, 0.1); color: #f43f5e; border: 1px solid rgba(244, 63, 94, 0.2); border-radius: 20px;">
+                                    <span class="badge" style="padding: 6px 10px; background: rgba(244, 63, 94, 0.1); color: #f43f5e; border: 1px solid rgba(244, 63, 94, 0.2); border-radius: 20px;">
                                         ● {{ __('messages.status_inactive') }}
                                     </span>
                                 @endif
@@ -105,7 +105,7 @@
                                     </form>
                                 @else
                                     {{-- User Action: Premium View Button --}}
-                                    <a href="{{-- route('admin.kits.show', $kit->id) --}}" class="btn btn-sm text-white px-3 py-1" style="background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; font-size: 12px; font-weight: 500; transition: all 0.2s; display: inline-flex; align-items: center; gap: 4px;" onmouseover="this.style.background='var(--accent)'; this.style.borderColor='var(--accent)';" onmouseout="this.style.background='var(--surface-2)'; this.style.borderColor='var(--border)';">
+                                    <a href="{{-- route('admin.kits.show', $kit->id) --}}" class="btn btn-sm px-3 py-1" style="background: var(--surface-2); border: 1px solid var(--border); color: var(--text); border-radius: 6px; font-size: 12px; font-weight: 500; transition: all 0.2s; display: inline-flex; align-items: center; gap: 4px;" onmouseover="this.style.background='var(--accent)'; this.style.borderColor='var(--accent)'; this.style.color='#fff';" onmouseout="this.style.background='var(--surface-2)'; this.style.borderColor='var(--border)'; this.style.color='var(--text)';">
                                         <i class="fa-regular fa-eye" style="font-size: 13px;"></i> {{ __('messages.view') ?? 'View' }}
                                     </a>
                                 @endif

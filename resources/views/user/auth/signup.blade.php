@@ -700,8 +700,8 @@
                     <input type="checkbox" id="terms" name="terms_accepted" value="1"
                            {{ old('terms_accepted') ? 'checked' : '' }}>
                     <label for="terms" class="terms-label">
-                        I agree to Vyralabs' <a href="/terms" target="_blank">Terms of Service</a>
-                        and <a href="/privacy" target="_blank">Privacy Policy</a>
+                        I agree to Vyralabs' <a href="/terms-and-condition" target="_blank">Terms of Service</a>
+                        and <a href="{{route('privacy.policy')}}" target="_blank">Privacy Policy</a>
                     </label>
                 </div>
                 <div class="field-error" id="termsError" style="display:none; margin-top:-10px; margin-bottom:12px;">
