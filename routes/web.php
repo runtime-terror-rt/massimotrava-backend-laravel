@@ -4,8 +4,10 @@ use App\Http\Controllers\ActionItem\ActionItemController;
 use App\Http\Controllers\Auth\SignUpController;
 use App\Http\Controllers\BiomarkerReportController;
 use App\Http\Controllers\KitController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PickupRequestController;
 use App\Http\Controllers\PrivacyPolicyController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ScheduleRetestController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\SubscriptionPlanController;
@@ -37,7 +39,7 @@ Route::post('/register',       [SignUpController::class, 'register']);
 Route::get('/otp/verify',      [SignUpController::class, 'showOtpForm'])->name('otp.verify.form');
 Route::post('/otp/verify',     [SignUpController::class, 'verifyOtp'])->name('otp.verify');
 Route::post('/otp/resend',     [SignUpController::class, 'resendOtp'])->name('otp.resend');
-
+Route::get('/reviews', [ReviewController::class, 'FrontIndex'])->name('review.index');
 Route::prefix('user')->name('user.')->middleware(['auth'])->group(function () {
     
     Route::post('/subscribe/checkout/{planId}', [SubscriptionController::class, 'createCheckoutSession'])->name('subscribe.checkout');
@@ -67,6 +69,10 @@ Route::prefix('user')->name('user.')->middleware(['auth'])->group(function () {
     Route::post('/action-items/mark-viewed', [ActionItemController::class, 'markViewed'])->name('action-items.mark-viewed');
     Route::get('/action-item/questionnaire', [ActionItemController::class, 'questionnaire'])->name('actionitem.questionnaire');
     Route::post('/kit-questionnaire', [ActionItemController::class, 'storeKitQuestionnaire'])->name('kit-questionnaire.store');
+
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
 });
 
 require __DIR__.'/admin.php';

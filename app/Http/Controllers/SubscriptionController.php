@@ -74,14 +74,16 @@ class SubscriptionController extends Controller
         }
 
         if ($event->type === 'checkout.session.completed') {
+        try {
             $session = $event->data->object;
-            
+
             $userId = $session->metadata->user_id;
             $planId = $session->metadata->subscription_plan_id;
             $stripeSubId = $session->subscription ?? null;
 
             $plan = SubscriptionPlan::find($planId);
             if (!$plan) {
+                Log::error('[STRIPE WEBHOOK] Plan not found: ' . $planId);
                 return response()->json(['error' => 'Plan not found'], 404);
             }
 
@@ -89,8 +91,8 @@ class SubscriptionController extends Controller
                 ->where('status', 'active')
                 ->update(['status' => 'expired']);
 
-            $endsAt = now()->addMonth(); // Default
-            if (strtolower($plan->billing_cycle) === 'annual' || strtolower($plan->billing_cycle) === 'year') {
+            $endsAt = now()->addMonth();
+            if (in_array(strtolower($plan->billing_cycle), ['annual', 'year'])) {
                 $endsAt = now()->addYear();
             }
 
@@ -100,19 +102,26 @@ class SubscriptionController extends Controller
                 'stripe_subscription_id' => $stripeSubId,
                 'status' => 'active',
                 'starts_at' => now(),
-                'ends_at' => $endsAt, 
+                'ends_at' => $endsAt,
             ]);
 
             Payment::create([
                 'user_id' => $userId,
                 'user_subscription_id' => $userSubscription->id,
                 'stripe_charge_id' => $session->payment_intent ?? $session->id,
-                'amount' => $session->amount_total / 100, 
+                'amount' => $session->amount_total / 100,
                 'currency' => strtoupper($session->currency),
                 'payment_status' => 'succeeded',
                 'payment_method' => 'card',
             ]);
+
+            Log::info('[STRIPE WEBHOOK] Subscription created for user ' . $userId);
+
+        } catch (\Throwable $e) {
+            Log::error('[STRIPE WEBHOOK] Failed: ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine());
+            return response()->json(['error' => 'Webhook processing failed'], 500);
         }
+    }
 
         return response()->json(['status' => 'success'], 200);
     }

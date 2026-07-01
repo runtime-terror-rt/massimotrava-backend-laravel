@@ -1523,10 +1523,11 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
   <div class="container nav-inner">
 
     <div class="logo">
-        <img src="{{ asset('images/logo.avif') }}" alt="{{ __('messages.logo_alt') }}" 
-         style="position: absolute !important; top: 15px !important; left: 6% !important; transform: translateX(-50%) !important; height: 38px !important; width: auto !important; object-fit: contain !important; max-width: 85% !important;">
-  
-    </div>    
+      <a href="{{ url('/') }}">
+          <img src="{{ asset('images/logo.avif') }}" alt="{{ __('messages.logo_alt') }}" 
+              style="position: absolute !important; top: 15px !important; left: 6% !important; transform: translateX(-50%) !important; height: 38px !important; width: auto !important; object-fit: contain !important; max-width: 85% !important;">
+      </a>
+    </div> 
     <div class="nav-links">
       <a href="#how">{{ __('messages.nav_what_we_test') }} <i class="fa-solid fa-chevron-down"></i></a>
       <a href="#pricing">{{ __('messages.nav_pricing') }}</a>
@@ -2135,7 +2136,6 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
   </div>
 </section>
 
-<!-- REVIEWS -->
 <section>
   <div class="container">
     <div class="section-head center" data-reveal>
@@ -2143,40 +2143,55 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
       <h2 class="section-title">This is what people say about Vyralabs</h2>
       <p class="section-sub">Real reviews from real customers who've seen health improvements in less than 90 days.</p>
     </div>
+    
     <div class="reviews-grid">
-      <div class="review-card" data-reveal>
-        <div class="review-stars">★★★★★</div>
-        <p>I was the most skeptical, as this sounded too good to be true. I ordered my kit, got informed every step of the way, and got my results within days.</p>
-        <div class="review-author">
-          <div class="review-av">M</div>
-          <div>
-            <div class="review-name">Manny A.</div>
-            <div class="review-tag"><i class="fa-solid fa-circle-check"></i> Verified Buyer</div>
+      @forelse($reviews as $review)
+        <div class="review-card" data-reveal @if($loop->index > 0) delay-{{ $loop->index }} @endif>
+          
+          <div class="review-stars">
+            @for($i = 1; $i <= 5; $i++)
+              {{ $i <= $review->rating ? '★' : '☆' }}
+            @endfor
           </div>
-        </div>
-      </div>
-      <div class="review-card" data-reveal delay-1>
-        <div class="review-stars">★★★★★</div>
-        <p>It's really that easy. The simplicity is not just talk — it's the reality. Scheduled a pickup, completed it Friday, results were ready by the weekend.</p>
-        <div class="review-author">
-          <div class="review-av" style="background:linear-gradient(135deg,var(--c2),#ec4899)">D</div>
-          <div>
-            <div class="review-name">Dominic</div>
-            <div class="review-tag"><i class="fa-solid fa-circle-check"></i> Verified Buyer</div>
+          
+          <p>{{ $review->text }}</p>
+          
+          <div class="review-author">
+            @if($review->author_image)
+              <div class="review-av" style="padding: 0;">
+                <img src="{{ asset('images/reviews/' . $review->author_image) }}" alt="{{ $review->author_name }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+              </div>
+            @else
+              @php
+                $gradients = [
+                    'linear-gradient(135deg, var(--c1, #3b82f6), #1d4ed8)',
+                    'linear-gradient(135deg, var(--c2, #a855f7), #ec4899)',
+                    'linear-gradient(135deg, var(--c3, #06b6d4), #10b981)'
+                ];
+                $currentGradient = $gradients[$loop->index % count($gradients)];
+              @endphp
+              <div class="review-av" style="background: {{ $currentGradient }}; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                {{ Str::upper(Str::substr($review->author_name, 0, 1)) }}
+              </div>
+            @endif
+            
+            <div>
+              <div class="review-name">{{ $review->author_name }}</div>
+              
+              @if($review->is_verified)
+                <div class="review-tag">
+                  <i class="fa-solid fa-circle-check"></i> Verified Buyer
+                </div>
+              @endif
+            </div>
           </div>
+
         </div>
-      </div>
-      <div class="review-card" data-reveal delay-2>
-        <div class="review-stars">★★★★★</div>
-        <p>If you have any hesitation, don't. I'm in great health, train 4-5 days a week, and the insights gave me real clarity on where to focus next.</p>
-        <div class="review-author">
-          <div class="review-av" style="background:linear-gradient(135deg,var(--c3),#10b981)">J</div>
-          <div>
-            <div class="review-name">John P.</div>
-            <div class="review-tag"><i class="fa-solid fa-circle-check"></i> Verified Buyer</div>
-          </div>
+      @empty
+        <div class="col-12 text-center" style="color: var(--text-muted); padding: 40px 0;">
+          <p>No reviews available at the moment.</p>
         </div>
-      </div>
+      @endforelse
     </div>
   </div>
 </section>
@@ -2214,7 +2229,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding-top:
             </div>
 
             <div class="pricing-card-header">
-              <span class="plan-type {{ $isPopular ? 'text-gradient' : '' }}">
+              <span class="plan-type {{ $isPopular ? 'text-gradient' : 'text-gradient' }}">
                 {{ $plan['name'] }}
               </span>
               <div class="plan-price-block">

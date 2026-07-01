@@ -7,15 +7,15 @@
 <style>
 .pd { padding: 4px 0 }
 
-.pd-back { display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#64748b;text-decoration:none;margin-bottom:22px;transition:color .2s }
-.pd-back:hover { color:#f1f5f9 }
+.pd-back { display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--text-muted);text-decoration:none;margin-bottom:22px;transition:color .2s }
+.pd-back:hover { color:var(--text) }
 
 /* Header card */
-.pd-header { background:var(--surface);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:28px 32px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px }
+.pd-header { background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px 32px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px }
 .pd-header-left { display:flex;align-items:center;gap:16px }
 .pd-kit-icon { width:56px;height:56px;border-radius:14px;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0 }
-.pd-kit-name { font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff }
-.pd-kit-id { font-size:12px;color:#64748b;margin-top:3px }
+.pd-kit-name { font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text) }
+.pd-kit-id { font-size:12px;color:var(--text-muted);margin-top:3px }
 
 /* Badges */
 .badge { font-size:12px;font-weight:700;padding:6px 16px;border-radius:20px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap }
@@ -26,37 +26,37 @@
 
 /* Grid */
 .pd-grid { display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px }
-.pd-card { background:var(--surface);border:1px solid rgba(255,255,255,0.06);border-radius:18px;padding:24px 28px }
-.pd-card-title { font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:#475569;margin-bottom:18px;display:flex;align-items:center;gap:8px }
+.pd-card { background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px 28px }
+.pd-card-title { font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-muted);margin-bottom:18px;display:flex;align-items:center;gap:8px }
 .pd-card-title i { font-size:12px }
 
 /* Info rows */
-.info-row { display:flex;align-items:flex-start;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04) }
+.info-row { display:flex;align-items:flex-start;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border) }
 .info-row:last-child { border-bottom:none;padding-bottom:0 }
 .info-row:first-child { padding-top:0 }
-.info-label { font-size:12px;color:#64748b;font-weight:500;flex-shrink:0;margin-right:12px }
-.info-val { font-size:13px;color:#f1f5f9;font-weight:600;text-align:right }
+.info-label { font-size:12px;color:var(--text-muted);font-weight:500;flex-shrink:0;margin-right:12px }
+.info-val { font-size:13px;color:var(--text);font-weight:600;text-align:right }
 
 /* Notes box */
-.notes-box { background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:14px 16px;font-size:13px;color:#94a3b8;line-height:1.6;min-height:60px }
+.notes-box { background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;font-size:13px;color:var(--text-muted);line-height:1.6;min-height:60px }
 
 /* Timeline */
 .timeline { list-style:none;padding:0;margin:0 }
 .tl-item { display:flex;gap:14px;padding-bottom:18px;position:relative }
 .tl-item:last-child { padding-bottom:0 }
-.tl-item:not(:last-child)::before { content:'';position:absolute;left:13px;top:28px;bottom:0;width:1px;background:rgba(255,255,255,0.06) }
+.tl-item:not(:last-child)::before { content:'';position:absolute;left:13px;top:28px;bottom:0;width:1px;background:var(--border) }
 .tl-dot { width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;margin-top:2px }
 .tl-dot-cyan   { background:rgba(34,211,238,0.1);color:#22d3ee;border:1px solid rgba(34,211,238,0.2) }
 .tl-dot-violet { background:rgba(167,139,250,0.1);color:#a78bfa;border:1px solid rgba(167,139,250,0.2) }
 .tl-dot-green  { background:rgba(16,185,129,0.1);color:#10b981;border:1px solid rgba(16,185,129,0.2) }
 .tl-dot-red    { background:rgba(239,68,68,0.08);color:#f87171;border:1px solid rgba(239,68,68,0.15) }
-.tl-dot-gray   { background:rgba(255,255,255,0.04);color:#64748b;border:1px solid rgba(255,255,255,0.08) }
-.tl-title { font-size:13px;font-weight:600;color:#f1f5f9;margin-bottom:3px }
-.tl-sub { font-size:11.5px;color:#64748b }
+.tl-dot-gray   { background:var(--surface-2);color:var(--text-muted);border:1px solid var(--border) }
+.tl-title { font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px }
+.tl-sub { font-size:11.5px;color:var(--text-muted) }
 
 /* Action bar */
-.pd-actions { background:var(--surface);border:1px solid rgba(255,255,255,0.06);border-radius:18px;padding:20px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px }
-.pd-actions-label { font-size:13px;color:#64748b }
+.pd-actions { background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px }
+.pd-actions-label { font-size:13px;color:var(--text-muted) }
 .pd-actions-btns { display:flex;gap:10px;flex-wrap:wrap }
 .act-btn { font-size:13px;font-weight:600;padding:9px 18px;border-radius:10px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .2s;text-decoration:none }
 .ab-violet { background:rgba(167,139,250,0.1);color:#a78bfa;border:1px solid rgba(167,139,250,0.2) }
@@ -65,7 +65,7 @@
 .ab-danger:hover { background:rgba(239,68,68,0.15) }
 
 /* Info alert */
-.info-alert { background:rgba(34,211,238,0.04);border:1px solid rgba(34,211,238,0.15);border-radius:12px;padding:12px 16px;font-size:13px;color:#94a3b8;display:flex;align-items:center;gap:10px;margin-bottom:20px }
+.info-alert { background:rgba(34,211,238,0.04);border:1px solid rgba(34,211,238,0.15);border-radius:12px;padding:12px 16px;font-size:13px;color:var(--text-muted);display:flex;align-items:center;gap:10px;margin-bottom:20px }
 .info-alert i { color:#22d3ee;flex-shrink:0 }
 
 @media(max-width:768px){.pd-grid{grid-template-columns:1fr}.pd-header{flex-direction:column;align-items:flex-start}}
@@ -120,9 +120,9 @@
         <i class="fa-solid fa-calendar-check"></i>
         <span>
             {{ __('messages.pickup_scheduled_alert_prefix') }} 
-            <strong style="color:#e2e8f0">{{ \Carbon\Carbon::parse($req->pickup_date)->format('D, M d, Y') }}</strong> 
+            <strong style="color:var(--text)">{{ \Carbon\Carbon::parse($req->pickup_date)->format('D, M d, Y') }}</strong> 
             {{ __('messages.pickup_scheduled_alert_middle') }} 
-            <strong style="color:#e2e8f0">{{ $req->time_slot }}</strong>. 
+            <strong style="color:var(--text)">{{ $req->time_slot }}</strong>. 
             {{ __('messages.pickup_scheduled_alert_suffix') }}
         </span>
     </div>
@@ -209,7 +209,7 @@
                 <li class="tl-item">
                     <div class="tl-dot tl-dot-gray"><i class="fa-solid fa-flask"></i></div>
                     <div>
-                        <div class="tl-title" style="color:#475569">{{ __('messages.tl_awaiting_title') }}</div>
+                        <div class="tl-title" style="color:var(--text-muted)">{{ __('messages.tl_awaiting_title') }}</div>
                         <div class="tl-sub">{{ __('messages.tl_awaiting_sub') }}</div>
                     </div>
                 </li>
@@ -224,7 +224,7 @@
 
             @if($req->admin_notes)
             <div class="pd-card-title" style="margin-top:20px"><i class="fa-solid fa-headset"></i> {{ __('messages.message_from_team') }}</div>
-            <div class="notes-box" style="border-color:rgba(34,211,238,0.15);background:rgba(34,211,238,0.03);color:#e2e8f0">
+            <div class="notes-box" style="border-color:rgba(34,211,238,0.15);background:rgba(34,211,238,0.03);color:var(--text)">
                 {{ $req->admin_notes }}
             </div>
             @endif
@@ -234,13 +234,13 @@
         <div class="pd-card">
             <div class="pd-card-title"><i class="fa-solid fa-circle-info"></i> {{ __('messages.whats_next_title') }}</div>
             @if($req->status === 'pending')
-                <p style="font-size:13px;color:#94a3b8;line-height:1.7;margin:0">{{ __('messages.wn_pending_text') }}</p>
+                <p style="font-size:13px;color:var(--text-muted);line-height:1.7;margin:0">{{ __('messages.wn_pending_text') }}</p>
             @elseif($req->status === 'scheduled')
-                <p style="font-size:13px;color:#94a3b8;line-height:1.7;margin:0">{{ __('messages.wn_scheduled_text') }}</p>
+                <p style="font-size:13px;color:var(--text-muted);line-height:1.7;margin:0">{{ __('messages.wn_scheduled_text') }}</p>
             @elseif($req->status === 'collected')
-                <p style="font-size:13px;color:#94a3b8;line-height:1.7;margin:0">{{ __('messages.wn_collected_text') }}</p>
+                <p style="font-size:13px;color:var(--text-muted);line-height:1.7;margin:0">{{ __('messages.wn_collected_text') }}</p>
             @elseif($req->status === 'cancelled')
-                <p style="font-size:13px;color:#94a3b8;line-height:1.7;margin:0">{{ __('messages.wn_cancelled_text') }}</p>
+                <p style="font-size:13px;color:var(--text-muted);line-height:1.7;margin:0">{{ __('messages.wn_cancelled_text') }}</p>
             @endif
         </div>
 

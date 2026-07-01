@@ -9,8 +9,8 @@
 
 /* Top bar */
 .ai-topbar { margin-bottom: 28px }
-.ai-title { font-family:'Syne',sans-serif;font-size:24px;font-weight:800;letter-spacing:-0.03em;color:#fff }
-.ai-sub   { font-size:13px;color:#64748b;margin-top:4px }
+.ai-title { font-family:'Syne',sans-serif;font-size:24px;font-weight:800;letter-spacing:-0.03em;color:var(--text) }
+.ai-sub   { font-size:13px;color:var(--text-muted);margin-top:4px }
 
 /* Progress card */
 .ai-progress-card {
@@ -30,10 +30,10 @@
     font-family:'Syne',sans-serif;
     font-size: 16px;
     font-weight: 800;
-    color: #fff;
+    color: var(--text);
     margin-bottom: 6px;
 }
-.ai-progress-sub { font-size:13px;color:#94a3b8;margin-bottom:14px }
+.ai-progress-sub { font-size:13px;color:var(--text-muted);margin-bottom:14px }
 .ai-prog-bar-bg {
     height: 8px;
     border-radius: 99px;
@@ -53,7 +53,7 @@
     gap: 8px;
     margin-top: 8px;
 }
-.ai-prog-label { font-size:12px;color:#64748b }
+.ai-prog-label { font-size:12px;color:var(--text-muted) }
 .ai-prog-pct   { font-size:12px;font-weight:700;color:#22d3ee }
 
 /* Big counter */
@@ -71,7 +71,7 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
-.ai-counter-label { font-size:12px;color:#64748b;margin-top:4px }
+.ai-counter-label { font-size:12px;color:var(--text-muted);margin-top:4px }
 
 /* What to expect section */
 .section-label {
@@ -79,7 +79,7 @@
     font-weight:700;
     letter-spacing:.07em;
     text-transform:uppercase;
-    color:#475569;
+    color:var(--text-muted);
     margin-bottom:14px;
     display:flex;
     align-items:center;
@@ -89,7 +89,7 @@
     content:'';
     flex:1;
     height:1px;
-    background:rgba(255,255,255,0.05);
+    background:var(--border);
 }
 
 /* What to expect cards */
@@ -101,20 +101,20 @@
 }
 .wte-card {
     background: var(--surface);
-    border: 1px solid rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
     border-radius: 16px;
     overflow: hidden;
     transition: border-color .2s, transform .2s;
 }
 .wte-card:hover {
-    border-color: rgba(255,255,255,0.12);
+    border-color: var(--accent);
     transform: translateY(-2px);
 }
 .wte-img {
     width: 100%;
     height: 130px;
     object-fit: cover;
-    background: rgba(255,255,255,0.04);
+    background: var(--surface-2);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -133,18 +133,18 @@
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background: #111827;
-    border: 1px solid rgba(255,255,255,0.1);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
     font-size: 11px;
     font-weight: 800;
-    color: #f1f5f9;
+    color: var(--text);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 10px;
 }
-.wte-title { font-size:14px;font-weight:700;color:#f1f5f9;margin-bottom:6px }
-.wte-desc  { font-size:12px;color:#64748b;line-height:1.6 }
+.wte-title { font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px }
+.wte-desc  { font-size:12px;color:var(--text-muted);line-height:1.6 }
 .wte-link  { font-size:12px;font-weight:600;color:#22d3ee;text-decoration:none;display:inline-flex;align-items:center;gap:5px;margin-top:8px }
 .wte-link:hover { color:#67e8f9 }
 
@@ -153,7 +153,7 @@
 
 .ai-step-card {
     background: var(--surface);
-    border: 1px solid rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
     border-radius: 16px;
     padding: 18px 22px;
     display: flex;
@@ -163,7 +163,7 @@
     position: relative;
     overflow: hidden;
 }
-.ai-step-card:hover { border-color: rgba(255,255,255,0.1); background: rgba(255,255,255,0.015) }
+.ai-step-card:hover { border-color: var(--accent); background: var(--surface-2) }
 .ai-step-card.done  {
     border-color: rgba(16,185,129,0.15);
     background: rgba(16,185,129,0.03);
@@ -182,7 +182,7 @@
     width: 22px;
     height: 22px;
     border-radius: 6px;
-    border: 2px solid rgba(255,255,255,0.12);
+    border: 2px solid var(--border);
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -217,20 +217,20 @@
 .ai-step-title-main {
     font-size: 14px;
     font-weight: 700;
-    color: #f1f5f9;
+    color: var(--text);
     margin-bottom: 3px;
     transition: color .2s;
 }
 .ai-step-card.done .ai-step-title-main {
-    color: #475569;
+    color: var(--text-muted);
     text-decoration: line-through;
-    text-decoration-color: #334155;
+    text-decoration-color: var(--border);
 }
-.ai-step-desc-main { font-size:12.5px;color:#64748b;line-height:1.5 }
+.ai-step-desc-main { font-size:12.5px;color:var(--text-muted);line-height:1.5 }
 
 /* Right side */
 .ai-step-right { display:flex;align-items:center;gap:12px;flex-shrink:0 }
-.ai-step-time { font-size:11.5px;color:#475569;display:flex;align-items:center;gap:5px }
+.ai-step-time { font-size:11.5px;color:var(--text-muted);display:flex;align-items:center;gap:5px }
 .ai-step-time i { font-size:10px }
 
 .ai-step-btn {
@@ -238,9 +238,9 @@
     font-weight: 700;
     padding: 8px 18px;
     border-radius: 9px;
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.05);
-    color: #f1f5f9;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text);
     text-decoration: none;
     display: inline-flex;
     align-items: center;
@@ -249,7 +249,7 @@
     white-space: nowrap;
     cursor: pointer;
 }
-.ai-step-btn:hover { background: rgba(255,255,255,0.1); color:#fff; border-color:rgba(255,255,255,0.2) }
+.ai-step-btn:hover { background: var(--surface); color:var(--text); border-color:var(--accent) }
 .ai-step-btn.btn-primary-g {
     background: linear-gradient(135deg,#10b981,#06b6d4);
     color: #000;
@@ -288,7 +288,7 @@
     flex-shrink: 0;
 }
 .ai-all-done-title { font-size:15px;font-weight:700;color:#10b981;margin-bottom:2px }
-.ai-all-done-sub   { font-size:13px;color:#64748b }
+.ai-all-done-sub   { font-size:13px;color:var(--text-muted) }
 
 @media(max-width:900px){.wte-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.wte-grid{grid-template-columns:1fr}.ai-progress-card{flex-direction:column}.ai-step-card{flex-wrap:wrap}.ai-step-right{width:100%;justify-content:flex-end}}
@@ -471,7 +471,7 @@
 
         @foreach($wteSteps as $wte)
         <div class="wte-card">
-            <div class="wte-img-placeholder" style="background:rgba(255,255,255,0.02); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+            <div class="wte-img-placeholder" style="background:var(--surface-2); display: flex; align-items: center; justify-content: center; overflow: hidden;">
                 @if(!empty($wte['image']))
                     <img src="{{ asset($wte['image']) }}" alt="{{ __($wte['title']) }}" style="width: 100%; height: 100%; object-fit: cover;">
                 @else
@@ -518,15 +518,18 @@
 
             {{-- Right --}}
             <div class="ai-step-right">
-                @if(!$step['done'] && isset($step['time']))
-                <div class="ai-step-time">
-                    <i class="fa-regular fa-clock"></i> ~{{ __($step['time']) }}
-                </div>
-                @endif
-
                 @if($step['done'])
                     <a href="{{ $step['btn_url'] }}" class="ai-step-btn">
                         <i class="fa-solid fa-check"></i> {{ __($step['done_label']) }}
+                    </a>
+                @else
+                    @if(isset($step['time']))
+                    <div class="ai-step-time">
+                        <i class="fa-regular fa-clock"></i> ~{{ __($step['time']) }}
+                    </div>
+                    @endif
+                    <a href="{{ $step['btn_url'] }}" class="ai-step-btn btn-primary-g">
+                        {{ __($step['btn_label']) }} <i class="fa-solid fa-arrow-right"></i>
                     </a>
                 @endif
             </div>

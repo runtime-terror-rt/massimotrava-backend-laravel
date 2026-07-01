@@ -1,4 +1,5 @@
 <head>
+    <link rel="icon" type="image/jpeg" href="{{ asset('images/favicon.png') }}">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -6,12 +7,12 @@
 <div class="auth-wrapper">
     <div class="auth-card">
         <div class="auth-header">
-            <div class="sidebar-brand" style="position: relative; height: 60px; display: block;">
+            <a href="/" class="sidebar-brand" style="position: relative; height: 60px; display: block;">
                 <img src="{{ asset('images/logo.avif') }}" alt="Logo"
                     style="position: absolute !important; top: 15px !important; left: 50% !important;
                            transform: translateX(-50%) !important; height: 38px !important;
                            width: auto !important; object-fit: contain !important; max-width: 85% !important;">
-            </div>
+            </a>
             <h1 class="auth-title">Welcome Back</h1>
             <p class="auth-subtitle">Please enter your details to sign in</p>
         </div>

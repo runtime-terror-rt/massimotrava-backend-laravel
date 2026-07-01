@@ -92,7 +92,7 @@ class SubscriptionPlanController extends Controller
             DB::commit();
 
             return redirect()
-                ->route('admin.plans.index')
+                ->route('admin.payments.index')
                 ->with('success', 'Subscription plan "' . $plan->name . '" created successfully.');
 
         } catch (ApiErrorException $e) {
@@ -249,7 +249,7 @@ class SubscriptionPlanController extends Controller
             DB::commit();
 
             return redirect()
-                ->route('admin.plans.index')
+                ->route('admin.payments.index')
                 ->with('success', 'Subscription plan "' . $plan->name . '" deleted successfully.');
 
         } catch (\Throwable $e) {

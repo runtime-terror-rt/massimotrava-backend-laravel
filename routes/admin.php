@@ -15,6 +15,7 @@ use App\Http\Controllers\FaqController;
 use App\Http\Controllers\KitController;
 use App\Http\Controllers\LabController;
 use App\Http\Controllers\PrivacyPolicyController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\SubscriptionPlanController;
 use App\Http\Controllers\UserController;
@@ -133,4 +134,7 @@ Route::prefix('admin')
             Route::patch('/pickup/{id}/schedule', [AdminPickupRequestController::class, 'schedule'])->name('pickup.schedule');
             Route::patch('/pickup/{id}/collect', [AdminPickupRequestController::class, 'collect'])->name('pickup.collect');
             Route::patch('/pickup/{id}/cancel', [AdminPickupRequestController::class, 'cancel'])->name('pickup.cancel');
+            Route::resource('reviews', ReviewController::class);
+            Route::post('/reviews/{review}/toggle-status', [ReviewController::class, 'toggleStatus'])->name('reviews.toggle-status');
+            Route::get('/reviews', [ReviewController::class, 'FrontIndex'])->name('review.index');
     });
