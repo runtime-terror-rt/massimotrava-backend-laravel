@@ -139,18 +139,18 @@ input[type=checkbox]:checked + .opt-label .opt-dot-inner { transform:scale(1) }
 <div class="hp-page">
 
     <a href="{{ route('user.actionitem.index') }}" class="hp-back">
-        <i class="fa-solid fa-arrow-left"></i> Back to Action Items
+        <i class="fa-solid fa-arrow-left"></i> {{ __('messages.back_to_action_items') }}
     </a>
 
     <div class="hp-header">
-        <div class="hp-title">Complete Your Health Profile</div>
-        <div class="hp-sub">Answer 5 quick questions to help us interpret your results more precisely. (~5 minutes)</div>
+        <div class="hp-title">{{ __('messages.complete_your_health_profile') }}</div>
+        <div class="hp-sub">{{ __('messages.sub_header') }}</div>
     </div>
 
     {{-- Progress --}}
     <div class="hp-prog-wrap">
         <div class="hp-prog-meta">
-            <span class="hp-prog-label" id="progLabel">Question 1 of 5</span>
+            <span class="hp-prog-label" id="progLabel">{{ __('messages.question_x_of_y', ['current' => 1, 'total' => 5]) }}</span>
             <span class="hp-prog-pct" id="progPct">0%</span>
         </div>
         <div class="hp-prog-bg">
@@ -169,32 +169,37 @@ input[type=checkbox]:checked + .opt-label .opt-dot-inner { transform:scale(1) }
 
         {{-- Q1: Age --}}
         <div class="hp-card" id="q1">
-            <div class="hp-q-num">Question 1 of 5</div>
-            <div class="hp-q-text">What is your age?</div>
-            <div class="hp-q-hint">This helps us interpret your biomarker levels against age-appropriate ranges.</div>
+            <div class="hp-q-num">{{ __('messages.question_x_of_y', ['current' => 1, 'total' => 5]) }}</div>
+            <div class="hp-q-text">{{ __('messages.q1_text') }}</div>
+            <div class="hp-q-hint">{{ __('messages.q1_hint') }}</div>
             <div class="range-wrap">
                 <input type="range" name="age" id="ageRange" class="range-input"
                        min="18" max="90" value="{{ old('age', auth()->user()->health_profile['age'] ?? 30) }}"
-                       oninput="updateRange('ageVal','ageUnit',this.value,'years old')">
+                       oninput="updateRange('ageVal','ageUnit',this.value,'{{ __('messages.years_old') }}')">
                 <div class="range-labels"><span>18</span><span>90</span></div>
                 <div class="range-val" id="ageVal">{{ old('age', auth()->user()->health_profile['age'] ?? 30) }}</div>
-                <div class="range-val-label" id="ageUnit">years old</div>
+                <div class="range-val-label" id="ageUnit">{{ __('messages.years_old') }}</div>
             </div>
         </div>
 
         {{-- Q2: Sex --}}
         <div class="hp-card" id="q2">
-            <div class="hp-q-num">Question 2 of 5</div>
-            <div class="hp-q-text">What is your biological sex?</div>
-            <div class="hp-q-hint">Certain biomarkers have different reference ranges based on biological sex.</div>
+            <div class="hp-q-num">{{ __('messages.question_x_of_y', ['current' => 2, 'total' => 5]) }}</div>
+            <div class="hp-q-text">{{ __('messages.q2_text') }}</div>
+            <div class="hp-q-hint">{{ __('messages.q2_hint') }}</div>
             <div class="opt-grid cols-3">
-                @foreach(['Male','Female','Prefer not to say'] as $opt)
+                @php $sexOptions = [
+                    'Male' => 'messages.sex_male',
+                    'Female' => 'messages.sex_female',
+                    'Prefer not to say' => 'messages.sex_prefer_not_to_say'
+                ] @endphp
+                @foreach($sexOptions as $val => $langKey)
                 <div class="opt-item">
-                    <input type="radio" name="biological_sex" id="sex_{{ $loop->index }}" value="{{ $opt }}"
-                           {{ old('biological_sex', auth()->user()->health_profile['biological_sex'] ?? '') === $opt ? 'checked' : '' }}>
+                    <input type="radio" name="biological_sex" id="sex_{{ $loop->index }}" value="{{ $val }}"
+                           {{ old('biological_sex', auth()->user()->health_profile['biological_sex'] ?? '') === $val ? 'checked' : '' }}>
                     <label for="sex_{{ $loop->index }}" class="opt-label">
                         <span class="opt-dot"><span class="opt-dot-inner"></span></span>
-                        {{ $opt }}
+                        {{ __($langKey) }}
                     </label>
                 </div>
                 @endforeach
@@ -203,15 +208,15 @@ input[type=checkbox]:checked + .opt-label .opt-dot-inner { transform:scale(1) }
 
         {{-- Q3: Activity level --}}
         <div class="hp-card" id="q3">
-            <div class="hp-q-num">Question 3 of 5</div>
-            <div class="hp-q-text">How would you describe your activity level?</div>
-            <div class="hp-q-hint">Your physical activity level affects many biomarkers including cholesterol and glucose.</div>
+            <div class="hp-q-num">{{ __('messages.question_x_of_y', ['current' => 3, 'total' => 5]) }}</div>
+            <div class="hp-q-text">{{ __('messages.q3_text') }}</div>
+            <div class="hp-q-hint">{{ __('messages.q3_hint') }}</div>
             <div class="opt-grid">
                 @php $activityOptions = [
-                    ['val'=>'sedentary',  'label'=>'Sedentary',    'desc'=>'Little or no exercise'],
-                    ['val'=>'light',      'label'=>'Lightly active','desc'=>'1–3 days/week'],
-                    ['val'=>'moderate',   'label'=>'Moderately active','desc'=>'3–5 days/week'],
-                    ['val'=>'very_active','label'=>'Very active',   'desc'=>'6–7 days/week'],
+                    ['val'=>'sedentary',   'label'=>'messages.act_sedentary',   'desc'=>'messages.act_sedentary_desc'],
+                    ['val'=>'light',       'label'=>'messages.act_light',       'desc'=>'messages.act_light_desc'],
+                    ['val'=>'moderate',    'label'=>'messages.act_moderate',    'desc'=>'messages.act_moderate_desc'],
+                    ['val'=>'very_active', 'label'=>'messages.act_very_active', 'desc'=>'messages.act_very_active_desc'],
                 ] @endphp
                 @foreach($activityOptions as $opt)
                 <div class="opt-item">
@@ -220,9 +225,9 @@ input[type=checkbox]:checked + .opt-label .opt-dot-inner { transform:scale(1) }
                     <label for="act_{{ $loop->index }}" class="opt-label" style="flex-direction:column;align-items:flex-start;gap:4px">
                         <div style="display:flex;align-items:center;gap:10px;width:100%">
                             <span class="opt-dot"><span class="opt-dot-inner"></span></span>
-                            <span style="font-weight:600">{{ $opt['label'] }}</span>
+                            <span style="font-weight:600">{{ __($opt['label']) }}</span>
                         </div>
-                        <span style="font-size:11.5px;color:#64748b;padding-left:30px">{{ $opt['desc'] }}</span>
+                        <span style="font-size:11.5px;color:#64748b;padding-left:30px">{{ __($opt['desc']) }}</span>
                     </label>
                 </div>
                 @endforeach
@@ -231,17 +236,17 @@ input[type=checkbox]:checked + .opt-label .opt-dot-inner { transform:scale(1) }
 
         {{-- Q4: Health goals --}}
         <div class="hp-card" id="q4">
-            <div class="hp-q-num">Question 4 of 5</div>
-            <div class="hp-q-text">What are your main health goals?</div>
-            <div class="hp-q-hint">Select all that apply. This helps us highlight the most relevant biomarkers for you.</div>
+            <div class="hp-q-num">{{ __('messages.question_x_of_y', ['current' => 4, 'total' => 5]) }}</div>
+            <div class="hp-q-text">{{ __('messages.q4_text') }}</div>
+            <div class="hp-q-hint">{{ __('messages.q4_hint') }}</div>
             <div class="opt-grid">
                 @php $goals = [
-                    ['val'=>'energy',       'label'=>'Improve energy levels', 'icon'=>'⚡'],
-                    ['val'=>'heart',        'label'=>'Heart health',          'icon'=>'❤️'],
-                    ['val'=>'weight',       'label'=>'Weight management',     'icon'=>'⚖️'],
-                    ['val'=>'hormones',     'label'=>'Hormone balance',       'icon'=>'🔬'],
-                    ['val'=>'longevity',    'label'=>'Longevity & vitality',  'icon'=>'🌿'],
-                    ['val'=>'performance',  'label'=>'Athletic performance',  'icon'=>'🏃'],
+                    ['val'=>'energy',       'label'=>'messages.goal_energy', 'icon'=>'⚡'],
+                    ['val'=>'heart',        'label'=>'messages.goal_heart',  'icon'=>'❤️'],
+                    ['val'=>'weight',       'label'=>'messages.goal_weight', 'icon'=>'⚖️'],
+                    ['val'=>'hormones',     'label'=>'messages.goal_hormones','icon'=>'🔬'],
+                    ['val'=>'longevity',    'label'=>'messages.goal_longevity','icon'=>'🌿'],
+                    ['val'=>'performance',  'label'=>'messages.goal_performance','icon'=>'🏃'],
                 ] @endphp
                 @foreach($goals as $g)
                 <div class="opt-item">
@@ -249,7 +254,7 @@ input[type=checkbox]:checked + .opt-label .opt-dot-inner { transform:scale(1) }
                            {{ in_array($g['val'], old('health_goals', auth()->user()->health_profile['health_goals'] ?? [])) ? 'checked' : '' }}>
                     <label for="goal_{{ $loop->index }}" class="opt-label">
                         <span class="opt-dot opt-dot-sq"><span class="opt-dot-inner opt-dot-inner-sq"></span></span>
-                        <span>{{ $g['icon'] }} {{ $g['label'] }}</span>
+                        <span>{{ $g['icon'] }} {{ __($g['label']) }}</span>
                     </label>
                 </div>
                 @endforeach
@@ -258,17 +263,17 @@ input[type=checkbox]:checked + .opt-label .opt-dot-inner { transform:scale(1) }
 
         {{-- Q5: Medical conditions --}}
         <div class="hp-card" id="q5">
-            <div class="hp-q-num">Question 5 of 5</div>
-            <div class="hp-q-text">Do you have any pre-existing medical conditions?</div>
-            <div class="hp-q-hint">Select all that apply. This information helps our team provide more accurate insights.</div>
+            <div class="hp-q-num">{{ __('messages.question_x_of_y', ['current' => 5, 'total' => 5]) }}</div>
+            <div class="hp-q-text">{{ __('messages.q5_text') }}</div>
+            <div class="hp-q-hint">{{ __('messages.q5_hint') }}</div>
             <div class="opt-grid">
                 @php $conditions = [
-                    ['val'=>'diabetes',     'label'=>'Diabetes or pre-diabetes'],
-                    ['val'=>'hypertension', 'label'=>'High blood pressure'],
-                    ['val'=>'thyroid',      'label'=>'Thyroid condition'],
-                    ['val'=>'cholesterol',  'label'=>'High cholesterol'],
-                    ['val'=>'none',         'label'=>'None of the above'],
-                    ['val'=>'prefer_not',   'label'=>'Prefer not to say'],
+                    ['val'=>'diabetes',     'label'=>'messages.cond_diabetes'],
+                    ['val'=>'hypertension', 'label'=>'messages.cond_hypertension'],
+                    ['val'=>'thyroid',      'label'=>'messages.cond_thyroid'],
+                    ['val'=>'cholesterol',  'label'=>'messages.cond_cholesterol'],
+                    ['val'=>'none',         'label'=>'messages.cond_none'],
+                    ['val'=>'prefer_not',   'label'=>'messages.cond_prefer_not'],
                 ] @endphp
                 @foreach($conditions as $c)
                 <div class="opt-item">
@@ -276,7 +281,7 @@ input[type=checkbox]:checked + .opt-label .opt-dot-inner { transform:scale(1) }
                            {{ in_array($c['val'], old('medical_conditions', auth()->user()->health_profile['medical_conditions'] ?? [])) ? 'checked' : '' }}>
                     <label for="cond_{{ $loop->index }}" class="opt-label">
                         <span class="opt-dot opt-dot-sq"><span class="opt-dot-inner opt-dot-inner-sq"></span></span>
-                        {{ $c['label'] }}
+                        {{ __($c['label']) }}
                     </label>
                 </div>
                 @endforeach
@@ -287,14 +292,14 @@ input[type=checkbox]:checked + .opt-label .opt-dot-inner { transform:scale(1) }
         <div class="hp-footer">
             <div style="font-size:13px;color:#64748b">
                 <i class="fa-solid fa-shield-halved" style="color:#22d3ee;margin-right:6px"></i>
-                Your health data is encrypted and never shared with third parties.
+                {{ __('messages.encryption_notice') }}
             </div>
             <div style="display:flex;gap:10px">
                 <a href="{{ route('user.actionitem.index') }}" class="btn-back-hp">
-                    <i class="fa-solid fa-arrow-left"></i> Back
+                    <i class="fa-solid fa-arrow-left"></i> {{ __('messages.back') }}
                 </a>
                 <button type="submit" class="btn-submit-hp">
-                    <i class="fa-solid fa-check"></i> Save Health Profile
+                    <i class="fa-solid fa-check"></i> {{ __('messages.save_profile') }}
                 </button>
             </div>
         </div>

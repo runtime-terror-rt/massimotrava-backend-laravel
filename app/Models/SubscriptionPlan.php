@@ -3,43 +3,37 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SubscriptionPlan extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'name',
         'user_id',
         'billing_cycle',
+        'stripe_price_id',
+        'stripe_product_id',
         'price',
         'duration',
         'features',
         'status',
-        'stripe_product_id',
-        'stripe_price_id'
     ];
 
-    /**
-     * The attributes that should be cast.
-     */
     protected $casts = [
-        'features' => 'array',   
-        'status'   => 'boolean',
+        'features' => 'array',
         'price'    => 'decimal:2',
+        'status'   => 'boolean',
     ];
 
-    /**
-     * Get the user (admin/owner) who created the subscription plan.
-     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Get the users currently subscribed to this plan.
-     */
-    public function subscribers()
+    public function subscriptions()
     {
-        return $this->hasMany(User::class, 'subscription_plan_id');
+        return $this->hasMany(Subscription::class, 'subscription_plan_id');
     }
 }

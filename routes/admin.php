@@ -16,6 +16,7 @@ use App\Http\Controllers\KitController;
 use App\Http\Controllers\LabController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\RolePermissionController;
+use App\Http\Controllers\SubscriptionPlanController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
@@ -121,12 +122,11 @@ Route::prefix('admin')
             Route::post('/campaigns', [CampaignController::class, 'store'])->name('campaigns.store');
             Route::get('/security-audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
 
-            Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
-            Route::post('/payments', [PaymentController::class, 'store'])->name('plans.store');
-
-            Route::get('plan/{id}', [PaymentController::class, 'show'])->name('plans.show');
-            Route::get('plan/{id}/edit', [PaymentController::class, 'edit'])->name('plans.edit');
-            Route::delete('plan/{id}', [PaymentController::class, 'destroy'])->name('plans.destroy');
+             
+            Route::get('/payments', [SubscriptionPlanController::class, 'index'])->name('payments.index');
+            Route::post('/plans', [SubscriptionPlanController::class, 'store'])->name('plans.store');
+            Route::put('/plans/{id}', [SubscriptionPlanController::class, 'update'])->name('plans.update');
+            Route::delete('/plans/{id}', [SubscriptionPlanController::class, 'destroy'])->name('plans.destroy');
 
             Route::get('/pickup-requests', [AdminPickupRequestController::class, 'index'])->name('pickup.index');
             Route::get('/pickup-requests/{id}', [AdminPickupRequestController::class, 'show'])->name('pickup.show');

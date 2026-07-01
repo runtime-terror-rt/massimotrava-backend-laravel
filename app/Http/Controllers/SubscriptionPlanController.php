@@ -3,315 +3,260 @@
 namespace App\Http\Controllers;
 
 use App\Models\SubscriptionPlan;
+use App\Models\Subscription;
 use Illuminate\Http\Request;
-use Stripe\Stripe;
-use Stripe\Checkout\Session as StripeSession;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Stripe\StripeClient;
+use Stripe\Exception\ApiErrorException;
 
 class SubscriptionPlanController extends Controller
 {
+    protected StripeClient $stripe;
+
+    public function __construct()
+    {
+        $this->stripe = new StripeClient(config('services.stripe.secret'));
+    }
+
+    /**
+     * Display plans + active subscriptions list.
+     */
     public function index(Request $request)
     {
-        try {
-            $type = $request->query('type'); 
-            $billing = strtolower($request->query('billing', 'monthly'));
+        $billing = $request->query('billing', 'monthly');
 
-            $query = SubscriptionPlan::query(); 
+        $plans = SubscriptionPlan::where('billing_cycle', $billing)
+            ->orderBy('price', 'asc')
+            ->get();
 
-            if ($type && in_array($type, ['individual', 'professional'])) {
-                $query->where('plan_type', $type);
-            }
+        $userSubscriptions = Subscription::with(['user', 'plan'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
-            $plans = $query->latest()->get();
-
-            $data = $plans->map(function ($plan) use ($billing) {
-                return [
-                    'id'             => $plan->id,
-                    'name'           => $plan->name,
-                    'plan_type'      => $plan->plan_type,
-                    'billing_cycle'  => $plan->billing_cycle,
-                    'duration'       => $plan->duration,
-                    'member_limit'   => $plan->member_limit,
-                    'features'       => $plan->features,
-                    'status'         => $plan->status,
-                    'price'          => $billing === 'annual' ? $plan->annual_price : $plan->price,
-                    'projection_limit' => $plan->projection_limit,
-                    'status_label'     => $plan->status ? 'Active' : 'Inactive',
-                ];
-            });
-
-            return response()->json([
-                'success' => true,
-                'count'   => $data->count(),
-                'data'    => $data
-            ], 200);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch all plans: ' . $e->getMessage(),
-            ], 500);
-        }
+        return view('admin.payments.index', compact('plans', 'userSubscriptions'));
     }
 
-    public function showPricingPage(Request $request)
+    /**
+     * Store a new plan and create it on Stripe.
+     */
+    public function store(Request $request)
     {
-        try {
-            $billing = strtolower($request->query('billing', 'monthly'));
-            
-            $plans = SubscriptionPlan::where('status', true)->latest()->get();
-
-            $data = $plans->map(function ($plan) use ($billing) {
-                return [
-                    'id'            => $plan->id,
-                    'name'           => $plan->name,
-                    'plan_type'      => $plan->plan_type,
-                    'billing_cycle'  => $plan->billing_cycle,
-                    'duration'       => $plan->duration,
-                    'features'       => $plan->features,
-                    'price'          => $billing === 'annual' ? $plan->annual_price : $plan->price,
-                ];
-            });
-
-            return view('pricing', compact('data'));
-
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Something went wrong: ' . $e->getMessage());
-        }
-    }
-
-
-    public function storeOrUpdatePlan(Request $request)
-    {
-        $request->validate([
-            'id'           => 'nullable|integer|exists:subscription_plans,id',
-            'name'         => 'required|string|max:255',
-            'billing_cycle'=> 'required|in:monthly,annual',
-            'price'        => 'required|numeric|min:0',
-            'duration'     => 'nullable|integer',
-            'features'     => 'nullable|array',
-            'status'       => 'boolean',
+        $validated = $request->validate([
+            'name'          => 'required|string|max:255',
+            'billing_cycle' => 'required|in:monthly,annual',
+            'price'         => 'required|numeric|min:0',
+            'duration'      => 'nullable|integer|min:1',
+            'features'      => 'nullable|array',
+            'features.*'    => 'nullable|string',
         ]);
-    
+
+        DB::beginTransaction();
+
         try {
-            \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
-    
-            $isUpdate  = $request->filled('id');
-            $existingPlan = $isUpdate ? SubscriptionPlan::find($request->id) : null;
-    
-            $priceChanged = $isUpdate
-                && $existingPlan
-                && (float) $existingPlan->price !== (float) $request->price;
-    
-            $stripePriceId   = $existingPlan?->stripe_price_id;
-            $stripeProductId = $existingPlan?->stripe_product_id;
-    
-            $intervalMap = [
-                'monthly' => ['interval' => 'month', 'count' => 1],
-                'annual'  => ['interval' => 'year',  'count' => 1],
-            ];
-            $interval = $intervalMap[$request->billing_cycle] ?? ['interval' => 'month', 'count' => 1];
-    
-            if (!$isUpdate || !$stripePriceId || $priceChanged) {
-    
-                if ($stripeProductId) {
-                    \Stripe\Product::update($stripeProductId, [
-                        'name' => $request->name,
-                    ]);
-                } else {
-                    $product = \Stripe\Product::create([
-                        'name'        => $request->name,
-                        'description' => "Vyralabs {$request->name} plan",
-                    ]);
-                    $stripeProductId = $product->id;
-                }
-    
-                if ($stripePriceId && $priceChanged) {
-                    \Stripe\Price::update($stripePriceId, ['active' => false]);
-                }
-    
-                $stripePrice = \Stripe\Price::create([
-                    'product'       => $stripeProductId,
-                    'unit_amount'   => (int) round($request->price * 100), // cents
-                    'currency'      => 'usd',
-                    'recurring'     => [
-                        'interval'       => $interval['interval'],
-                        'interval_count' => $interval['count'],
+            $stripeProductId = null;
+            $stripePriceId   = null;
+
+            if ((float) $validated['price'] > 0) {
+                $product = $this->stripe->products->create([
+                    'name'        => $validated['name'],
+                    'description' => $validated['name'] . ' subscription plan (' . $validated['billing_cycle'] . ')',
+                ]);
+
+                $price = $this->stripe->prices->create([
+                    'product'     => $product->id,
+                    'unit_amount' => (int) round($validated['price'] * 100),
+                    'currency'    => 'usd',
+                    'recurring'   => [
+                        'interval' => $validated['billing_cycle'] === 'annual' ? 'year' : 'month',
                     ],
                 ]);
-    
-                $stripePriceId = $stripePrice->id;
-            }
-    
-            // ── DB save ─────────────────────────────────────────────────────
-            $plan = SubscriptionPlan::updateOrCreate(
-                ['id' => $request->id],
-                [
-                    'name'              => $request->name,
-                    'user_id'           => $request->user()->id,
-                    'billing_cycle'     => $request->billing_cycle,
-                    'price'             => $request->price,
-                    'duration'          => $request->duration,
-                    'features'          => $request->features,
-                    'status'            => $request->status ?? true,
-                    'stripe_price_id'   => $stripePriceId,
-                    'stripe_product_id' => $stripeProductId,
-                ]
-            );
-    
-            return response()->json([
-                'success' => true,
-                'message' => $isUpdate ? 'Plan updated successfully.' : 'Plan created successfully.',
-                'data'    => $plan,
-            ], $isUpdate ? 200 : 201);
-    
-        } catch (\Stripe\Exception\ApiErrorException $e) {
-            \Log::error('Stripe Plan Error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Stripe error: ' . $e->getMessage(),
-            ], 500);
-        } catch (\Exception $e) {
-            \Log::error('Plan Store Error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Something went wrong: ' . $e->getMessage(),
-            ], 500);
-        }
-    }
 
-    /**
-     * Show single plan
-     */
-    public function show(Request $request, $id)
-    {
-        try {
-            $plan = SubscriptionPlan::findOrFail($id);
-
-            $billing = strtolower($request->query('billing', 'monthly')); // monthly/annual default
-            if (!in_array($billing, ['monthly', 'annual'])) {
-                $billing = 'monthly';
+                $stripeProductId = $product->id;
+                $stripePriceId   = $price->id;
             }
 
-            $data = [
-                'id'            => $plan->id,
-                'name'          => $plan->name,
-                'plan_type'     => $plan->plan_type,
-                'billing_cycle' => $plan->billing_cycle,
-                'duration'      => $plan->duration,
-                'member_limit'  => $plan->member_limit,
-                'features'      => $plan->features,
-                'status'        => $plan->status,
-                'price'         => $billing === 'annual' ? $plan->annual_price : $plan->price,
-            ];
+            $plan = SubscriptionPlan::create([
+                'name'              => $validated['name'],
+                'user_id'           => Auth::id(),
+                'billing_cycle'     => $validated['billing_cycle'],
+                'price'             => $validated['price'],
+                'duration'          => $validated['duration'] ?? null,
+                'features'          => array_values(array_filter($request->input('features', []))),
+                'stripe_product_id' => $stripeProductId,
+                'stripe_price_id'   => $stripePriceId,
+                'status'            => true,
+            ]);
 
-            return response()->json([
-                'success' => true,
-                'data'    => $data
-            ], 200);
+            DB::commit();
 
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Plan not found'
-            ], 404);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch plan: ' . $e->getMessage()
-            ], 500);
+            return redirect()
+                ->route('admin.plans.index')
+                ->with('success', 'Subscription plan "' . $plan->name . '" created successfully.');
+
+        } catch (ApiErrorException $e) {
+            DB::rollBack();
+            Log::error('[PLAN STORE] Stripe error: ' . $e->getMessage());
+
+            return back()->withInput()->with('error', 'Stripe error: ' . $e->getMessage());
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('[PLAN STORE] Error: ' . $e->getMessage() . ' | ' . $e->getFile() . ':' . $e->getLine());
+
+            return back()->withInput()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
     }
 
     /**
-     * Toggle plan status (active/inactive)
+     * Update an existing plan, syncing Stripe Price/Product as needed.
      */
-    public function toggleStatus($id)
+    public function update(Request $request, $id)
     {
+        $plan = SubscriptionPlan::findOrFail($id);
+
+        $validated = $request->validate([
+            'name'          => 'required|string|max:255',
+            'billing_cycle' => 'required|in:monthly,annual',
+            'price'         => 'required|numeric|min:0',
+            'duration'      => 'nullable|integer|min:1',
+            'features'      => 'nullable|array',
+            'features.*'    => 'nullable|string',
+        ]);
+
+        DB::beginTransaction();
+
         try {
-            $plan = SubscriptionPlan::findOrFail($id);
-            $plan->status = !$plan->status;
-            $plan->save();
+            $newPrice     = (float) $validated['price'];
+            $priceChanged = $newPrice != (float) $plan->price;
+            $cycleChanged = $validated['billing_cycle'] !== $plan->billing_cycle;
+            $nameChanged  = $validated['name'] !== $plan->name;
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Plan status updated successfully',
-                'data' => [
-                    'id' => $plan->id,
-                    'name' => $plan->name,
-                    'status' => $plan->status ? 'Active' : 'Inactive'
-                ]
-            ], 200);
+            $stripeProductId = $plan->stripe_product_id;
+            $stripePriceId   = $plan->stripe_price_id;
 
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Plan not found'
-            ], 404);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update plan status: ' . $e->getMessage()
-            ], 500);
+            if ($newPrice > 0) {
+                if (!$stripeProductId) {
+                    $product = $this->stripe->products->create([
+                        'name'        => $validated['name'],
+                        'description' => $validated['name'] . ' subscription plan (' . $validated['billing_cycle'] . ')',
+                    ]);
+                    $stripeProductId = $product->id;
+                } elseif ($nameChanged) {
+                    $this->stripe->products->update($stripeProductId, [
+                        'name' => $validated['name'],
+                    ]);
+                }
+
+                if ($priceChanged || $cycleChanged || !$stripePriceId) {
+                    $newStripePrice = $this->stripe->prices->create([
+                        'product'     => $stripeProductId,
+                        'unit_amount' => (int) round($newPrice * 100),
+                        'currency'    => 'usd',
+                        'recurring'   => [
+                            'interval' => $validated['billing_cycle'] === 'annual' ? 'year' : 'month',
+                        ],
+                    ]);
+
+                    if ($stripePriceId) {
+                        try {
+                            $this->stripe->prices->update($stripePriceId, ['active' => false]);
+                        } catch (ApiErrorException $e) {
+                            Log::warning('[PLAN UPDATE] Could not archive old price: ' . $e->getMessage());
+                        }
+                    }
+
+                    $stripePriceId = $newStripePrice->id;
+                }
+            } else {
+                if ($stripePriceId) {
+                    try {
+                        $this->stripe->prices->update($stripePriceId, ['active' => false]);
+                    } catch (ApiErrorException $e) {
+                        Log::warning('[PLAN UPDATE] Could not archive price for free plan: ' . $e->getMessage());
+                    }
+                }
+                $stripePriceId = null;
+            }
+
+            $plan->update([
+                'name'              => $validated['name'],
+                'billing_cycle'     => $validated['billing_cycle'],
+                'price'             => $newPrice,
+                'duration'          => $validated['duration'] ?? null,
+                'features'          => array_values(array_filter($request->input('features', []))),
+                'stripe_product_id' => $stripeProductId,
+                'stripe_price_id'   => $stripePriceId,
+            ]);
+
+            DB::commit();
+
+            return redirect()
+                ->route('admin.payments.index')
+                ->with('success', 'Subscription plan "' . $plan->name . '" updated successfully.');
+
+        } catch (ApiErrorException $e) {
+            DB::rollBack();
+            Log::error('[PLAN UPDATE] Stripe error: ' . $e->getMessage());
+
+            return back()->withInput()->with('error', 'Stripe error: ' . $e->getMessage());
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('[PLAN UPDATE] Error: ' . $e->getMessage() . ' | ' . $e->getFile() . ':' . $e->getLine());
+
+            return back()->withInput()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
     }
 
     /**
-     * Delete plan
+     * Delete a plan: archive Stripe Price/Product, soft-delete locally.
      */
     public function destroy($id)
     {
-        $plan = SubscriptionPlan::find($id);
-        if (!$plan) return response()->json(['success' => false, 'message' => 'Plan not found'], 404);
+        $plan = SubscriptionPlan::findOrFail($id);
 
-        // Prevent deleting fixed plans
-        if (in_array($plan->id, [1,2,3,4,5,6,7,8])) {
-            return response()->json([
-                'success' => false,
-                'message' => 'This plan is fixed and cannot be deleted.'
-            ], 403);
+        $activeSubscribers = Subscription::where('subscription_plan_id', $plan->id)
+            ->where('status', 'active')
+            ->count();
+
+        if ($activeSubscribers > 0) {
+            return back()->with('error', 'Cannot delete "' . $plan->name . '" — it has ' . $activeSubscribers . ' active subscriber(s).');
         }
 
-        $plan->delete();
-        return response()->json(['success' => true, 'message' => 'Plan deleted successfully'], 200);
-    }
-
-    public function checkout($id)
-    {
-        $plan = SubscriptionPlan::findOrFail($id);
-        $user = auth()->user();
+        DB::beginTransaction();
 
         try {
-            Stripe::setApiKey(config('services.stripe.secret') ?? env('STRIPE_SECRET'));
+            if ($plan->stripe_price_id) {
+                try {
+                    $this->stripe->prices->update($plan->stripe_price_id, ['active' => false]);
+                } catch (ApiErrorException $e) {
+                    Log::warning('[PLAN DESTROY] Could not archive price: ' . $e->getMessage());
+                }
+            }
 
-            $checkoutSession = StripeSession::create([
-                'customer_email' => $user->email,
-                'payment_method_types' => ['card'],
-                'line_items' => [[
-                    'price_data' => [
-                        'currency' => 'eur',
-                        'product_data' => [
-                            'name' => $plan->name . ' - Longevity Suite',
-                        ],
-                        'unit_amount' => $plan->price * 100,
-                        'recurring' => [
-                            'interval' => $plan->billing_cycle === 'annual' ? 'year' : 'month',
-                        ],
-                    ],
-                    'quantity' => 1,
-                ]],
-                'mode' => 'subscription',
-                'success_url' => route('dashboard') . '?session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url' => route('pricing.page') ?? url('/'),
-                'metadata' => [
-                    'user_id' => $user->id,
-                    'plan_id' => $plan->id,
-                ],
-            ]);
+            if ($plan->stripe_product_id) {
+                try {
+                    $this->stripe->products->update($plan->stripe_product_id, ['active' => false]);
+                } catch (ApiErrorException $e) {
+                    Log::warning('[PLAN DESTROY] Could not archive product: ' . $e->getMessage());
+                }
+            }
 
-            return redirect()->away($checkoutSession->url);
+            $plan->delete();
 
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Stripe checkout failed: ' . $e->getMessage());
+            DB::commit();
+
+            return redirect()
+                ->route('admin.plans.index')
+                ->with('success', 'Subscription plan "' . $plan->name . '" deleted successfully.');
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('[PLAN DESTROY] Error: ' . $e->getMessage());
+
+            return back()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
     }
 }

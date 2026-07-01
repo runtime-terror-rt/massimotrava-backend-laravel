@@ -155,12 +155,12 @@
 <div class="ins-page">
 
     <a href="{{ route('user.actionitem.index') }}" class="ins-back">
-        <i class="fa-solid fa-arrow-left"></i> Back to Action Items
+        <i class="fa-solid fa-arrow-left"></i> {{ __('messages.back_to_action_items') }}
     </a>
 
     <div class="ins-header">
-        <div class="ins-title">Kit Instructions</div>
-        <div class="ins-sub">Watch this video to learn how to use your lab kit correctly before collecting your sample.</div>
+        <div class="ins-title">{{ __('messages.ins_title') }}</div>
+        <div class="ins-sub">{{ __('messages.ins_sub') }}</div>
     </div>
 
     {{-- Video Section --}}
@@ -168,41 +168,41 @@
         <div class="video-wrap">
             <div class="video-placeholder" id="videoPlaceholder">
                 <div class="video-play-btn"><i class="fa-solid fa-play"></i></div>
-                <div class="video-placeholder-label">How to use your Vyralabs kit</div>
+                <div class="video-placeholder-label">{{ __('messages.video_placeholder_label') }}</div>
             </div>
         </div>
         <div class="video-meta">
             <div>
-                <div class="video-meta-title">How to use your at-home lab kit</div>
-                <div class="video-meta-sub">Complete step-by-step guide for sample collection</div>
+                <div class="video-meta-title">{{ __('messages.video_meta_title') }}</div>
+                <div class="video-meta-sub">{{ __('messages.video_meta_sub') }}</div>
             </div>
             <div class="video-duration">
-                <i class="fa-regular fa-clock"></i> ~3 minutes
+                <i class="fa-regular fa-clock"></i> ~{{ __('messages.time_3_mins') }}
             </div>
         </div>
     </div>
 
     {{-- Step-by-step guide --}}
     <div style="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#475569;margin-bottom:14px;display:flex;align-items:center;gap:8px">
-        <i class="fa-solid fa-list-ol"></i> Step-by-step guide
+        <i class="fa-solid fa-list-ol"></i> {{ __('messages.step_by_step_guide') }}
         <span style="flex:1;height:1px;background:rgba(255,255,255,0.05)"></span>
     </div>
 
     <div class="steps-grid">
         @php $instructionSteps = [
-            ['num'=>1,'title'=>'Wash your hands','desc'=>'Thoroughly wash and dry your hands before handling the kit components to avoid contamination.'],
-            ['num'=>2,'title'=>'Prepare your kit','desc'=>'Lay out all components on a clean surface: lancet, collection tube, bandage, and return envelope.'],
-            ['num'=>3,'title'=>'Collect your sample','desc'=>'Follow the instructions provided in the kit to collect your blood or saliva sample as directed.'],
-            ['num'=>4,'title'=>'Seal the collection tube','desc'=>'Securely close the collection tube and place it in the biohazard bag included in your kit.'],
-            ['num'=>5,'title'=>'Complete the label','desc'=>'Fill in your name and date of birth on the sample label and attach it firmly to the collection tube.'],
-            ['num'=>6,'title'=>'Schedule a pickup','desc'=>'Schedule a courier pickup from your Pickup Requests page and have your sealed kit ready.'],
+            ['num'=>1, 'title'=>'messages.ins_step1_title', 'desc'=>'messages.ins_step1_desc'],
+            ['num'=>2, 'title'=>'messages.ins_step2_title', 'desc'=>'messages.ins_step2_desc'],
+            ['num'=>3, 'title'=>'messages.ins_step3_title', 'desc'=>'messages.ins_step3_desc'],
+            ['num'=>4, 'title'=>'messages.ins_step4_title', 'desc'=>'messages.ins_step4_desc'],
+            ['num'=>5, 'title'=>'messages.ins_step5_title', 'desc'=>'messages.ins_step5_desc'],
+            ['num'=>6, 'title'=>'messages.ins_step6_title', 'desc'=>'messages.ins_step6_desc'],
         ]; @endphp
 
         @foreach($instructionSteps as $s)
         <div class="step-card">
             <div class="step-num">{{ $s['num'] }}</div>
-            <div class="step-title">{{ $s['title'] }}</div>
-            <div class="step-desc">{{ $s['desc'] }}</div>
+            <div class="step-title">{{ __($s['title']) }}</div>
+            <div class="step-desc">{{ __($s['desc']) }}</div>
         </div>
         @endforeach
     </div>
@@ -210,21 +210,21 @@
     {{-- Footer actions --}}
     <div class="ins-footer">
         <div class="ins-footer-text">
-            Once you've watched the video, mark this step as <b>complete</b> and move on.
+            {!! __('messages.ins_footer_text') !!}
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
             <a href="{{ route('user.actionitem.index') }}" class="btn-next">
-                <i class="fa-solid fa-arrow-left"></i> Back
+                <i class="fa-solid fa-arrow-left"></i> {{ __('messages.back') }}
             </a>
             @if(auth()->user()->action_item_viewed)
                 <span class="btn-mark-done" style="background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.2); cursor: default; box-shadow: none;">
-                    <i class="fa-solid fa-check"></i> Already Viewed
+                    <i class="fa-solid fa-check"></i> {{ __('messages.already_viewed') }}
                 </span>
             @else
                 <form action="{{ route('user.action-items.mark-viewed') }}" method="POST">
                     @csrf
                     <button type="submit" class="btn-mark-done">
-                        <i class="fa-solid fa-check"></i> Mark as Viewed
+                        <i class="fa-solid fa-check"></i> {{ __('messages.mark_as_viewed') }}
                     </button>
                 </form>
             @endif

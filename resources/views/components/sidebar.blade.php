@@ -173,14 +173,14 @@
       @endcan
 
       {{-- Subscription Plans --}}
-      @can('manage-settings')
+      {{-- @can('manage-settings')
       <a href="{{ Route::has('admin.plans.index') ? route('admin.plans.index') : '#' }}"
          class="nav-item {{ request()->routeIs('admin.plans*') ? 'active' : '' }}"
          data-tooltip="Subscription Plans">
         <i class="fa-solid fa-credit-card"></i>
         <span>Subscription Plans</span>
       </a>
-      @endcan
+      @endcan --}}
 
       {{-- ── SYSTEM ── --}}
       <div class="nav-section-label">System</div>
