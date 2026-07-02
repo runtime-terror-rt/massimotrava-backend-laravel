@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\ActionItem\ActionItemController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\SignUpController;
 use App\Http\Controllers\BiomarkerReportController;
 use App\Http\Controllers\KitController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\NotificationSettingController;
 use App\Http\Controllers\PickupRequestController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\ReviewController;
@@ -41,7 +43,9 @@ Route::post('/otp/verify',     [SignUpController::class, 'verifyOtp'])->name('ot
 Route::post('/otp/resend',     [SignUpController::class, 'resendOtp'])->name('otp.resend');
 Route::get('/reviews', [ReviewController::class, 'FrontIndex'])->name('review.index');
 Route::prefix('user')->name('user.')->middleware(['auth'])->group(function () {
-    
+    Route::get('/edit/profile', [UserController::class, 'userEditProfile'])->name('profile.edit');
+    Route::post('/profile', [UserController::class, 'userUpdateProfile'])->name('update.profile');
+    Route::post('/update-password', [LoginController::class, 'updatePassword'])->name('update.password');
     Route::post('/subscribe/checkout/{planId}', [SubscriptionController::class, 'createCheckoutSession'])->name('subscribe.checkout');
     
     Route::get('/subscription/success', function () { return view('user.subscription.success'); })->name('subscription.success');
@@ -49,6 +53,8 @@ Route::prefix('user')->name('user.')->middleware(['auth'])->group(function () {
     Route::get('/dashboard', [UserController::class, 'userDashboard'])->name('dashboard.index');
     Route::get('/reports', [BiomarkerReportController::class, 'index'])->name('reports.index');
     Route::get('/health-insights', [UserController::class, 'helthInsight'])->name('health.insights');
+    Route::get('/report/show/{inv_code}', [BiomarkerReportController::class, 'userReportShow'])->name('show.reports');
+    
     Route::get('/reports/{id}', [BiomarkerReportController::class, 'showUserReport'])->name('reports.show');
     Route::get('/kits', [KitController::class, 'index'])->name('kits.index');
     Route::get('/pickup-requests', [PickupRequestController::class, 'index'])->name('pickup.index');
@@ -73,6 +79,10 @@ Route::prefix('user')->name('user.')->middleware(['auth'])->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+
+    Route::get('/notifications/edit', [NotificationSettingController::class, 'edit']);
+    Route::post('/notifications/toggle', [NotificationSettingController::class, 'toggle']);
 });
 
 require __DIR__.'/admin.php';

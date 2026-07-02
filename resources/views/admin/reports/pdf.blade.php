@@ -174,24 +174,46 @@
             </thead>
             <tbody>
                 @foreach($group as $report)
-                <tr>
-                    <td style="color: #1e293b; font-weight: 500;">
-                        {{ optional($report->biomarkerSubcategory)->title ?? __('messages.lbl_not_available') }}
-                    </td>
-                    <td style="text-align: center; font-weight: bold; font-size: 13px;">
-                        {{ $report->value }}
-                    </td>
-                    <td style="text-align: center; color: #64748b;">
-                        {{ $report->unit ?? '-' }}
-                    </td>
-                    <td style="text-align: center;">
-                        @if($report->status)
-                            <span class="status normal">{{ __('messages.pdf_badge_normal') }}</span>
-                        @else
-                            <span class="status abnormal">{{ __('messages.pdf_badge_abnormal') }}</span>
-                        @endif
-                    </td>
-                </tr>
+                    @php
+                        $subcat = $report->biomarkerSubcategory;
+                        $min = $subcat->min_range ?? null;
+                        $max = $subcat->max_range ?? null;
+                        $value = $report->value;
+
+                        if (is_null($min) || is_null($max)) {
+                            $statusLabel = 'N/A';
+                            $statusColor = '#94a3b8';
+                            $statusBg = 'rgba(148,163,184,0.12)';
+                        } elseif ($value < $min) {
+                            $statusLabel = 'LOW';
+                            $statusColor = '#fbbf24';
+                            $statusBg = 'rgba(251,191,36,0.12)';
+                        } elseif ($value > $max) {
+                            $statusLabel = 'HIGH';
+                            $statusColor = '#f87171';
+                            $statusBg = 'rgba(239,68,68,0.12)';
+                        } else {
+                            $statusLabel = 'OPTIMAL';
+                            $statusColor = '#34d399';
+                            $statusBg = 'rgba(16,185,129,0.12)';
+                        }
+                    @endphp
+                    <tr style="border-bottom: 1px solid #273548;">
+                        <td style="padding: 13px 18px; font-size:13px; font-weight:600; color:#393b3d;">
+                            {{ optional($subcat)->title ?? __('messages.lbl_not_available') }}
+                        </td>
+                        <td style="padding: 13px 18px; font-size:14px; font-weight:800; color:#393b3d; text-align:center; font-family: monospace;">
+                            {{ $value }}
+                        </td>
+                        <td style="padding: 13px 18px; font-size:12px; color:#393b3d; text-align:center;">
+                            {{ $report->unit ?? '-' }}
+                        </td>
+                        <td style="padding: 13px 18px; text-align:center;">
+                            <span style="background:{{ $statusBg }}; color:{{ $statusColor }}; font-size:11px; font-weight:700; padding: 3px 10px; border-radius:999px; display:inline-block;">
+                                {{ $statusLabel }}
+                            </span>
+                        </td>
+                    </tr>
                 @endforeach
             </tbody>
         </table>

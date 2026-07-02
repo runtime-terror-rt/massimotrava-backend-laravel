@@ -12,8 +12,10 @@ use Illuminate\Support\Str;
 use Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
  use App\Mail\BiomarkerReportMail;
+use App\Models\Notification;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class BiomarkerReportController extends Controller
 {
@@ -263,12 +265,12 @@ class BiomarkerReportController extends Controller
             BiomarkerReport::where('inv_code', $inv_code)->delete();
             $message = 'Reports updated successfully';
         } else {
-            $inv_code = 'INV-' . strtoupper(\Str::random(10));
+            $inv_code = 'INV-' . strtoupper(Str::random(10));
             $message = 'Reports saved successfully';
         }
 
         try {
-            \DB::transaction(function () use ($request, $inv_code, &$savedReports) {
+            DB::transaction(function () use ($request, $inv_code, &$savedReports) {
                 foreach ($request->categories as $categoryData) {
                     $categoryId = $categoryData['id'];
 
@@ -291,6 +293,21 @@ class BiomarkerReportController extends Controller
                 }
             });
 
+            $generateReportSetting = DB::table('notification_settings')
+                ->where('user_id', $request->user_id)
+                ->value('generate_report');
+
+            if ($generateReportSetting == 1) {
+                Notification::create([
+                    'user_id' => $request->user_id,
+                    'type'    => 'health_insight',
+                    'title'   => 'Your Biomarker Report is Ready',
+                    'message' => 'Your latest lab report has been processed and is now available to view.',
+                    'link'    => route('user.show.reports', $inv_code),
+                    'is_read' => false,
+                ]);
+            }
+
             if ($request->expectsJson()) {
                 return response()->json([
                     'status'  => 'success', 
@@ -302,10 +319,24 @@ class BiomarkerReportController extends Controller
                 ]);
             }
 
+            $userSettings = DB::table('notification_settings')
+                ->where('user_id', $request->user_id)
+                ->first();
+
+            if ($userSettings && $userSettings->sms_notification == 1) {
+                $userPhone = DB::table('users')->where('id', $request->user_id)->value('phone');
+                
+                if ($userPhone) {
+                    $smsMessage = "Hello, your Biomarker Report (Code: {$inv_code}) is ready at VyraLabs. Please log in to check your health insights.";
+                    
+                    \App\Services\SmsService::sendSms($userPhone, $smsMessage);
+                }
+            }
+
             return redirect()->route('admin.reports.index')->with('success', $message);
 
         } catch (\Exception $e) {
-            \Log::error('Biomarker Store Failed Error Trace: ' . $e->getMessage());
+            Log::error('Biomarker Store Failed Error Trace: ' . $e->getMessage());
 
             if ($request->expectsJson()) {
                 return response()->json([
@@ -316,6 +347,23 @@ class BiomarkerReportController extends Controller
 
             return back()->withInput()->with('error', 'Something went wrong while saving records values matrix!');
         }
+    }
+
+    public function userReportShow($inv_code)
+    {
+        $reports = BiomarkerReport::with(['biomarkerCategory', 'biomarkerSubcategory', 'user', 'kit'])
+        ->where('inv_code', $inv_code)
+        ->where('user_id', auth()->id())
+        ->get();
+
+        if ($reports->isEmpty()) {
+            abort(403, 'Unauthorized action or report not found.');
+        }
+
+        $mainReport = $reports->first();
+        $specificUser = $mainReport->user;
+
+        return view('user.show-report', compact('reports', 'mainReport', 'specificUser'));
     }
 
     public function getReports(Request $request)
@@ -505,7 +553,7 @@ class BiomarkerReportController extends Controller
         }
 
         $mainReport = $reports->first();
-        return view('user.reports.show', compact('reports', 'mainReport')); 
+        return view('admin.reports.show', compact('reports', 'mainReport')); 
     }
 
     /**

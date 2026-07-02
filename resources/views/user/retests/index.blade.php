@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-@section('title', 'My Retest Schedules')
+@section('page_title_key', 'schedule_retest')
 
 @section('content')
 <div class="container-fluid px-4 py-4" style="background-color: var(--bg); min-height: 100vh; color: var(--text); transition: background-color 0.3s, color 0.3s;">

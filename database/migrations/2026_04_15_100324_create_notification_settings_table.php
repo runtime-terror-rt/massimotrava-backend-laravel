@@ -16,9 +16,10 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users');
             $table->boolean('push_notification')->default('0');
             $table->boolean('email_notification')->default('0');
-            $table->boolean('test_reminder')->default('0');
-            $table->boolean('health_insights')->default('0');
-            $table->boolean('community_updates')->default('0');
+            $table->boolean('email_alerts')->default(true);
+            $table->boolean('generate_report')->default(true);
+            $table->boolean('lab_kit_updates')->default(true);
+            $table->boolean('weekly_analytics')->default(false);
             $table->timestamps();
         });
     }

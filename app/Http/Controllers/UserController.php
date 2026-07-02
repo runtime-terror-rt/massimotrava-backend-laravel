@@ -195,4 +195,46 @@ class UserController extends Controller
             return back()->with('error', 'Something went wrong. Please try again.');
         }
     }
+
+    public function userEditProfile()
+    {
+        $user = Auth::user();
+        return view('user.profile', compact('user'));
+    }
+
+    public function userUpdateProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:20',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048', // max 2MB
+        ]);
+
+        try {
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->phone = $request->phone;
+
+            if ($request->hasFile('image') && $request->file('image')->isValid()) {
+                if ($user->image && Storage::disk('public')->exists($user->image)) {
+                    Storage::disk('public')->delete($user->image);
+                }
+
+                $file = $request->file('image');
+                $filename = 'profile_' . $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $user->image = $file->storeAs('profiles', $filename, 'public');
+            }
+
+            $user->save();
+
+            return back()->with('success', __('messages.profile_updated_success') ?? 'Profile updated successfully!');
+
+        } catch (\Exception $e) {
+            Log::error('Profile Update Error: ' . $e->getMessage());
+            return back()->with('error', 'Something went wrong. Please try again.')->withInput();
+        }
+    }
 }

@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Pickup Requests')
+@section('page_title_key', 'sb_pickup')
 
 @section('content')
 
