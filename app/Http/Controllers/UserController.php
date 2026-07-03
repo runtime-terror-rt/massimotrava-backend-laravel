@@ -24,6 +24,7 @@ class UserController extends Controller
     public function userHome()
     {
         $reviews = Review::where('status', 1)->latest()->get();
+        //dd('reviews');
         $campaigns = Campaign::where('status', 'active')->orderBy('id', 'desc')->get();
         $faqs = Faq::where('is_active', true)->orderBy('id', 'desc')->get();
         $contents = Content::where('status', 'published')

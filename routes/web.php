@@ -47,7 +47,7 @@ Route::prefix('user')->name('user.')->middleware(['auth'])->group(function () {
     Route::post('/profile', [UserController::class, 'userUpdateProfile'])->name('update.profile');
     Route::post('/update-password', [LoginController::class, 'updatePassword'])->name('update.password');
     Route::post('/subscribe/checkout/{planId}', [SubscriptionController::class, 'createCheckoutSession'])->name('subscribe.checkout');
-    
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('/subscription/success', function () { return view('user.subscription.success'); })->name('subscription.success');
     Route::get('/subscription/cancel', function () { return view('subscription.cancel'); })->name('subscription.cancel');
     Route::get('/dashboard', [UserController::class, 'userDashboard'])->name('dashboard.index');

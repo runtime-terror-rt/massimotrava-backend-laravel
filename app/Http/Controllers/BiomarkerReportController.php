@@ -70,16 +70,30 @@ class BiomarkerReportController extends Controller
 
         $rawReports = $query->latest()->get();
 
-        $groupedCollection = $rawReports->groupBy('inv_code')->map(function ($reports, $invCode) {
+        // Testing-frequency modifier: distinct test batches (inv_code) in the last 6 months
+        $recentBatchCount = $rawReports
+            ->where('created_at', '>=', now()->subMonths(6))
+            ->pluck('inv_code')
+            ->unique()
+            ->count();
+
+        $groupedCollection = $rawReports->groupBy('inv_code')->map(function ($reports, $invCode) use ($recentBatchCount) {
             $firstReport = $reports->first();
-            
+
+            // Evaluate every biomarker row once, reuse for both the score and the label
+            $evaluated = $reports->map(fn ($row) => array_merge(
+                ['row' => $row],
+                $this->evaluateBiomarker($row)
+            ));
+
             return [
                 'inv_code'          => $invCode,
                 'created_at'        => $firstReport->created_at,
                 'user'              => auth()->user(),
-                'longevity_score'   => "84",
+                'longevity_score'   => $this->calculateLongevityScore($evaluated, $recentBatchCount),
                 'kit'               => $firstReport->kit,
-                'metrics'           => $reports->map(function($row) {
+                'metrics'           => $evaluated->map(function ($item) {
+                    $row = $item['row'];
                     return [
                         'id'                    => $row->id,
                         'biomarker_category_id' => $row->biomarker_category_id,
@@ -88,7 +102,7 @@ class BiomarkerReportController extends Controller
                         'subcategory_title'     => $row->biomarkerSubcategory->title ?? null,
                         'value'                 => $row->value,
                         'unit'                  => $row->unit,
-                        'test_status'           => "Good",
+                        'test_status'           => $item['label'],   // dynamically derived (Optimal/Good/Fair/At Risk/Critical)
                         'status'                => $row->status,
                     ];
                 })
@@ -114,6 +128,142 @@ class BiomarkerReportController extends Controller
         ], 200);
     }
 
+    /**
+     * Longevity Score = Σ (weight_i × normalized_category_score_i) + modifiers
+     * Spec: Vyralabs Formulas & Business Logic Documentation v1.0
+     *
+     * $evaluated is a collection of ['row' => BiomarkerReport, 'score' => float, 'label' => string]
+     */
+    private function calculateLongevityScore($evaluated, int $recentBatchCount = 0): int
+    {
+        // Fuzzy keyword match so this works regardless of exact spelling/casing/punctuation
+        // in your biomarker_categories.title column (e.g. "Inflammation & Immunity",
+        // "Inflammation and Immunity", "inflammation_immunity" all match).
+        $categoryWeightKeywords = [
+            'metabolic'      => 25,
+            'cardiovascular' => 22,
+            'inflammat'      => 18,
+            'immun'          => 18,
+            'hormon'         => 20,
+            'organ'          => 15,
+            'nutrient'       => 15,
+        ];
+
+        $categoryScores = $evaluated
+            ->groupBy(fn ($item) => $item['row']->biomarker_category_id)
+            ->map(function ($itemsInCategory) {
+                return [
+                    'title' => optional($itemsInCategory->first()['row']->biomarkerCategory)->title ?? '',
+                    'score' => $itemsInCategory->avg('score'),
+                ];
+            });
+
+        $weightedSum = 0;
+        $totalWeight = 0;
+        $matchedAny  = false;
+
+        foreach ($categoryScores as $cat) {
+            $weight = $this->matchCategoryWeight($cat['title'], $categoryWeightKeywords);
+            if ($weight === null) {
+                continue; // category title didn't match any known keyword
+            }
+            $matchedAny   = true;
+            $weightedSum += $weight * $cat['score'];
+            $totalWeight += $weight;
+        }
+
+        // Renormalized weighted average if we matched known categories,
+        // otherwise fall back to a plain average so the score is never just "0 + modifiers"
+        $baseScore = $matchedAny && $totalWeight > 0
+            ? ($weightedSum / $totalWeight)
+            : ($categoryScores->avg('score') ?? 60.0);
+
+        // --- Modifiers (per spec) ---
+        if ($recentBatchCount >= 3) {
+            $baseScore += 5;
+        }
+
+        $bmi = optional(auth()->user())->bmi; // adjust accessor if BMI lives elsewhere in your schema
+        if ($bmi !== null && ($bmi < 18.5 || $bmi > 30)) {
+            $baseScore -= 8;
+        }
+
+        $baseScore = max(0, min(100, $baseScore));
+
+        return (int) round($baseScore);
+    }
+
+    private function matchCategoryWeight(string $title, array $weightKeywords): ?int
+    {
+        $normalized = strtolower($title);
+        foreach ($weightKeywords as $keyword => $weight) {
+            if (str_contains($normalized, $keyword)) {
+                return $weight;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Determines a biomarker's normalized 0–100 score AND its human-readable status label
+     * by comparing $row->value against whatever min/max reference-range columns actually
+     * exist on the related biomarker_subcategories row — it auto-detects the column names
+     * (anything containing min/low/lower and max/high/upper), so this keeps working no
+     * matter what you've named them.
+     */
+    private function evaluateBiomarker($row): array
+    {
+        $value = is_numeric($row->value) ? (float) $row->value : null;
+        $sub   = $row->biomarkerSubcategory;
+
+        if ($value === null || !$sub) {
+            return ['score' => 60.0, 'label' => 'Unknown'];
+        }
+
+        $attrs = $sub->getAttributes();
+        $min   = $this->findRangeValue($attrs, ['min', 'low', 'lower']);
+        $max   = $this->findRangeValue($attrs, ['max', 'high', 'upper']);
+
+        if ($min === null || $max === null || $max <= $min) {
+            return ['score' => 60.0, 'label' => 'Unknown']; // no usable range columns found
+        }
+
+        $span   = $max - $min;
+        $coreLo = $min + $span * 0.2;
+        $coreHi = $max - $span * 0.2;
+
+        if ($value >= $coreLo && $value <= $coreHi) {
+            return ['score' => 97.5, 'label' => 'Optimal'];
+        }
+
+        if ($value >= $min && $value <= $max) {
+            return ['score' => 87.0, 'label' => 'Good'];
+        }
+
+        $deviation = $value < $min ? ($min - $value) / $span : ($value - $max) / $span;
+
+        return match (true) {
+            $deviation <= 0.15 => ['score' => 69.5, 'label' => 'Fair'],
+            $deviation <= 0.40 => ['score' => 49.5, 'label' => 'At Risk'],
+            default            => ['score' => 19.5, 'label' => 'Critical'],
+        };
+    }
+
+    private function findRangeValue(array $attrs, array $keywords): ?float
+    {
+        foreach ($attrs as $key => $val) {
+            if ($val === null || !is_numeric($val)) {
+                continue;
+            }
+            foreach ($keywords as $kw) {
+                if (str_contains(strtolower($key), $kw)) {
+                    return (float) $val;
+                }
+            }
+        }
+        return null;
+    }
+
     public function getUserReports(Request $request)
     {
         if (!auth()->check()) {
@@ -125,51 +275,65 @@ class BiomarkerReportController extends Controller
 
         $userId = auth()->id();
 
-        // Pull only recent package records to optimize execution queries speeds
         $rawReports = BiomarkerReport::with(['kit', 'biomarkerCategory', 'biomarkerSubcategory'])
             ->where('user_id', $userId)
             ->latest()
             ->get();
 
-        $groupedCollection = $rawReports->groupBy('inv_code')->map(function ($reports, $invCode) {
+        // Testing-frequency modifier: distinct test batches (inv_code) in the last 6 months
+        $recentBatchCount = $rawReports
+            ->where('created_at', '>=', now()->subMonths(6))
+            ->pluck('inv_code')
+            ->unique()
+            ->count();
+
+        $groupedCollection = $rawReports->groupBy('inv_code')->map(function ($reports, $invCode) use ($recentBatchCount) {
             $firstReport = $reports->first();
-            
+
+            $evaluated = $reports->map(fn ($row) => array_merge(
+                ['row' => $row],
+                $this->evaluateBiomarker($row)
+            ));
+
+            $metrics = $evaluated->map(function ($item) {
+                $row = $item['row'];
+                return [
+                    'id'                    => $row->id,
+                    'biomarker_category_id' => $row->biomarker_category_id,
+                    'category_title'        => $row->biomarkerCategory->title ?? null,
+                    'subcategory_id'        => $row->biomarker_subcategory_id,
+                    'subcategory_title'     => $row->biomarkerSubcategory->title ?? null,
+                    'value'                 => $row->value,
+                    'unit'                  => $row->unit,
+                    'test_status'           => $item['label'],
+                    'status'                => $row->status,
+                ];
+            });
+
             return [
-                'inv_code'   => $invCode,
-                'created_at' => $firstReport->created_at,
-                'user'       => auth()->user(),
-                'kit'        => $firstReport->kit,
-                'metrics'    => $reports->map(function($row) {
-                    return [
-                        'id'                    => $row->id,
-                        'biomarker_category_id' => $row->biomarker_category_id,
-                        'category_title'        => $row->biomarkerCategory->title ?? null,
-                        'subcategory_id'        => $row->biomarker_subcategory_id,
-                        'subcategory_title'     => $row->biomarkerSubcategory->title ?? null,
-                        'value'                 => $row->value,
-                        'unit'                  => $row->unit,
-                        'test_status'           => "Good",
-                        'status'                => $row->status,
-                    ];
-                })
+                'inv_code'        => $invCode,
+                'created_at'      => $firstReport->created_at,
+                'user'            => auth()->user(),
+                'kit'             => $firstReport->kit,
+                'metrics'         => $metrics,
+                'longevity_score' => $this->calculateLongevityScore($evaluated, $recentBatchCount),
             ];
         })->values();
 
-        // Pull the top/most recent report bundle package out
         $lastReportBundle = $groupedCollection->first();
 
         return response()->json([
             'status'  => 'success',
             'message' => 'User reports bundle packages retrieved successfully.',
             'data'    => [
-                'last_report' => $lastReportBundle ?? null, 
+                'last_report' => $lastReportBundle ?? null,
             ]
         ], 200);
     }
 
     /**
-    * Get a specific report bundle package by inv_code
-    */
+     * Get a specific report bundle package by inv_code
+     */
     public function getReportByInvoice(Request $request, $invCode = null)
     {
         if (!auth()->check()) {
@@ -190,7 +354,7 @@ class BiomarkerReportController extends Controller
         $userId = auth()->id();
 
         $rawReports = BiomarkerReport::with([
-                'kit', 
+                'kit',
                 'biomarkerCategory',
                 'biomarkerSubcategory'
             ])
@@ -206,25 +370,40 @@ class BiomarkerReportController extends Controller
         }
 
         $firstReport = $rawReports->first();
-        
+
+        $recentBatchCount = BiomarkerReport::where('user_id', $userId)
+            ->where('created_at', '>=', now()->subMonths(6))
+            ->distinct()
+            ->pluck('inv_code')
+            ->count();
+
+        $evaluated = $rawReports->map(fn ($row) => array_merge(
+            ['row' => $row],
+            $this->evaluateBiomarker($row)
+        ));
+
+        $metrics = $evaluated->map(function ($item) {
+            $row = $item['row'];
+            return [
+                'id'                    => $row->id,
+                'biomarker_category_id' => $row->biomarker_category_id,
+                'category_title'        => $row->biomarkerCategory->title ?? null,
+                'subcategory_id'        => $row->biomarker_subcategory_id,
+                'subcategory_title'     => $row->biomarkerSubcategory->title ?? null,
+                'value'                 => $row->value,
+                'unit'                  => $row->unit,
+                'test_status'           => $item['label'],
+                'status'                => $row->status,
+            ];
+        });
+
         $structuredBundle = [
-            'inv_code'   => $invoiceReference,
-            'created_at' => $firstReport->created_at,
-            'user'       => auth()->user(), 
-            'kit'        => $firstReport->kit,
-            'metrics'    => $rawReports->map(function($row) {
-                return [
-                    'id'                    => $row->id,
-                    'biomarker_category_id' => $row->biomarker_category_id,
-                    'category_title'        => $row->biomarkerCategory->title ?? null,
-                    'subcategory_id'        => $row->biomarker_subcategory_id,
-                    'subcategory_title'     => $row->biomarkerSubcategory->title ?? null,
-                    'value'                 => $row->value,
-                    'unit'                  => $row->unit,
-                    'test_status'           => "Good",
-                    'status'                => $row->status,
-                ];
-            })
+            'inv_code'        => $invoiceReference,
+            'created_at'      => $firstReport->created_at,
+            'user'            => auth()->user(),
+            'kit'             => $firstReport->kit,
+            'metrics'         => $metrics,
+            'longevity_score' => $this->calculateLongevityScore($evaluated, $recentBatchCount),
         ];
 
         return response()->json([

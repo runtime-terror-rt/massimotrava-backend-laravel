@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('subscription_plan_id')->constrained('subscription_plans')->onDelete('cascade');
             $table->string('stripe_subscription_id')->nullable();
+            $table->string('stripe_price_id')->nullable();
             $table->enum('status', ['active', 'trialing', 'cancelled', 'expired'])->default('active');
             $table->timestamp('starts_at')->nullable();
             $table->timestamp('ends_at')->nullable();

@@ -17,4 +17,9 @@ class Payment extends Model
     {
         return $this->belongsTo(UserSubscription::class, 'user_subscription_id');
     }
+
+    public function plan()
+    {
+        return $this->belongsTo(SubscriptionPlan::class, 'subscription_plan_id');
+    }
 }
