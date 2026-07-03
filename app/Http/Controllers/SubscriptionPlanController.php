@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Payment;
 use App\Models\SubscriptionPlan;
 use App\Models\Subscription;
+use App\Models\UserSubscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -31,8 +33,8 @@ class SubscriptionPlanController extends Controller
             ->orderBy('price', 'asc')
             ->get();
 
-        $userSubscriptions = Subscription::with(['user', 'plan'])
-            ->orderBy('created_at', 'desc')
+        $userSubscriptions = Payment::with(['user', 'plan', 'subscription'])
+            ->latest('id')
             ->paginate(10);
 
         return view('admin.payments.index', compact('plans', 'userSubscriptions'));

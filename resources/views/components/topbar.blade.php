@@ -82,7 +82,7 @@
       </ul>
     </div>
 
-    {{-- Notifications --}}
+    {{-- Notifications UI Element --}}
     <div class="notif-wrapper" style="position: relative;">
         <button class="icon-btn" title="Notifications" id="notifBtn">
             <i class="fa-regular fa-bell"></i>
@@ -100,122 +100,298 @@
         </div>
     </div>
 
-      <style>
+    <style>
         .notif-dropdown {
-          position: absolute;
-          top: 40px;
-          right: 0;
-          width: 320px;
-          background: #1e293b;
-          border: 1px solid #334155;
-          border-radius: 8px;
-          box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-          z-index: 50;
-      }
-      .notif-header {
-          display: flex;
-          justify-content: space-between;
-          padding: 12px;
-          border-bottom: 1px solid #334155;
-          color: #fff;
-          font-size: 14px;
-      }
-      .notif-header button {
-          background: none;
-          border: none;
-          color: #38bdf8;
-          cursor: pointer;
-          font-size: 12px;
-      }
-      .notif-list {
-          max-height: 320px;
-          overflow-y: auto;
-      }
-      .notif-item {
-          padding: 10px 12px;
-          border-bottom: 1px solid #334155;
-          cursor: pointer;
-          color: #e2e8f0;
-          font-size: 13px;
-      }
-      .notif-item.unread {
-          background: rgba(56,189,248,0.08);
-      }
-      .notif-item:hover { background: #273548; }
-      .notif-empty { padding: 16px; text-align: center; color: #94a3b8; font-size: 13px; }
-      </style>
+            position: absolute;
+            top: 40px;
+            right: 0;
+            width: 320px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            z-index: 50;
+        }
+        .notif-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 14px;
+            border-bottom: 1px solid #334155;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .notif-header button {
+            background: none;
+            border: none;
+            color: #38bdf8;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .notif-header button:hover { text-decoration: underline; }
 
+        .notif-list {
+            max-height: 320px;
+            overflow-y: auto;
+        }
+        .notif-item {
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 14px;
+            border-bottom: 1px solid #334155;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+            color: #e2e8f0;
+            font-size: 13px;
+            transition: background 0.15s, opacity 0.2s;
+        }
+        .notif-item:hover { background: #273548; }
+
+        .notif-item.unread {
+            border-left-color: #38bdf8;
+            background: rgba(56,189,248,0.10);
+        }
+        .notif-item.unread .notif-title::before {
+            content: '';
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            background: #38bdf8;
+            border-radius: 50%;
+            margin-right: 6px;
+            flex-shrink: 0;
+        }
+        .notif-item.unread .notif-title {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .notif-item.read {
+            opacity: 0.75;
+        }
+        .notif-item.read:hover { opacity: 1; }
+        .notif-item.read .notif-title {
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        .notif-body { flex: 1; min-width: 0; }
+        .notif-title { display: flex; align-items: center; font-size: 13px; }
+        .notif-msg { margin: 3px 0 0 0; font-size: 12px; color: #94a3b8; }
+
+        .notif-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 6px;
+        }
+        .notif-time {
+            font-size: 11px;
+            color: #64748b;
+        }
+        .notif-seen {
+            font-size: 11px;
+            color: #34d399;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 600;
+        }
+
+        .notif-delete-btn {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(148,163,184,0.12);
+            border: none;
+            border-radius: 50%;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.15s, color 0.15s;
+        }
+        .notif-delete-btn:hover {
+            background: rgba(239,68,68,0.18);
+            color: #ef4444;
+        }
+
+        .notif-empty { padding: 20px; text-align: center; color: #94a3b8; font-size: 13px; }
+    </style>
 
     <script>
-      const notifBtn = document.getElementById('notifBtn');
-      const notifDropdown = document.getElementById('notifDropdown');
-      const notifDot = document.getElementById('notifDot');
-      const notifList = document.getElementById('notifList');
-      const markAllReadBtn = document.getElementById('markAllReadBtn');
+        const notifBtn = document.getElementById('notifBtn');
+        const notifDropdown = document.getElementById('notifDropdown');
+        const notifDot = document.getElementById('notifDot');
+        const notifList = document.getElementById('notifList');
+        const markAllReadBtn = document.getElementById('markAllReadBtn');
+        
+        const csrfToken = '{{ csrf_token() }}';
 
-      // Bell click → toggle dropdown + fetch data
-      notifBtn.addEventListener('click', () => {
-          const isOpen = notifDropdown.style.display === 'block';
-          notifDropdown.style.display = isOpen ? 'none' : 'block';
-          if (!isOpen) loadNotifications();
-      });
+        notifBtn.addEventListener('click', () => {
+            const isOpen = notifDropdown.style.display === 'block';
+            notifDropdown.style.display = isOpen ? 'none' : 'block';
+            if (!isOpen) loadNotifications();
+        });
 
-      document.addEventListener('click', (e) => {
-          if (!notifBtn.contains(e.target) && !notifDropdown.contains(e.target)) {
-              notifDropdown.style.display = 'none';
-          }
-      });
+        document.addEventListener('click', (e) => {
+            if (!notifBtn.contains(e.target) && !notifDropdown.contains(e.target)) {
+                notifDropdown.style.display = 'none';
+            }
+        });
 
-      function loadNotifications() {
-          fetch('/notifications')
-              .then(res => res.json())
-              .then(data => {
-                  renderNotifications(data.notifications);
-                  notifDot.style.display = data.unread_count > 0 ? 'block' : 'none';
-              });
-      }
+        function timeAgo(dateString) {
+            const seconds = Math.floor((new Date() - new Date(dateString)) / 1000);
+            if (seconds < 60) return 'Just now';
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return `${minutes}m ago`;
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `${hours}h ago`;
+            const days = Math.floor(hours / 24);
+            return `${days}d ago`;
+        }
 
-      function renderNotifications(items) {
-          if (items.length === 0) {
-              notifList.innerHTML = '<p class="notif-empty">No notifications yet</p>';
-              return;
-          }
-          notifList.innerHTML = items.map(n => `
-              <div class="notif-item ${n.is_read ? '' : 'unread'}" data-id="${n.id}" data-link="${n.link ?? ''}">
-                  <strong>${n.title}</strong>
-                  <p>${n.message}</p>
-              </div>
-          `).join('');
+        function loadNotifications() {
+            fetch('/user/notifications')
+                .then(res => {
+                    if (!res.ok) throw new Error('Failed to load');
+                    return res.json();
+                })
+                .then(data => {
+                    renderNotifications(data.notifications);
+                    notifDot.style.display = data.unread_count > 0 ? 'block' : 'none';
+                })
+                .catch(err => console.error('Failed to load notifications:', err));
+        }
 
-          document.querySelectorAll('.notif-item').forEach(item => {
-              item.addEventListener('click', () => {
-                  const id = item.dataset.id;
-                  fetch(`/notifications/${id}/read`, {
-                      method: 'POST',
-                      headers: {
-                          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                          'Content-Type': 'application/json'
-                      }
-                  }).then(() => {
-                      item.classList.remove('unread');
-                      const link = item.dataset.link;
-                      if (link) window.location.href = link;
-                  });
-              });
-          });
-      }
+        function renderNotifications(items) {
+            if (items.length === 0) {
+                notifList.innerHTML = '<p class="notif-empty">No notifications yet</p>';
+                return;
+            }
 
-      markAllReadBtn.addEventListener('click', () => {
-          fetch('/notifications/mark-all-read', {
-              method: 'POST',
-              headers: {
-                  'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-              }
-          }).then(() => loadNotifications());
-      });
+            notifList.innerHTML = items.map(n => `
+                <div class="notif-item ${n.is_read ? 'read' : 'unread'}" data-id="${n.id}" data-link="${n.link ?? ''}">
+                    <div class="notif-body">
+                        <div class="notif-title">${n.title}</div>
+                        <p class="notif-msg">${n.message}</p>
+                        <div class="notif-meta">
+                            <span class="notif-time">${timeAgo(n.created_at)}</span>
+                            ${n.is_read ? '<span class="notif-seen"><i class="fa-solid fa-check"></i> Seen</span>' : ''}
+                        </div>
+                    </div>
+                    <button class="notif-delete-btn" data-id="${n.id}" title="Delete notification">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
 
-      // Page load এ dot check (unread আছে কিনা)
-      loadNotifications();
+        notifList.addEventListener('click', (e) => {
+            const deleteBtn = e.target.closest('.notif-delete-btn');
+            const item = e.target.closest('.notif-item');
+
+            if (deleteBtn && item) {
+                e.stopPropagation();
+                if (!confirm('Delete this notification?')) return;
+
+                const id = deleteBtn.dataset.id;
+                item.style.opacity = '0.4';
+                item.style.pointerEvents = 'none';
+
+                fetch(`/user/notifications/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error('Delete failed');
+                    return res.json();
+                })
+                .then(() => {
+                    loadNotifications(); 
+                })
+                .catch(err => {
+                    console.error(err);
+                    item.style.opacity = '1';
+                    item.style.pointerEvents = 'auto';
+                    alert('Failed to delete notification.');
+                });
+                return;
+            }
+
+            if (item) {
+                const id = item.dataset.id;
+                const link = item.dataset.link;
+
+                if (item.classList.contains('read')) {
+                    if (link) window.location.href = link;
+                    return;
+                }
+
+                fetch(`/user/notifications/${id}/read`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error('Mark read failed');
+                    
+                    item.classList.remove('unread');
+                    item.classList.add('read');
+                    const metaEl = item.querySelector('.notif-meta');
+                    if (metaEl && !metaEl.querySelector('.notif-seen')) {
+                        metaEl.insertAdjacentHTML('beforeend', '<span class="notif-seen"><i class="fa-solid fa-check"></i> Seen</span>');
+                    }
+                    loadUnreadCountOnly();
+
+                    if (link) window.location.href = link;
+                })
+                .catch(err => {
+                    console.error('Mark as read failed:', err);
+                });
+            }
+        });
+
+        function loadUnreadCountOnly() {
+            fetch('/user/notifications')
+                .then(res => res.json())
+                .then(data => {
+                    notifDot.style.display = data.unread_count > 0 ? 'block' : 'none';
+                })
+                .catch(err => console.error('Failed to refresh unread count:', err));
+        }
+
+        markAllReadBtn.addEventListener('click', () => {
+            fetch('/user/notifications/mark-all-read', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Mark all read failed');
+                return res.json();
+            })
+            .then(() => loadNotifications())
+            .catch(err => console.error('Mark all read failed:', err));
+        });
+
+        loadNotifications();
     </script>
     
     {{-- Theme Toggle Button --}}

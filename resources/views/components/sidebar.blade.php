@@ -247,8 +247,8 @@
     @if(!$isAdminOrLab)
       <div class="nav-section-label">{{ __('messages.settings') }}</div>
 
-      <a href="{{ Route::has('user.settings.index') ? route('user.settings.index') : '#' }}"
-         class="nav-item {{ request()->routeIs('user.settings*') ? 'active' : '' }}"
+      <a href="{{ Route::has('user.profile.edit') ? route('user.profile.edit') : '#' }}"
+         class="nav-item {{ request()->routeIs('user.profile.edit*') ? 'active' : '' }}"
          data-tooltip="{{ __('messages.account_settings') }}">
         <i class="fa-solid fa-gear"></i>
         <span>{{ __('messages.account_settings') }}</span>

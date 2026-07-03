@@ -128,9 +128,13 @@
                                         </button>
                                     </form>
                                 @endif
-
+                                
                                 <a href="{{ route('admin.reports.download.pdf', ['inv_code' => $invCode]) }}" title="{{ __('messages.tip_download_pdf') }}" style="color: #fbbf24; display: inline-flex; align-items: center; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                                     <i class="fa-solid fa-print" style="font-size: 18px;"></i>
+                                </a>
+
+                                <a href="{{ route('user.show.reports', ['inv_code' => $invCode]) }}" title="{{ __('messages.report') }}" style="color: #fbbf24; display: inline-flex; align-items: center; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                    <i class="fa-solid fa-book" style="font-size: 18px;"></i>
                                 </a>
                                 
                                 <form action="#" method="POST" onsubmit="return confirm('{{ __('messages.js_confirm_delete_invoice') }}');" style="margin: 0;">

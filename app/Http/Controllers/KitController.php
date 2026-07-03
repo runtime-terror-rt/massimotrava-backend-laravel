@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kit;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -57,6 +58,15 @@ class KitController extends Controller
                 'status' => 1,
             ]);
 
+            Notification::create([
+                'user_id' => auth()->id(),
+                'type'    => 'kit_status',
+                'title'   => 'Kit Activated',
+                'message' => 'Your test kit (' . $kit->activation_code . ') has been registered and activated successfully.',
+                'link'    => route('user.kits.index'),
+                'is_read' => false,
+            ]);
+
             return $this->responseHandler($request, 'New kit registered and activated!', $kit->inv_code);
         }
 
@@ -70,6 +80,15 @@ class KitController extends Controller
             'user_id' => auth()->id(),
             'status' => 1,
             'inv_code' => $kit->inv_code ?? 'INV-' . strtoupper(Str::random(10)),
+        ]);
+
+        Notification::create([
+            'user_id' => auth()->id(),
+            'type'    => 'kit_status',
+            'title'   => 'Kit Activated',
+            'message' => 'Your test kit (' . $kit->activation_code . ') has been activated successfully.',
+            'link'    => null,
+            'is_read' => false,
         ]);
 
         return $this->responseHandler($request, 'Kit activated successfully!', $kit->inv_code);

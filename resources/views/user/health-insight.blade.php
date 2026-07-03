@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Health Insights')
+@section('page_title_key', 'sb_insights')
 
 @section('content')
 

@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Action Items')
+@section('page_title_key', 'action_items')
 
 @section('content')
 

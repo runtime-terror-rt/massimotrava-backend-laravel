@@ -115,7 +115,7 @@
                     <tr style="background: var(--surface-2); border-bottom: 1px solid var(--border);">
                         <th style="padding: 12px 20px; color: var(--text); font-size: 13px; font-weight: 600;">Subscriber Name</th>
                         <th style="padding: 12px 20px; color: var(--text); font-size: 13px; font-weight: 600;">Active Plan</th>
-                        <th style="padding: 12px 20px; color: var(--text); font-size: 13px; font-weight: 600;">Billing Cycle</th>
+                        <th style="padding: 12px 20px; color: var(--text); font-size: 13px; font-weight: 600;">Expire Date</th>
                         <th style="padding: 12px 20px; color: var(--text); font-size: 13px; font-weight: 600;">Price</th>
                         <th style="padding: 12px 20px; color: var(--text); font-size: 13px; font-weight: 600;">Status</th>
                     </tr>
@@ -127,13 +127,13 @@
                                 <div style="font-weight: 600; color: var(--text);">{{ $sub->user->name ?? 'Unknown' }}</div>
                                 <div style="font-size: 12px; color: var(--text-muted);">{{ $sub->user->email ?? 'N/A' }}</div>
                             </td>
-                            <td style="padding: 15px 20px; font-weight: 600; color: var(--accent, #6366f1);">{{ $sub->plan->name ?? 'Custom Plan' }}</td>
+                            <td style="padding: 15px 20px; font-weight: 600; color: var(--accent, #6366f1);">{{ $sub->subscription->plan->name ?? 'Custom Plan' }}</td>
                             <td style="padding: 15px 20px;">
-                                <span style="background: var(--surface-2); color: var(--text); text-transform: capitalize; border: 1px solid var(--border); padding: 4px 8px; border-radius: 4px; font-size: 11px;">{{ $sub->billing_cycle }}</span>
+                                {{ \Carbon\Carbon::parse($sub->subscription->ends_at)->format('d M Y h:i A') }}
                             </td>
-                            <td style="padding: 15px 20px; color: #10b981; font-weight: 600;">${{ number_format($sub->price, 2) }}</td>
+                            <td style="padding: 15px 20px; color: #10b981; font-weight: 600;">${{ number_format($sub->amount, 2) }}</td>
                             <td style="padding: 15px 20px;">
-                                @if($sub->status === 'active')
+                                @if($sub->subscription->ends_at && $sub->subscription->ends_at->isFuture())
                                     <span style="background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.2); padding: 4px 10px; border-radius: 20px; font-size: 11px;">Active</span>
                                 @else
                                     <span style="background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); padding: 4px 10px; border-radius: 20px; font-size: 11px;">Expired</span>

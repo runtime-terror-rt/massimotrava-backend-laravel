@@ -2,64 +2,47 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\NotificationSetting;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class NotificationSettingController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function edit(): JsonResponse
     {
-        //
+        $settings = NotificationSetting::firstOrCreate(
+            ['user_id' => Auth::id()],
+            [
+                'email_alerts' => true,
+                'lab_kit_updates' => true,
+                'weekly_analytics' => false,
+            ]
+        );
+
+        return response()->json([
+            'success' => true,
+            'settings' => $settings
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function toggle(Request $request): JsonResponse
     {
-        //
-    }
+        $request->validate([
+            'setting_name' => 'required|string|in:email_alerts,generate_report,sms_notification,lab_kit_updates,weekly_analytics,push_notification,email_notification',
+            'value' => 'required|boolean',
+        ]);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        $settings = NotificationSetting::firstOrCreate(['user_id' => Auth::id()]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(NotificationSetting $notificationSetting)
-    {
-        //
-    }
+        $field = $request->setting_name;
+        $settings->$field = $request->value;
+        $settings->save();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(NotificationSetting $notificationSetting)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, NotificationSetting $notificationSetting)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(NotificationSetting $notificationSetting)
-    {
-        //
+        return response()->json([
+            'success' => true,
+            'message' => 'Notification preference updated successfully!'
+        ]);
     }
 }
