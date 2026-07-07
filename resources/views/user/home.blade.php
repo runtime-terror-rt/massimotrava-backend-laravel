@@ -23,7 +23,7 @@
   <meta property="og:url" content="{{ url()->current() }}">
   <meta property="og:title" content="Vyralabs | The World's Easiest Performance Lab Test">
   <meta property="og:description" content="Track your biomarkers, testosterone, longevity score, and get certified results in under 72 hours with Vyralabs.">
-  <meta property="og:image" content="{{ asset('images/dna-banner.png') }}">
+  <meta property="og:image" content="{{ asset('images/dna-banner.webp') }}">
   <meta property="og:site_name" content="Vyralabs">
   <meta property="og:locale" content="{{ App::getLocale() }}">
 
@@ -32,7 +32,7 @@
   <meta name="twitter:url" content="{{ url()->current() }}">
   <meta name="twitter:title" content="Vyralabs | The World's Easiest Performance Lab Test">
   <meta name="twitter:description" content="Optimize your performance with the world's easiest home lab testing by Vyralabs.">
-  <meta name="twitter:image" content="{{ asset('images/dna-banner.png') }}">
+  <meta name="twitter:image" content="{{ asset('images/dna-banner.webp') }}">
 
   <script type="application/ld+json">
   {
@@ -58,7 +58,7 @@
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 
   <!-- Performance: preload the LCP hero background image -->
-  <link rel="preload" as="image" href="{{ asset('images/dna-banner.png') }}" fetchpriority="high">
+  <link rel="preload" as="image" href="{{ asset('images/dna-banner.webp') }}" fetchpriority="high">
   <link rel="preload" as="image" href="{{ asset('images/logo.avif') }}">
 
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -251,7 +251,7 @@
     <header class="hero" style="
       background-image:
         linear-gradient(270deg,rgba(7,11,18,0) 0%,rgba(7,11,18,.75) 50%,rgba(7,11,18,1) 100%),
-        url('images/dna-banner.png');
+        url('images/dna-banner.webp');
       background-size:100% 100%,cover;
       background-position:center,right center;
       background-repeat:no-repeat; ">
@@ -471,7 +471,7 @@
           <div class="bm-card-wrapper">
             <!-- Background Device Image Placeolder -->
             <div class="bm-image-side">
-              <img src="images/3dbiomarker.jpg" alt="{{ __('messages.device_img_alt') }}" class="bm-main-img" loading="lazy" decoding="async">
+              <img src="images/dna_image.webp" alt="{{ __('messages.device_img_alt') }}" class="bm-main-img" loading="lazy" decoding="async">
               <!-- Gradient overlay matching the mockup vibe -->
               <div class="bm-img-overlay"></div>
             </div>
@@ -947,14 +947,14 @@
         <a href="#pricing" class="btn btn-primary btn-lg" data-reveal delay-2>Try now with 20% off <span style="opacity:.65;font-style:italic;font-weight:500">risk free</span></a>
       </div>
     </section>
-
-    <!-- FOOTER -->
+    
+    <!--- Footer ---->
     <footer>
       <div class="container">
         <div class="footer-top">
           <div class="footer-brand">
             <div class="logo"><span class="dot"></span> vyralabs</div>
-            <p>Painless at-home blood testing for everyone. Clinical-grade insights, delivered to your dashboard in under 72 hours.</p>
+            <p>{{ __('messages.footer_desc') }}</p>
             <div class="social-row">
               <a href="#"><i class="fa-brands fa-instagram"></i></a>
               <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
@@ -963,42 +963,42 @@
             </div>
           </div>
           <div class="footer-col">
-            <h4>Get in Vyralabs</h4>
+            <h4>{{ __('messages.get_in_vyralabs') }}</h4>
             <ul>
-              <li><a href="#pricing">Start Testing</a></li>
-              <li><a href="{{route('login')}}">Login</a></li>
-              <li><a href="#">Careers</a></li>
+              <li><a href="#pricing">{{ __('messages.start_testing') }}</a></li>
+              <li><a href="{{route('login')}}">{{ __('messages.login') }}</a></li>
+              <li><a href="#">{{ __('messages.careers') }}</a></li>
             </ul>
           </div>
           <div class="footer-col">
-            <h4>Explore</h4>
+            <h4>{{ __('messages.explore') }}</h4>
             <ul>
-              <li><a href="#how">Biomarkers We Test</a></li>
-              <li><a href="#">Customer Reviews</a></li>
-              <li><a href="#about">About Us</a></li>
+              <li><a href="#how">{{ __('messages.biomarkers_test') }}</a></li>
+              <li><a href="#">{{ __('messages.customer_reviews') }}</a></li>
+              <li><a href="#about">{{ __('messages.about_us') }}</a></li>
             </ul>
           </div>
           <div class="footer-col" id="partners">
-            <h4>Partnerships</h4>
+            <h4>{{ __('messages.partnerships') }}</h4>
             <ul>
-              <li><a href="#">Creator Partnerships</a></li>
-              <li><a href="#">Affiliate Programs</a></li>
-              <li><a href="#">Chat With Us Now</a></li>
+              <li><a href="#">{{ __('messages.creator_partnerships') }}</a></li>
+              <li><a href="#">{{ __('messages.affiliate_programs') }}</a></li>
+              <li><a href="#">{{ __('messages.chat_with_us') }}</a></li>
             </ul>
           </div>
         </div>
         <div class="footer-bottom">
-          <div>&copy; 2026 Vyralabs. All rights reserved.</div>
+          <div>&copy; {{ date('Y') }} Vyralabs. {{ __('messages.all_rights_reserved') }}</div>
           <div class="footer-legal">
-            <a href="{{ url('/terms-and-condition') }}">Terms &amp; Conditions</a>
-            <a href="#">Refund Policy</a>
-            <a href="{{ route('privacy.policy') }}">Privacy Policy</a>
-            <a href="#">Consumer Health Data Privacy Policy</a>
-            <a href="{{ url('/laboratory-services-consent') }}">Laboratory Services Consent</a>
+            <a href="{{ url('/terms-and-condition') }}">{{ __('messages.terms_conditions') }}</a>
+            <a href="#">{{ __('messages.refund_policy') }}</a>
+            <a href="{{ route('privacy.policy') }}">{{ __('messages.privacy_policy') }}</a>
+            <a href="#">{{ __('messages.consumer_health_privacy') }}</a>
+            <a href="{{ url('/laboratory-services-consent') }}">{{ __('messages.lab_services_consent') }}</a>
           </div>
         </div>
         <div class="disclaimer">
-          DISCLAIMER: Vyralabs does not recommend or refer you to any healthcare providers, and you are free to choose any healthcare provider and to continue to use Vyralabs' services. Vyralabs does not offer medical advice, a diagnosis, medical treatment, or any form of medical opinion through our services or otherwise. We recommend that you discuss those questions with your primary care physician or other licensed provider. All material, information, data, and content that Vyralabs provides is strictly for general information purposes. Vyralabs' membership pricing includes technology and service fees charged by Vyralabs, as well as access to prepaid laboratory and other services. Certain items and services require additional payment that are not included in standard membership pricing.
+          {{ __('messages.footer_disclaimer') }}
         </div>
       </div>
     </footer>
