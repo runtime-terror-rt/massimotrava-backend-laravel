@@ -490,7 +490,7 @@
             background: 
                 radial-gradient(ellipse 80% 60% at 20% 50%, rgba(0,194,168,0.15) 0%, rgba(10,13,18,0.85) 80%),
                 linear-gradient(rgba(10,13,18,0.4), rgba(10,13,18,0.7)),
-                url('images/3dbiomarker.jpg') no-repeat center center;
+                url('images/dna_image.webp') no-repeat center center;
             background-size: cover;
         }
     </style>

@@ -13,9 +13,13 @@ use Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
  use App\Mail\BiomarkerReportMail;
 use App\Models\Notification;
+use App\Services\FcmNotificationService;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Google\Auth\Credentials\ServiceAccountCredentials;
+
 
 class BiomarkerReportController extends Controller
 {
@@ -424,7 +428,7 @@ class BiomarkerReportController extends Controller
     }
 
 
-    public function storeReport(Request $request)
+    public function storeReport(Request $request, FcmNotificationService $fcmService)
     {
         $request->validate([
             'inv_code'              => 'nullable|string|exists:biomarker_reports,inv_code',
@@ -477,7 +481,7 @@ class BiomarkerReportController extends Controller
                 ->value('generate_report');
 
             if ($generateReportSetting == 1) {
-                Notification::create([
+                $dbNotification = Notification::create([
                     'user_id' => $request->user_id,
                     'type'    => 'health_insight',
                     'title'   => 'Your Biomarker Report is Ready',
@@ -485,6 +489,17 @@ class BiomarkerReportController extends Controller
                     'link'    => route('user.show.reports', $inv_code),
                     'is_read' => false,
                 ]);
+
+                $fcmService->sendPush(
+                    $request->user_id,
+                    'Your Biomarker Report is Ready',
+                    'Your latest lab report has been processed and is now available to view.',
+                    [
+                        'type'            => 'health_insight',
+                        'inv_code'        => $inv_code,
+                        'notification_id' => (string) $dbNotification->id
+                    ]
+                );
             }
 
             if ($request->expectsJson()) {
@@ -527,7 +542,7 @@ class BiomarkerReportController extends Controller
             return back()->withInput()->with('error', 'Something went wrong while saving records values matrix!');
         }
     }
-
+   
     public function userReportShow($inv_code)
     {
         $reports = BiomarkerReport::with(['biomarkerCategory', 'biomarkerSubcategory', 'user', 'kit'])

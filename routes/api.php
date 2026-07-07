@@ -22,6 +22,7 @@ use App\Http\Controllers\Auth\AppleAuthController;
 use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\LabController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserController;
 
 
@@ -56,6 +57,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/track-shipment/{trackingNumber}', [ShippingController::class, 'trackShipment']);
 
     Route::get('/track-shipment', [CourierTrackController::class, 'trackShipment']);
+    Route::post('/notifications/test-send', [NotificationController::class, 'testSendNotification']);
 
     // ----------------------------
     // Protected Routes (Require Auth)
@@ -130,5 +132,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/contents', [ContentController::class, 'store']);
 
         Route::get('/campaigns', [CampaignController::class, 'index']);
+        Route::get('/notifications', [NotificationController::class, 'index']);
+        Route::post('/notifications/update-token', [NotificationController::class, 'updateFcmToken']);
     });
 });

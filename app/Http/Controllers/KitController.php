@@ -7,6 +7,9 @@ use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use App\Services\FcmNotificationService;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class KitController extends Controller
 {
@@ -42,56 +45,95 @@ class KitController extends Controller
         ]);
     }
 
-    public function activateKit(Request $request)
+    public function activateKit(Request $request, FcmNotificationService $fcmService)
     {
         $request->validate([
             'activation_code' => 'required|string'
         ]);
 
+        $userId = auth()->id();
         $kit = Kit::where('activation_code', $request->activation_code)->first();
 
-        if (!$kit) {
-            $kit = Kit::create([
-                'user_id' => auth()->id(),
-                'activation_code' => $request->activation_code,
-                'inv_code' => 'INV-' . strtoupper(Str::random(10)),
-                'status' => 1,
-            ]);
+        if ($kit && $kit->status == 1) {
+            $message = ($kit->user_id === $userId) 
+                ? 'You have already activated this kit!' 
+                : 'This activation code has already been used by another account.';
 
-            Notification::create([
-                'user_id' => auth()->id(),
-                'type'    => 'kit_status',
-                'title'   => 'Kit Activated',
-                'message' => 'Your test kit (' . $kit->activation_code . ') has been registered and activated successfully.',
-                'link'    => route('user.kits.index'),
-                'is_read' => false,
-            ]);
-
-            return $this->responseHandler($request, 'New kit registered and activated!', $kit->inv_code);
-        }
-
-        if ($kit->status == 1) {
             return $request->expectsJson() 
-                ? response()->json(['message' => 'Already active'], 400) 
-                : back()->with('error', 'This kit is already active!');
+                ? response()->json(['status' => 'error', 'message' => $message], 400) 
+                : back()->with('error', $message);
         }
 
-        $kit->update([
-            'user_id' => auth()->id(),
-            'status' => 1,
-            'inv_code' => $kit->inv_code ?? 'INV-' . strtoupper(Str::random(10)),
-        ]);
+        if ($kit && $kit->user_id && $kit->user_id !== $userId) {
+            $message = 'This activation code is reserved for another account.';
+            return $request->expectsJson() 
+                ? response()->json(['status' => 'error', 'message' => $message], 403) 
+                : back()->with('error', $message);
+        }
 
-        Notification::create([
-            'user_id' => auth()->id(),
-            'type'    => 'kit_status',
-            'title'   => 'Kit Activated',
-            'message' => 'Your test kit (' . $kit->activation_code . ') has been activated successfully.',
-            'link'    => null,
-            'is_read' => false,
-        ]);
+        try {
+            $isNewKit = !$kit;
+            $invCode = $kit->inv_code ?? 'INV-' . strtoupper(Str::random(10));
+            
+            $dbNotification = null;
+            $notificationMsg = '';
 
-        return $this->responseHandler($request, 'Kit activated successfully!', $kit->inv_code);
+            DB::transaction(function () use (&$kit, &$dbNotification, &$notificationMsg, $request, $userId, $invCode, $isNewKit) {
+                if ($isNewKit) {
+                    $kit = Kit::create([
+                        'user_id'         => $userId,
+                        'activation_code' => $request->activation_code,
+                        'inv_code'        => $invCode,
+                        'status'          => 1,
+                    ]);
+                    $notificationMsg = 'Your test kit (' . $kit->activation_code . ') has been registered and activated successfully.';
+                } else {
+                    $kit->update([
+                        'user_id'  => $userId,
+                        'status'   => 1,
+                        'inv_code' => $invCode,
+                    ]);
+                    $notificationMsg = 'Your test kit (' . $kit->activation_code . ') has been activated successfully.';
+                }
+
+                $dbNotification = Notification::create([
+                    'user_id' => $userId,
+                    'type'    => 'kit_status',
+                    'title'   => 'Kit Activated',
+                    'message' => $notificationMsg,
+                    'link'    => route('user.kits.index'),
+                    'is_read' => false,
+                ]);
+            });
+
+            if ($dbNotification) {
+                $fcmService->sendPush(
+                    $userId,
+                    'Kit Activated',
+                    $notificationMsg,
+                    [
+                        'type'            => 'kit_status',
+                        'inv_code'        => $invCode,
+                        'notification_id' => (string) $dbNotification->id
+                    ]
+                );
+            }
+
+            $successMessage = $isNewKit ? 'New kit registered and activated!' : 'Kit activated successfully!';
+            return $this->responseHandler($request, $successMessage, $kit->inv_code);
+
+        } catch (\Exception $e) {
+            Log::error('Kit Activation Failed: ' . $e->getMessage());
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Failed to activate kit. Please try again later.'
+                ], 500);
+            }
+
+            return back()->withInput()->with('error', 'Something went wrong while activating the kit!');
+        }
     }
    
     public function myKits(Request $request)
