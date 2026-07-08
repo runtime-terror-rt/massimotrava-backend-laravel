@@ -860,4 +860,6 @@ return [
     'consumer_health_privacy' => 'Informativa sulla Privacy dei Dati Sanitari dei Consumatori',
     'lab_services_consent' => 'Consenso ai Servizi di Laboratorio',
     'footer_disclaimer' => 'DISCLAIMER: Vyralabs non raccomanda né indirizza l\'utente a specifici fornitori di assistenza sanitaria; l\'utente è libero di scegliere qualsiasi fornitore e di continuare a utilizzare i servizi di Vyralabs. Vyralabs non fornisce consulenza medica, diagnosi, trattamenti medici o qualsiasi forma di parere medico tramite i propri servizi o in altro modo. Si consiglia di discutere tali questioni con il proprio medico curante o un altro professionista autorizzato. Tutto il materiale, le informazioni, i dati e i contenuti forniti da Vyralabs sono strettamente a scopo informativo generale. I prezzi dell\'abbonamento a Vyralabs includono le tariffe tecnologiche e di servizio addebitate da Vyralabs, nonché l\'accesso a laboratori prepagati e altri servizi. Alcuni articoli e servizi richiedono un pagamento aggiuntivo non incluso nei prezzi standard dell\'abbonamento.',
+    'view' => 'Visualizza',
+    'report' => 'Referto'
 ];

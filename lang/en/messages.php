@@ -859,5 +859,8 @@ return [
     'consumer_health_privacy' => 'Consumer Health Data Privacy Policy',
     'lab_services_consent' => 'Laboratory Services Consent',
     'footer_disclaimer' => 'DISCLAIMER: Vyralabs does not recommend or refer you to any healthcare providers, and you are free to choose any healthcare provider and to continue to use Vyralabs\' services. Vyralabs does not offer medical advice, a diagnosis, medical treatment, or any form of medical opinion through our services or otherwise. We recommend that you discuss those questions with your primary care physician or other licensed provider. All material, information, data, and content that Vyralabs provides is strictly for general information purposes. Vyralabs\' membership pricing includes technology and service fees charged by Vyralabs, as well as access to prepaid laboratory and other services. Certain items and services require additional payment that are not included in standard membership pricing.',
+    'view' => 'View',
+    'report' => 'Lab Report',
+    
 ];
     
