@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Google\Auth\Credentials\ServiceAccountCredentials;
+use App\Services\FcmNotificationService;
 
 class NotificationController extends Controller
 {
@@ -32,7 +33,10 @@ class NotificationController extends Controller
         $notification = Notification::where('user_id', auth()->id())->findOrFail($id);
         $notification->update(['is_read' => true]);
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Notification marked as read successfully.'
+        ]);
     }
 
     public function markAllAsRead()
@@ -41,7 +45,10 @@ class NotificationController extends Controller
             ->where('is_read', false)
             ->update(['is_read' => true]);
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true,
+            'message' => 'All notifications have been marked as read.'
+        ]);
     }
 
     public function destroy($id)
@@ -49,7 +56,10 @@ class NotificationController extends Controller
         $notification = Notification::where('user_id', auth()->id())->findOrFail($id);
         $notification->delete();
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Notification deleted successfully.'
+        ]);
     }
 
     public function updateFcmToken(Request $request)
@@ -83,44 +93,9 @@ class NotificationController extends Controller
             'is_read' => false,
         ]);
 
-        $user = User::find($userId);
+        $customData['notification_id'] = (string) $dbNotification->id;
 
-        if ($user && $user->fcm_token) {
-            try {
-                $jsonPath = storage_path('app/firebase-auth.json'); 
-
-                $credentials = new ServiceAccountCredentials(
-                    'https://www.googleapis.com/auth/cloud-platform',
-                    $jsonPath
-                );
-                $accessToken = $credentials->fetchAuthToken()['access_token'];
-
-                $firebaseConfig = json_decode(file_get_contents($jsonPath), true);
-                $projectId = $firebaseConfig['project_id'];
-
-                $response = Http::withToken($accessToken)
-                    ->post("https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send", [
-                        'message' => [
-                            'token' => $user->fcm_token,
-                            'notification' => [
-                                'title' => $title,
-                                'body'  => $body,
-                            ],
-                            'data' => array_merge([
-                                'click_action'    => 'FLUTTER_NOTIFICATION_CLICK',
-                                'notification_id' => (string) $dbNotification->id,
-                            ], array_map('strval', $customData)),
-                        ],
-                    ]);
-
-                if (!$response->successful()) {
-                    \Log::error('FCM API Error: ' . $response->body());
-                }
-
-            } catch (\Exception $e) {
-                \Log::error('FCM Native Push Failed: ' . $e->getMessage());
-            }
-        }
+        app(FcmNotificationService::class)->sendPush($userId, $title, $body, $customData);
 
         return $dbNotification;
     }

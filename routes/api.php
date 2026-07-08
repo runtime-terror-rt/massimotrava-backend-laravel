@@ -132,7 +132,11 @@ Route::prefix('v1')->group(function () {
         Route::post('/contents', [ContentController::class, 'store']);
 
         Route::get('/campaigns', [CampaignController::class, 'index']);
+        
         Route::get('/notifications', [NotificationController::class, 'index']);
         Route::post('/notifications/update-token', [NotificationController::class, 'updateFcmToken']);
+        Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
+        Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead']);
+        Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
     });
 });

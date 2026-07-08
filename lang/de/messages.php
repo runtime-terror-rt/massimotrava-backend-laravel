@@ -863,5 +863,6 @@ return [
     'consumer_health_privacy' => 'Datenschutzrichtlinie für Verbrauchergesundheitsdaten',
     'lab_services_consent' => 'Einwilligung in Laborleistungen',
     'footer_disclaimer' => 'HAFTUNGSAUSSCHLUSS: Vyralabs empfiehlt oder verweist Sie nicht an bestimmte Gesundheitsdienstleister. Es steht Ihnen frei, jeden Gesundheitsdienstleister zu wählen und die Dienste von Vyralabs weiterhin zu nutzen. Vyralabs bietet über unsere Dienste oder auf andere Weise keine medizinische Beratung, Diagnose, medizinische Behandlung oder irgendeine Form von medizinischer Meinung an. Wir empfehlen Ihnen, diese Fragen mit Ihrem Hausarzt oder einem anderen zugelassenen Anbieter zu besprechen. Alle Materialien, Informationen, Daten und Inhalte, die Vyralabs bereitstellt, dienen ausschließlich allgemeinen Informationszwecken. Die Mitgliedschaftspreise von Vyralabs beinhalten Technologie- und Servicegebühren, die von Vyralabs erhoben werden, sowie den Zugang zu im Voraus bezahlten Labor- und anderen Dienstleistungen. Bestimmte Artikel und Dienstleistungen erfordern eine zusätzliche Zahlung, die nicht in den Standard-Mitgliedschaftspreisen enthalten ist.',
-    
+    'view' => 'Anzeigen',
+    'report' => 'Befund',
 ];
