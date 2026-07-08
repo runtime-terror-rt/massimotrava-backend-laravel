@@ -93,9 +93,44 @@ class NotificationController extends Controller
             'is_read' => false,
         ]);
 
-        $customData['notification_id'] = (string) $dbNotification->id;
+        $user = User::find($userId);
 
-        app(FcmNotificationService::class)->sendPush($userId, $title, $body, $customData);
+        if ($user && $user->fcm_token) {
+            try {
+                $jsonPath = storage_path('app/firebase-auth.json'); 
+
+                $credentials = new ServiceAccountCredentials(
+                    'https://www.googleapis.com/auth/cloud-platform',
+                    $jsonPath
+                );
+                $accessToken = $credentials->fetchAuthToken()['access_token'];
+
+                $firebaseConfig = json_decode(file_get_contents($jsonPath), true);
+                $projectId = $firebaseConfig['project_id'];
+
+                $response = Http::withToken($accessToken)
+                    ->post("https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send", [
+                        'message' => [
+                            'token' => $user->fcm_token,
+                            'notification' => [
+                                'title' => $title,
+                                'body'  => $body,
+                            ],
+                            'data' => array_merge([
+                                'click_action'    => 'FLUTTER_NOTIFICATION_CLICK',
+                                'notification_id' => (string) $dbNotification->id,
+                            ], array_map('strval', $customData)),
+                        ],
+                    ]);
+
+                if (!$response->successful()) {
+                    \Log::error('FCM API Error: ' . $response->body());
+                }
+
+            } catch (\Exception $e) {
+                \Log::error('FCM Native Push Failed: ' . $e->getMessage());
+            }
+        }
 
         return $dbNotification;
     }
