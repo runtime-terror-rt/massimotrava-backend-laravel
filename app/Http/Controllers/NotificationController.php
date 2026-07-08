@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Google\Auth\Credentials\ServiceAccountCredentials;
+use App\Services\FcmNotificationService;
 
 class NotificationController extends Controller
 {
@@ -32,7 +33,10 @@ class NotificationController extends Controller
         $notification = Notification::where('user_id', auth()->id())->findOrFail($id);
         $notification->update(['is_read' => true]);
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Notification marked as read successfully.'
+        ]);
     }
 
     public function markAllAsRead()
@@ -41,7 +45,10 @@ class NotificationController extends Controller
             ->where('is_read', false)
             ->update(['is_read' => true]);
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true,
+            'message' => 'All notifications have been marked as read.'
+        ]);
     }
 
     public function destroy($id)
@@ -49,7 +56,10 @@ class NotificationController extends Controller
         $notification = Notification::where('user_id', auth()->id())->findOrFail($id);
         $notification->delete();
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Notification deleted successfully.'
+        ]);
     }
 
     public function updateFcmToken(Request $request)
