@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\SignUpController;
 use App\Http\Controllers\BiomarkerReportController;
 use App\Http\Controllers\KitController;
+use App\Http\Controllers\NewsletterSubscriberController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\NotificationSettingController;
 use App\Http\Controllers\PickupRequestController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\SubscriptionPlanController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Http;
 
 // Route::get('/', function () {
 //     return view('user.home');
@@ -29,6 +31,12 @@ Route::get('/laboratory-services-consent', function () {
     return view('user.laboratory-services');
     
 });
+
+Route::post('/newsletter/subscribe', [NewsletterSubscriberController::class, 'subscribe'])
+        ->name('newsletter.subscribe');
+Route::get('/newsletter/unsubscribe/{subscriber}', [NewsletterSubscriberController::class, 'unsubscribe'])
+    ->name('newsletter.unsubscribe')
+    ->middleware('signed');
 
 Route::get('/pricing', [SubscriptionPlanController::class, 'showPricingPage'])->name('pricing.page');
 Route::get('/privacy-policy', [PrivacyPolicyController::class, 'frontIndex'])->name('privacy.policy');
@@ -83,6 +91,27 @@ Route::prefix('user')->name('user.')->middleware(['auth'])->group(function () {
 
     Route::get('/notifications/edit', [NotificationSettingController::class, 'edit']);
     Route::post('/notifications/toggle', [NotificationSettingController::class, 'toggle']);
+
 });
 
 require __DIR__.'/admin.php';
+
+Route::get('/test-sms', function () {
+
+    $response = Http::withBasicAuth(env('TWILIO_SID'), env('TWILIO_AUTH_TOKEN'))
+        ->asForm()
+        ->post(
+            "https://api.twilio.com/2010-04-01/Accounts/" . env('TWILIO_SID') . "/Messages.json",
+            [
+                'To' => '+8801631382236',
+                'From' => env('TWILIO_NUMBER'),
+                'Body' => 'Laravel Test SMS',
+            ]
+        );
+
+    dd(
+        $response->status(),
+        $response->json(),
+        $response->body()
+    );
+});

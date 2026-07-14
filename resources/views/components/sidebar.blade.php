@@ -180,6 +180,16 @@
       </a>
       @endcan
 
+      {{-- Newsletter --}}
+      @can('manage-newsletter')
+      <a href="{{ route('admin.newsletter.index') }}"
+         class="nav-item {{ request()->routeIs('admin.newsletter.index*') ? 'active' : '' }}"
+         data-tooltip="{{ __('messages.newsletter') }}">
+        <i class="fa-solid fa-envelope-open-text"></i>
+        <span>{{ __('messages.newsletter') }}</span>
+      </a>
+      @endcan
+      
       {{-- ── SYSTEM ── --}}
       <div class="nav-section-label">{{ __('messages.system') }}</div>
 
