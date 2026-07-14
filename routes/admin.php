@@ -14,6 +14,7 @@ use App\Http\Controllers\ContentController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\KitController;
 use App\Http\Controllers\LabController;
+use App\Http\Controllers\NewsletterSubscriberController;
 use App\Http\Controllers\PrivacyPolicyController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\RolePermissionController;
@@ -137,4 +138,9 @@ Route::prefix('admin')
             Route::resource('reviews', ReviewController::class);
             Route::post('/reviews/{review}/toggle-status', [ReviewController::class, 'toggleStatus'])->name('reviews.toggle-status');
             Route::get('/reviews', [ReviewController::class, 'FrontIndex'])->name('review.index');
+
+            Route::get('/newsletter', [NewsletterSubscriberController::class, 'index'])->name('newsletter.index');
+            Route::get('/newsletter/export', [NewsletterSubscriberController::class, 'export'])->name('newsletter.export');
+            Route::patch('/newsletter/{subscriber}/toggle', [NewsletterSubscriberController::class, 'toggle'])->name('newsletter.toggle');
+            Route::delete('/newsletter/{subscriber}', [NewsletterSubscriberController::class, 'destroy'])->name('newsletter.destroy');
     });

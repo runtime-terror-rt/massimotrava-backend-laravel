@@ -68,6 +68,32 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
   <link rel="stylesheet" href="{{ asset('frontend/user.css') }}">
+
+  <style>
+    /* ===== Newsletter section (added) ===== */
+    .vyr-newsletter-section{ position:relative; padding:90px 0; overflow:hidden; }
+    .vyr-newsletter-grid{ display:grid; grid-template-columns:1.1fr .9fr; gap:56px; align-items:center; position:relative; z-index:2; }
+    .vyr-newsletter-chips{ display:flex; gap:8px; margin-top:22px; flex-wrap:wrap; }
+    .vyr-newsletter-form-wrap{ background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:var(--r,16px); padding:32px; backdrop-filter:blur(6px); }
+    .vyr-newsletter-input-row{ display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:10px; padding:6px 6px 6px 16px; transition:border-color .2s; }
+    .vyr-newsletter-input-row:focus-within{ border-color:var(--c,#22d3ee); }
+    .vyr-newsletter-input-row i{ color:var(--muted2,#94a3b8); font-size:14px; }
+    .vyr-newsletter-input-row input{ flex:1; min-width:0; background:transparent; border:none; outline:none; color:var(--text,#e2e8f0); font-size:14px; padding:12px 0; font-family:inherit; }
+    .vyr-newsletter-input-row input::placeholder{ color:var(--muted,#64748b); }
+    .vyr-newsletter-input-row .btn{ white-space:nowrap; }
+    .vyr-newsletter-fineprint{ font-size:12px; color:var(--muted,#64748b); margin-top:14px; display:flex; align-items:center; gap:6px; }
+    .vyr-newsletter-alert{ font-size:13px; padding:10px 14px; border-radius:8px; margin-bottom:14px; }
+    .vyr-newsletter-alert.success{ background:rgba(52,211,153,.1); color:#34d399; border:1px solid rgba(52,211,153,.2); }
+    .vyr-newsletter-alert.error{ background:rgba(239,68,68,.1); color:#ef4444; border:1px solid rgba(239,68,68,.2); }
+    .vyr-newsletter-pulse{ position:absolute; bottom:0; left:0; width:100%; opacity:.22; z-index:1; pointer-events:none; }
+    .vyr-newsletter-pulse svg{ width:100%; height:60px; display:block; }
+    @media (max-width:860px){
+      .vyr-newsletter-grid{ grid-template-columns:1fr; }
+      .vyr-newsletter-form-wrap{ padding:24px; }
+      .vyr-newsletter-input-row{ flex-wrap:wrap; }
+      .vyr-newsletter-input-row .btn{ width:100%; margin-top:8px; }
+    }
+  </style>
   </head>
   <body>
 
@@ -947,13 +973,77 @@
         <a href="#pricing" class="btn btn-primary btn-lg" data-reveal delay-2>Try now with 20% off <span style="opacity:.65;font-style:italic;font-weight:500">risk free</span></a>
       </div>
     </section>
+
+    <!-- NEWSLETTER (added) -->
+    <section class="vyr-newsletter-section" id="newsletter">
+      <div class="container vyr-newsletter-grid">
+
+        <div class="vyr-newsletter-copy" data-reveal>
+          <div class="section-eyebrow">{{ __('messages.newsletter_eyebrow') }}</div>
+          <h2 class="section-title">{{ __('messages.newsletter_title') }}</h2>
+          <p class="section-sub">{{ __('messages.newsletter_description') }}</p>
+
+          <div class="vyr-newsletter-chips">
+            <span class="ic-badge cyan">{{ __('messages.newsletter_chip_vitamin_d') }}</span>
+            <span class="ic-badge amber">{{ __('messages.newsletter_chip_cortisol') }}</span>
+            <span class="ic-badge green">{{ __('messages.newsletter_chip_hba1c') }}</span>
+            <span class="ic-badge cyan">{{ __('messages.newsletter_chip_testosterone') }}</span>
+          </div>
+        </div>
+
+        <div class="vyr-newsletter-form-wrap" data-reveal delay-1>
+
+          @if(session('newsletter_success'))
+            <div class="vyr-newsletter-alert success"><i class="fa-solid fa-circle-check"></i> {{ session('newsletter_success') }}</div>
+          @endif
+          @if($errors->has('newsletter_email'))
+            <div class="vyr-newsletter-alert error"><i class="fa-solid fa-circle-exclamation"></i> {{ $errors->first('newsletter_email') }}</div>
+          @endif
+
+          <form action="{{ route('newsletter.subscribe') }}" method="POST" class="vyr-newsletter-form">
+            @csrf
+            <div class="vyr-newsletter-input-row">
+              <i class="fa-regular fa-envelope"></i>
+              <input type="email" name="newsletter_email" placeholder="{{ __('messages.newsletter_email_placeholder') }}" value="{{ old('newsletter_email') }}" required>
+              <button type="submit" class="btn btn-primary">{{ __('messages.newsletter_subscribe_btn') }}</button>
+            </div>
+          </form>
+
+          <p class="vyr-newsletter-fineprint"><i class="fa-solid fa-lock"></i> {{ __('messages.newsletter_fineprint') }}</p>
+        </div>
+
+      </div>
+
+      <div class="vyr-newsletter-pulse" aria-hidden="true">
+        <svg viewBox="0 0 600 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="vyrPulseGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#22d3ee" stop-opacity="0"/>
+              <stop offset="15%" stop-color="#22d3ee"/>
+              <stop offset="85%" stop-color="#22d3ee"/>
+              <stop offset="100%" stop-color="#22d3ee" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <polyline points="0,30 60,30 80,10 100,50 120,30 200,30 220,15 240,45 260,30 600,30" fill="none" stroke="url(#vyrPulseGrad)" stroke-width="2"/>
+        </svg>
+      </div>
+    </section>
     
     <!--- Footer ---->
     <footer>
       <div class="container">
         <div class="footer-top">
           <div class="footer-brand">
-            <div class="logo"><span class="dot"></span> vyralabs</div>
+            <div class="logo">
+          <a href="{{ url('/') }}" style="display: flex; align-items: center;">
+            <img
+              src="{{ asset('images/logo.avif') }}"
+              alt="{{ __('messages.logo_alt') }}"
+              fetchpriority="high"
+              decoding="async"
+              style="height: 34px; width: auto; object-fit: contain;">
+          </a>
+        </div>
             <p>{{ __('messages.footer_desc') }}</p>
             <div class="social-row">
               <a href="#"><i class="fa-brands fa-instagram"></i></a>

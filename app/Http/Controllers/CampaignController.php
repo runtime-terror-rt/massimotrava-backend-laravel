@@ -5,9 +5,20 @@ namespace App\Http\Controllers;
 use App\Models\Campaign;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Mail\CampaignAnnouncementMail;
+use App\Models\NewsletterSubscriber;
+use Illuminate\Support\Facades\Mail;
 
 class CampaignController extends Controller
 {
+    /**
+     * Web Only Form Trigger
+     */
+    public function create()
+    {
+        return view('admin.campaigns.create');
+    }
+
     /**
      * Display Campaigns List
      */
@@ -38,7 +49,7 @@ class CampaignController extends Controller
             'end_date'     => 'nullable|date|after_or_equal:start_date',
             'banner_image' => 'nullable|string|max:255',
         ]);
-
+    
         try {
             $campaign = Campaign::create([
                 'title'        => $request->title,
@@ -50,7 +61,11 @@ class CampaignController extends Controller
                 'start_date'   => $request->start_date,
                 'end_date'     => $request->end_date,
             ]);
-
+    
+            if ($campaign->status === 'active') {
+                $this->notifySubscribers($campaign);
+            }
+    
             if ($request->wantsJson()) {
                 return response()->json([
                     'status'  => 'success',
@@ -58,24 +73,29 @@ class CampaignController extends Controller
                     'data'    => $campaign
                 ], 201);
             }
-
+    
             return redirect()->route('admin.campaigns.index')->with('success', 'Campaign created successfully!');
-
+    
         } catch (\Exception $e) {
             \Log::error('Campaign Pipeline Error: ' . $e->getMessage());
-
+    
             if ($request->wantsJson()) {
                 return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
             }
             return back()->withInput()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
     }
-
-    /**
-     * Web Only Form Trigger
-     */
-    public function create()
+    
+    
+    private function notifySubscribers(Campaign $campaign): void
     {
-        return view('admin.campaigns.create');
+        NewsletterSubscriber::where('is_active', true)
+            ->chunk(100, function ($subscribers) use ($campaign) {
+                foreach ($subscribers as $subscriber) {
+                    Mail::to($subscriber->email)->queue(new CampaignAnnouncementMail($campaign, $subscriber));
+                }
+            });
     }
+
+    
 }
