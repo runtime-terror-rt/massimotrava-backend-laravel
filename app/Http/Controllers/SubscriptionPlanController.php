@@ -59,6 +59,7 @@ class SubscriptionPlanController extends Controller
         try {
             $stripeProductId = null;
             $stripePriceId   = null;
+            $kit_limit = 0;
 
             if ((float) $validated['price'] > 0) {
                 $product = $this->stripe->products->create([
@@ -88,6 +89,7 @@ class SubscriptionPlanController extends Controller
                 'features'          => array_values(array_filter($request->input('features', []))),
                 'stripe_product_id' => $stripeProductId,
                 'stripe_price_id'   => $stripePriceId,
+                'kit_limit'         => $kit_limit,
                 'status'            => true,
             ]);
 

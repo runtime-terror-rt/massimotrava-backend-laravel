@@ -15,12 +15,12 @@ return new class extends Migration
             Schema::create('payments', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('user_id')->constrained()->onDelete('cascade');
-                $table->foreignId('user_subscription_id')->nullable()->constrained('user_subscriptions')->onDelete('set null');
-                $table->string('stripe_charge_id')->unique(); // Stripe Transaction/Charge ID (ch_xxxx or pi_xxxx)
-                $table->decimal('amount', 10, 2);
-                $table->string('currency', 10)->default('EUR');
-                $table->string('payment_status')->default('succeeded'); // succeeded, failed, refunded
-                $table->string('payment_method')->nullable(); // card, bank_transfer 
+                $table->foreignId('user_subscription_id')->nullable()->constrained()->nullOnDelete();
+                $table->string('stripe_charge_id')->nullable();
+                $table->decimal('amount', 10, 2)->default(0);
+                $table->string('currency', 3)->default('USD');
+                $table->enum('payment_status', ['pending', 'succeeded', 'failed', 'refunded'])->default('pending');
+                $table->string('payment_method')->nullable();
                 $table->timestamps();
             });
         }

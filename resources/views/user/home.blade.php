@@ -740,6 +740,7 @@
       </div>
     </section>
 
+    <!---Review------->
     <section>
       <div class="container">
         <div class="section-head center" data-reveal>
@@ -800,6 +801,8 @@
       </div>
     </section>
 
+    
+    <!------Pricing Plan-------->
     <section class="premium-pricing-section" id="pricing">
       <div class="container">
         
@@ -810,11 +813,11 @@
         </div>
 
         <div class="pricing-grid">
-          @if(session('error'))
+          {{-- @if(session('error'))
             <div style="background: #ff4a4a; color: white; padding: 14px; text-align: center; border-radius: 8px; margin-bottom: 25px; font-weight: bold; width: 100%; max-width: 1200px; margin-left: auto; margin-right: auto;">
                 {{ session('error') }}
             </div>
-          @endif
+          @endif --}}
           @isset($data)
             @foreach($data as $index => $plan)
               @php

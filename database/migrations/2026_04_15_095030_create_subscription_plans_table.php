@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('subscription_plans', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->enum('billing_cycle', ['monthly', 'annual']);
             $table->string('stripe_price_id')->nullable();
             $table->string('stripe_product_id')->nullable();
             $table->decimal('price', 10, 2)->nullable();
+            $table->unsignedInteger('kit_limit')->nullable(); // null = unlimited kits
             $table->integer('duration')->nullable();
             $table->json('features')->nullable();
             $table->boolean('status')->default(true);

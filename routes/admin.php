@@ -143,4 +143,18 @@ Route::prefix('admin')
             Route::get('/newsletter/export', [NewsletterSubscriberController::class, 'export'])->name('newsletter.export');
             Route::patch('/newsletter/{subscriber}/toggle', [NewsletterSubscriberController::class, 'toggle'])->name('newsletter.toggle');
             Route::delete('/newsletter/{subscriber}', [NewsletterSubscriberController::class, 'destroy'])->name('newsletter.destroy');
+            Route::get('/kits', [KitController::class, 'index'])->name('kits.index');
+            Route::delete('/kits/{id}', [KitController::class, 'destroy'])->name('kits.destroy');
+            Route::get('/get-subcategories', [KitController::class, 'getSubcategories'])->name('get-subcategories');
+
+            // Admin dispatch control
+            Route::post('/kits/dispatch', [KitController::class, 'dispatchKit'])->name('kits.dispatch');
+            Route::patch('/kits/{id}/dispatch-status', [KitController::class, 'updateDispatchStatus'])->name('kits.dispatch-status');
+
+            // Admin pickup management
+            Route::get('/pickup', [KitController::class, 'pickupIndex'])->name('pickup.index');
+            Route::patch('/pickup/{id}/assign', [KitController::class, 'assignPickup'])->name('pickup.assign');
+            Route::patch('/pickup/{id}/collected', [KitController::class, 'markPickupCollected'])->name('pickup.collected');
+            Route::patch('/pickup/{id}/delivered-to-lab', [KitController::class, 'markPickupDeliveredToLab'])->name('pickup.delivered-to-lab');
+            Route::patch('/pickup/{id}/failed', [KitController::class, 'markPickupFailed'])->name('pickup.failed');
     });

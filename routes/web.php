@@ -65,6 +65,13 @@ Route::prefix('user')->name('user.')->middleware(['auth'])->group(function () {
     
     Route::get('/reports/{id}', [BiomarkerReportController::class, 'showUserReport'])->name('reports.show');
     Route::get('/kits', [KitController::class, 'index'])->name('kits.index');
+    Route::get('/get-user-kits', [KitController::class, 'getUserKits'])->name('get-user-kits');
+    Route::post('/kits/activate', [KitController::class, 'activateKit'])->name('kits.activate');
+    Route::get('/my-kits', [KitController::class, 'myKits'])->name('user.kits.index');
+
+    // User schedules sample pickup
+    Route::post('/kits/{id}/schedule-pickup', [KitController::class, 'schedulePickup'])->name('kits.schedule-pickup');
+    
     Route::get('/pickup-requests', [PickupRequestController::class, 'index'])->name('pickup.index');
     Route::post('/pickup-requests', [PickupRequestController::class, 'store'])->name('pickup.store');
     Route::get('/pickup-requests/{id}', [PickupRequestController::class, 'show'])->name('pickup.show');

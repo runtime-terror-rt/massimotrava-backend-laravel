@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
             RolesTableSeeder::class, 
             UserSeeder::class,
             PrivacyPolicySeeder::class,
-            SubscriptionPlanSeeder::class
+            // SubscriptionPlanSeeder::class
         ]);
     }
 }
