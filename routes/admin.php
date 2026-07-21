@@ -130,7 +130,7 @@ Route::prefix('admin')
             Route::put('/plans/{id}', [SubscriptionPlanController::class, 'update'])->name('plans.update');
             Route::delete('/plans/{id}', [SubscriptionPlanController::class, 'destroy'])->name('plans.destroy');
 
-            Route::get('/pickup-requests', [AdminPickupRequestController::class, 'index'])->name('pickup.index');
+            Route::get('/pickup-requests', [AdminPickupRequestController::class, 'index'])->name('pick-up.index');
             Route::get('/pickup-requests/{id}', [AdminPickupRequestController::class, 'show'])->name('pickup.show');
             Route::patch('/pickup/{id}/schedule', [AdminPickupRequestController::class, 'schedule'])->name('pickup.schedule');
             Route::patch('/pickup/{id}/collect', [AdminPickupRequestController::class, 'collect'])->name('pickup.collect');
