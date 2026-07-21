@@ -8,8 +8,6 @@ use Illuminate\Support\Facades\Log;
 
 class Kit extends Model
 {
-    use SoftDeletes;
-
     protected $fillable = [
         'user_id',
         'user_subscription_id',
