@@ -5,26 +5,24 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
+use Stripe\StripeClient;
 
 class SubscriptionPlanSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $user = User::first();
-        $userId = $user ? $user->id : 1; 
+        $userId = $user ? $user->id : 1;
+
+        $stripe = new StripeClient(config('services.stripe.secret'));
 
         $plans = [
             [
-                'name'              => 'Free',
-                'billing_cycle'     => 'monthly',
-                'price'             => 0.00,
-                'duration'          => 30,
-                'stripe_product_id' => null,
-                'stripe_price_id'   => null,
-                'features'          => [
+                'name'          => 'Free',
+                'billing_cycle' => 'monthly',
+                'price'         => 0.00,
+                'duration'      => 30,
+                'features'      => [
                     'kits_per_year'                => '1 Kit Per Year Included',
                     'longevity_score'              => 'Basic Longevity Score & Trends',
                     'biomarker_insights'           => 'Limited Biomarker Insights',
@@ -34,16 +32,14 @@ class SubscriptionPlanSeeder extends Seeder
                     'pdf_reports_export'           => 'No PDF Reports & Data Export',
                     'family_sharing'               => 'No Family Sharing Access'
                 ],
-                'status'            => true,
+                'status' => true,
             ],
             [
-                'name'              => 'Basic',
-                'billing_cycle'     => 'monthly',
-                'price'             => 19.00,
-                'duration'          => 30,
-                'stripe_product_id' => 'prod_UmQ3TbqgWleKzq', 
-                'stripe_price_id'   => 'price_1TmrE0PFSvdpw7414rmFIRwk', 
-                'features'          => [
+                'name'          => 'Basic',
+                'billing_cycle' => 'monthly',
+                'price'         => 19.00,
+                'duration'      => 30,
+                'features'      => [
                     'kits_per_year'                => '4 Kits Per Year Included',
                     'longevity_score'              => 'Full Longevity Score & Trends',
                     'biomarker_insights'           => 'Standard Biomarker Insights',
@@ -53,16 +49,14 @@ class SubscriptionPlanSeeder extends Seeder
                     'pdf_reports_export'           => 'PDF Reports & Data Export',
                     'family_sharing'               => 'No Family Sharing Access'
                 ],
-                'status'            => true,
+                'status' => true,
             ],
             [
-                'name'              => 'Premium',
-                'billing_cycle'     => 'monthly',
-                'price'             => 39.00,
-                'duration'          => 30,
-                'stripe_product_id' => 'prod_UmQ5rKlnilczHj',
-                'stripe_price_id'   => 'price_1TmrErPFSvdpw741ndhhsVXc',
-                'features'          => [
+                'name'          => 'Premium',
+                'billing_cycle' => 'monthly',
+                'price'         => 39.00,
+                'duration'      => 30,
+                'features'      => [
                     'kits_per_year'                => 'Unlimited Kits Per Year',
                     'longevity_score'              => 'Full Longevity Score + Deep History',
                     'biomarker_insights'           => 'Advanced Biomarker Insights',
@@ -72,16 +66,14 @@ class SubscriptionPlanSeeder extends Seeder
                     'pdf_reports_export'           => 'PDF Reports & Data Export',
                     'family_sharing'               => 'Family Sharing (Up to 2 Members)'
                 ],
-                'status'            => true,
+                'status' => true,
             ],
             [
-                'name'              => 'Ultimate',
-                'billing_cycle'     => 'monthly',
-                'price'             => 69.00,
-                'duration'          => 30,
-                'stripe_product_id' => 'prod_UmQ5NNzQsQ420r',
-                'stripe_price_id'   => 'price_1TmrF6PFSvdpw7419FZ3mOBW',
-                'features'          => [
+                'name'          => 'Ultimate',
+                'billing_cycle' => 'monthly',
+                'price'         => 69.00,
+                'duration'      => 30,
+                'features'      => [
                     'kits_per_year'                => 'Unlimited Kits Per Year',
                     'longevity_score'              => 'Full Longevity Score + AI Trends',
                     'biomarker_insights'           => 'Personalized AI Biomarker Insights',
@@ -91,18 +83,42 @@ class SubscriptionPlanSeeder extends Seeder
                     'pdf_reports_export'           => 'Advanced PDF Reports & Export',
                     'family_sharing'               => 'Family Sharing (Up to 4 Members)'
                 ],
-                'status'            => true,
-            ]
+                'status' => true,
+            ],
         ];
 
         foreach ($plans as $planData) {
+            $stripeProductId = null;
+            $stripePriceId   = null;
+
+            if ($planData['price'] > 0) {
+                $product = $stripe->products->create([
+                    'name'        => $planData['name'],
+                    'description' => $planData['name'] . ' subscription plan (' . $planData['billing_cycle'] . ')',
+                ]);
+
+                $price = $stripe->prices->create([
+                    'product'     => $product->id,
+                    'unit_amount' => (int) round($planData['price'] * 100),
+                    'currency'    => 'usd',
+                    'recurring'   => [
+                        'interval' => $planData['billing_cycle'] === 'annual' ? 'year' : 'month',
+                    ],
+                ]);
+
+                $stripeProductId = $product->id;
+                $stripePriceId   = $price->id;
+            }
+
             SubscriptionPlan::updateOrCreate(
                 [
-                    'name'          => $planData['name'], 
-                    'billing_cycle' => $planData['billing_cycle']
+                    'name'          => $planData['name'],
+                    'billing_cycle' => $planData['billing_cycle'],
                 ],
                 array_merge($planData, [
-                    'user_id' => $userId
+                    'user_id'           => $userId,
+                    'stripe_product_id' => $stripeProductId,
+                    'stripe_price_id'   => $stripePriceId,
                 ])
             );
         }
