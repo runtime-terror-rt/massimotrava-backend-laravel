@@ -15,7 +15,7 @@ class UserSubscription extends Model
         'starts_at',
         'ends_at',
         'stripe_subscription_id',
-        
+        'stripe_price_id',
     ];
 
     protected $casts = [
