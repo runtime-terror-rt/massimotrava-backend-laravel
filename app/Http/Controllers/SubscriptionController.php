@@ -7,11 +7,11 @@ use App\Models\SubscriptionPlan;
 use App\Models\UserSubscription;
 use App\Models\Payment;
 use Stripe\Stripe;
+use Illuminate\Support\Facades\Log;
 use Stripe\Checkout\Session;
 
 class SubscriptionController extends Controller
 {
-    
     public function createCheckoutSession($planId)
     {
         $plan = SubscriptionPlan::findOrFail($planId);
@@ -56,7 +56,6 @@ class SubscriptionController extends Controller
         }
     }
 
-    
     public function handleWebhook(Request $request)
     {
         Stripe::setApiKey(config('services.stripe.secret', env('STRIPE_SECRET')));
@@ -73,56 +72,197 @@ class SubscriptionController extends Controller
             return response()->json(['error' => 'Invalid signature'], 400);
         }
 
-        if ($event->type === 'checkout.session.completed') {
         try {
-            $session = $event->data->object;
-
-            $userId = $session->metadata->user_id;
-            $planId = $session->metadata->subscription_plan_id;
-            $stripeSubId = $session->subscription ?? null;
-
-            $plan = SubscriptionPlan::find($planId);
-            if (!$plan) {
-                Log::error('[STRIPE WEBHOOK] Plan not found: ' . $planId);
-                return response()->json(['error' => 'Plan not found'], 404);
+            switch ($event->type) {
+                case 'checkout.session.completed':
+                    $this->handleCheckoutCompleted($event->data->object);
+                    break;
+                    
+                case 'invoice.payment_succeeded':
+                    $this->handleRenewalPayment($event->data->object);
+                    break;
+                    
+                case 'invoice.payment_failed':
+                    $this->handleFailedPayment($event->data->object);
+                    break;
+                    
+                case 'customer.subscription.deleted':
+                    $this->handleCancellation($event->data->object);
+                    break;
+                    
+                case 'customer.subscription.updated':
+                    $this->handleSubscriptionUpdated($event->data->object);
+                    break;
             }
-
-            UserSubscription::where('user_id', $userId)
-                ->where('status', 'active')
-                ->update(['status' => 'expired']);
-
-            $endsAt = now()->addMonth();
-            if (in_array(strtolower($plan->billing_cycle), ['annual', 'year'])) {
-                $endsAt = now()->addYear();
-            }
-
-            $userSubscription = UserSubscription::create([
-                'user_id' => $userId,
-                'subscription_plan_id' => $planId,
-                'stripe_subscription_id' => $stripeSubId,
-                'status' => 'active',
-                'starts_at' => now(),
-                'ends_at' => $endsAt,
-            ]);
-
-            Payment::create([
-                'user_id' => $userId,
-                'user_subscription_id' => $userSubscription->id,
-                'stripe_charge_id' => $session->payment_intent ?? $session->id,
-                'amount' => $session->amount_total / 100,
-                'currency' => strtoupper($session->currency),
-                'payment_status' => 'succeeded',
-                'payment_method' => 'card',
-            ]);
-
-            Log::info('[STRIPE WEBHOOK] Subscription created for user ' . $userId);
-
+        } catch (\InvalidArgumentException $e) {
+            Log::warning('[STRIPE WEBHOOK] Expected error: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 400);
         } catch (\Throwable $e) {
             Log::error('[STRIPE WEBHOOK] Failed: ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine());
             return response()->json(['error' => 'Webhook processing failed'], 500);
         }
-    }
 
         return response()->json(['status' => 'success'], 200);
+    }
+
+    /**
+     * Handle initial checkout completion
+     */
+    private function handleCheckoutCompleted($session)
+    {
+        $userId = $session->metadata->user_id;
+        $planId = $session->metadata->subscription_plan_id;
+        $stripeSubId = $session->subscription ?? null;
+
+        // ✅ IDEMPOTENCY: Skip if already processed
+        if ($stripeSubId) {
+            $existing = UserSubscription::where('stripe_subscription_id', $stripeSubId)->first();
+            if ($existing) {
+                Log::info('[STRIPE WEBHOOK] Duplicate checkout, skipping: ' . $session->id);
+                return;
+            }
+        }
+
+        $plan = SubscriptionPlan::find($planId);
+        if (!$plan) {
+            Log::error('[STRIPE WEBHOOK] Plan not found: ' . $planId);
+            throw new \InvalidArgumentException('Plan not found');
+        }
+
+        // Expire previous active subscriptions
+        UserSubscription::where('user_id', $userId)
+            ->where('status', 'active')
+            ->update(['status' => 'expired']);
+
+        // Calculate end date
+        $endsAt = now()->addMonth();
+        if (in_array(strtolower($plan->billing_cycle), ['annual', 'year'])) {
+            $endsAt = now()->addYear();
+        }
+
+        // Create new subscription
+        $userSubscription = UserSubscription::create([
+            'user_id' => $userId,
+            'subscription_plan_id' => $planId,
+            'stripe_subscription_id' => $stripeSubId,
+            'stripe_price_id' => $plan->stripe_price_id,
+            'status' => 'active',
+            'starts_at' => now(),
+            'ends_at' => $endsAt,
+        ]);
+
+        // Record payment
+        $amount = isset($session->amount_total) ? $session->amount_total / 100 : 0;
+        
+        Payment::create([
+            'user_id' => $userId,
+            'user_subscription_id' => $userSubscription->id,
+            'stripe_charge_id' => $session->payment_intent ?? $session->id,
+            'amount' => $amount,
+            'currency' => strtoupper($session->currency),
+            'payment_status' => 'succeeded',
+            'payment_method' => 'card',
+        ]);
+
+        Log::info('[STRIPE WEBHOOK] Subscription created for user ' . $userId);
+    }
+
+    /**
+     * Handle recurring payment success
+     */
+    private function handleRenewalPayment($invoice)
+    {
+        $stripeSubId = $invoice->subscription;
+        
+        $subscription = UserSubscription::where('stripe_subscription_id', $stripeSubId)
+            ->where('status', 'active')
+            ->first();
+
+        if (!$subscription) {
+            Log::warning('[STRIPE WEBHOOK] Subscription not found for renewal: ' . $stripeSubId);
+            return;
+        }
+
+        // Extend end date from current end date
+        $plan = $subscription->plan;
+        $newEndsAt = $subscription->ends_at->addMonth();
+        if (in_array(strtolower($plan->billing_cycle), ['annual', 'year'])) {
+            $newEndsAt = $subscription->ends_at->addYear();
+        }
+
+        $subscription->update(['ends_at' => $newEndsAt]);
+
+        // Record payment
+        $amount = isset($invoice->amount_paid) ? $invoice->amount_paid / 100 : 0;
+        
+        Payment::create([
+            'user_id' => $subscription->user_id,
+            'user_subscription_id' => $subscription->id,
+            'stripe_charge_id' => $invoice->payment_intent ?? $invoice->id,
+            'amount' => $amount,
+            'currency' => strtoupper($invoice->currency),
+            'payment_status' => 'succeeded',
+            'payment_method' => 'card',
+        ]);
+
+        Log::info('[STRIPE WEBHOOK] Renewal payment recorded for user ' . $subscription->user_id);
+    }
+
+    /**
+     * Handle failed payment
+     */
+    private function handleFailedPayment($invoice)
+    {
+        $stripeSubId = $invoice->subscription;
+        
+        UserSubscription::where('stripe_subscription_id', $stripeSubId)
+            ->where('status', 'active')
+            ->update(['status' => 'expired']);
+
+        Log::warning('[STRIPE WEBHOOK] Payment failed for subscription: ' . $stripeSubId);
+    }
+
+    /**
+     * Handle subscription cancellation
+     */
+    private function handleCancellation($subscription)
+    {
+        $stripeSubId = $subscription->id;
+        
+        UserSubscription::where('stripe_subscription_id', $stripeSubId)
+            ->whereIn('status', ['active', 'trialing'])
+            ->update(['status' => 'cancelled']);
+
+        Log::info('[STRIPE WEBHOOK] Subscription cancelled: ' . $stripeSubId);
+    }
+
+    /**
+     * Handle subscription updates (plan changes, etc.)
+     */
+    private function handleSubscriptionUpdated($subscription)
+    {
+        $stripeSubId = $subscription->id;
+        
+        $userSubscription = UserSubscription::where('stripe_subscription_id', $stripeSubId)->first();
+        
+        if (!$userSubscription) {
+            Log::warning('[STRIPE WEBHOOK] Subscription not found for update: ' . $stripeSubId);
+            return;
+        }
+
+        // Update status if changed
+        $stripeStatus = $subscription->status; // active, canceled, past_due, unpaid, etc.
+        $mappedStatus = match($stripeStatus) {
+            'active' => 'active',
+            'canceled' => 'cancelled',
+            'past_due' => 'expired',
+            'unpaid' => 'expired',
+            default => $userSubscription->status,
+        };
+
+        if ($mappedStatus !== $userSubscription->status) {
+            $userSubscription->update(['status' => $mappedStatus]);
+            Log::info('[STRIPE WEBHOOK] Subscription ' . $stripeSubId . ' status updated to ' . $mappedStatus);
+        }
     }
 }

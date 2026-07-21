@@ -19,6 +19,7 @@ class SubscriptionPlan extends Model
         'duration',
         'features',
         'status',
+        'kit_limit',
     ];
 
     protected $casts = [
