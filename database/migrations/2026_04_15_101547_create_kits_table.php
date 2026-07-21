@@ -14,10 +14,7 @@ return new class extends Migration
         Schema::create('kits', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('user_subscription_id')
-                ->nullable()
-                ->constrained('user_subscriptions')
-                ->nullOnDelete();
+            $table->foreignId('user_subscription_id')->nullable()->constrained('user_subscriptions')->nullOnDelete();
             $table->string('activation_code')->unique();
             $table->string('inv_code')->unique()->nullable();
             $table->enum('status', [
