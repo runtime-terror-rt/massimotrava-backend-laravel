@@ -67,11 +67,13 @@ class SubscriptionController extends Controller
         try {
             $event = \Stripe\Webhook::constructEvent($payload, $sigHeader, $endpointSecret);
         } catch (\UnexpectedValueException $e) {
+            Log::error('[STRIPE WEBHOOK] Invalid payload: ' . $e->getMessage());
             return response()->json(['error' => 'Invalid payload'], 400);
         } catch (\Stripe\Exception\SignatureVerificationException $e) {
+            Log::error('[STRIPE WEBHOOK] Invalid signature: ' . $e->getMessage() . ' | secret_used_prefix: ' . substr($endpointSecret, 0, 12));
             return response()->json(['error' => 'Invalid signature'], 400);
         }
-
+        
         try {
             switch ($event->type) {
                 case 'checkout.session.completed':
