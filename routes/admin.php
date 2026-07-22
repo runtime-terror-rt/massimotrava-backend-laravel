@@ -81,6 +81,8 @@ Route::prefix('admin')
             Route::post('/kits/activate', [KitController::class, 'activateKit'])->name('kits.activate');
             Route::delete('/kits/{id}', [KitController::class, 'destroy'])->name('kits.destroy');
             Route::get('/get-subcategories', [KitController::class, 'getSubcategories'])->name('get-subcategories');
+            Route::post('/kits/dispatch', [KitController::class, 'dispatchKit'])
+            ->name('admin.kits.dispatch');
 
             // Category & Sub Category Node System 
             Route::get('/category', [BiomarkerCategoryController::class, 'index'])->name('category.index');

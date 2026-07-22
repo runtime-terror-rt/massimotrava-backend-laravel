@@ -33,4 +33,9 @@ class UserSubscription extends Model
     {
         return $this->belongsTo(SubscriptionPlan::class, 'subscription_plan_id');
     }
+
+    public function kits() 
+    {
+        return $this->hasMany(Kit::class, 'user_subscription_id');
+    }
 }

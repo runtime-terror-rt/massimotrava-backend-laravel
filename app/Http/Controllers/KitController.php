@@ -28,13 +28,21 @@ class KitController extends Controller
 
         $kits = $query->paginate(10);
 
+        $activeSubscriptions = $isAdminOrLab
+            ? \App\Models\UserSubscription::with(['user', 'plan'])
+                ->where('status', 'active')
+                ->latest()
+                ->get()
+            : collect();
+
         if ($request->expectsJson()) {
             return response()->json(['status' => 'success', 'data' => $kits]);
         }
 
         return view('admin.kits.index', [
-            'kits'    => $kits,
-            'isAdmin' => $isAdminOrLab
+            'kits'                => $kits,
+            'isAdmin'             => $isAdminOrLab,
+            'activeSubscriptions' => $activeSubscriptions,
         ]);
     }
 
@@ -50,6 +58,7 @@ class KitController extends Controller
 
         $request->validate([
             'user_subscription_id' => 'required|exists:user_subscriptions,id',
+            'activation_code'      => 'required|string|max:100|unique:kits,activation_code',
             'courier_name'         => 'nullable|string|max:255',
             'admin_notes'          => 'nullable|string',
         ]);
@@ -71,13 +80,11 @@ class KitController extends Controller
         }
 
         try {
-            $activationCode = 'ACT-' . strtoupper(Str::random(10));
-
             $kit = Kit::create([
                 'user_id'              => $subscription->user_id,
                 'user_subscription_id' => $subscription->id,
                 'added_by_admin_id'    => $user->id,
-                'activation_code'      => $activationCode,
+                'activation_code'      => $request->activation_code,
                 'status'               => 'processing',
                 'courier_name'         => $request->courier_name,
                 'admin_notes'          => $request->admin_notes,
@@ -98,7 +105,7 @@ class KitController extends Controller
             Log::error('Kit Dispatch Failed: ' . $e->getMessage());
             return $this->responseHandler($request, 'Failed to dispatch kit. Please try again.', null, false, 500);
         }
-    }
+    }   
 
     /**
      * [ADMIN] Update dispatch status with validation

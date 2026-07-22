@@ -37,6 +37,10 @@
         </div>
     @endif
 
+    @if($isAdmin)
+        @include('admin.kits.dispatch-kit', ['activeSubscriptions' => $activeSubscriptions ?? []])
+    @endif
+
     {{-- Main Data Table Card --}}
     <div class="card border-0 overflow-hidden shadow-sm" style="background: var(--surface); border-radius: 12px; border: 1px solid var(--border) !important; font-family: 'DM Sans', sans-serif; transition: background-color 0.3s, border-color 0.3s;">
         <div class="table-responsive">
