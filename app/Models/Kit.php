@@ -108,4 +108,9 @@ class Kit extends Model
     {
         return $this->hasMany(BiomarkerReport::class);
     }
+
+    public function pickupRequest()
+    {
+        return $this->hasOne(PickupRequest::class, 'kit_id');
+    }
 }

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PickupRequest extends Model {
     protected $fillable = [
-        'user_id','kit_name','kit_icon','pickup_date',
+        'user_id','kit_name','kit_icon','pickup_date','kit_id',
         'time_slot','address','notes','admin_notes',
         'status','collected_at','cancelled_at',
     ];

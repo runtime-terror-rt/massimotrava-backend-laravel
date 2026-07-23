@@ -92,6 +92,12 @@
         <i class="fa-solid fa-calendar"></i>
         <span>{{ __('messages.schedule_retest') }}</span>
       </a>
+
+      <a href="{{ route('user.subscription.my') }}" 
+        class="nav-item {{ request()->routeIs('user.subscription.my*') ? 'active' : '' }}">
+          <i class="fa-solid fa-dollar"></i>
+          <span>{{ __('messages.subscription') }}</span>
+      </a>
     @endif
 
     {{-- ── ADMIN/LAB ONLY LINKS ── --}}

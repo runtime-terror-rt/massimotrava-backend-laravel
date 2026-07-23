@@ -50,7 +50,6 @@
                         <th class="px-4 py-3 border-0" style="color: var(--text);">{{ __('messages.activation_code') }}</th>
                         <th class="px-4 py-3 border-0" style="color: var(--text);">{{ __('messages.invoice_code') }}</th>
                         
-                        {{-- শুধু অ্যাডমিন হলে ইউজার ইনফো কলামের হেডার দেখাবে --}}
                         @if($isAdmin)
                             <th class="px-4 py-3 border-0" style="color: var(--text);">{{ __('messages.user') }}</th>
                         @endif
@@ -73,7 +72,6 @@
                                 <code style="color: var(--text-muted); font-family: monospace; background: var(--surface-2); padding: 2px 6px; border-radius: 4px;">{{ $kit->inv_code }}</code>
                             </td>
                             
-                            {{-- User Column (শুধু অ্যাডমিনদের জন্য দৃশ্যমান) --}}
                             @if($isAdmin)
                                 <td class="px-4 py-3">
                                     <div class="d-flex flex-column">
@@ -109,7 +107,7 @@
                                     </form>
                                 @else
                                     {{-- User Action: Premium View Button --}}
-                                    <a href="{{-- route('admin.kits.show', $kit->id) --}}" class="btn btn-sm px-3 py-1" style="background: var(--surface-2); border: 1px solid var(--border); color: var(--text); border-radius: 6px; font-size: 12px; font-weight: 500; transition: all 0.2s; display: inline-flex; align-items: center; gap: 4px;" onmouseover="this.style.background='var(--accent)'; this.style.borderColor='var(--accent)'; this.style.color='#fff';" onmouseout="this.style.background='var(--surface-2)'; this.style.borderColor='var(--border)'; this.style.color='var(--text)';">
+                                    <a href="{{ route('admin.kits.show', $kit->user_subscription_id) }}" class="btn btn-sm px-3 py-1" style="background: var(--surface-2); border: 1px solid var(--border); color: var(--text); border-radius: 6px; font-size: 12px; font-weight: 500; transition: all 0.2s; display: inline-flex; align-items: center; gap: 4px;" onmouseover="this.style.background='var(--accent)'; this.style.borderColor='var(--accent)'; this.style.color='#fff';" onmouseout="this.style.background='var(--surface-2)'; this.style.borderColor='var(--border)'; this.style.color='var(--text)';">
                                         <i class="fa-regular fa-eye" style="font-size: 13px;"></i> {{ __('messages.view') ?? 'View' }}
                                     </a>
                                 @endif

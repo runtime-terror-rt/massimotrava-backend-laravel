@@ -434,7 +434,7 @@
         <a href="{{ route('home.index') }}#pricing" class="dropdown-item" style="color: var(--text, #334155); text-decoration: none;">
             <i class="fa-regular fa-credit-card"></i> Upgrade Plan
         </a>    
-        <div class="dropdown-item" style="color: var(--text, #334155);"><i class="fa-solid fa-gear"></i> Settings</div>
+        {{-- <div class="dropdown-item" style="color: var(--text, #334155);"><i class="fa-solid fa-gear"></i> Settings</div> --}}
         <div class="dropdown-divider" style="height: 1px; background: var(--border, rgba(0,0,0,0.06)); margin: 6px 0;"></div>
         <a href="{{ route('admin.logout') }}" class="dropdown-item" style="color:#ef4444; text-decoration:none"
            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

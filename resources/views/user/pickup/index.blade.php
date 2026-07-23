@@ -294,15 +294,23 @@
         <form action="{{ route('user.pickup.store') }}" method="POST">
             @csrf
             <div class="pu-form-group">
-                <label class="pu-form-label">Kit Type</label>
-                <select name="kit_name" class="pu-form-input" required>
-                    <option value="">Select kit type</option>
-                    <option value="Longevity Panel">Longevity Panel</option>
-                    <option value="Cardio Panel">Cardio Panel</option>
-                    <option value="Vitamin Panel">Vitamin Panel</option>
-                    <option value="Hormone Panel">Hormone Panel</option>
-                    <option value="Full Body Panel">Full Body Panel</option>
+                <label class="pu-form-label">Kit</label>
+                <select name="kit_id" class="pu-form-input" required>
+                    <option value="">Select an activated kit</option>
+                    @forelse($activatedKits as $kit)
+                        <option value="{{ $kit->id }}">
+                            {{ $kit->activation_code }}
+                            @if($kit->inv_code) — Inv: {{ $kit->inv_code }} @endif
+                        </option>
+                    @empty
+                        <option value="" disabled>No activated kits available</option>
+                    @endforelse
                 </select>
+                @if($activatedKits->isEmpty())
+                    <small class="text-muted d-block mt-1">
+                        You have no activated kits yet. Activate a kit first before scheduling a pickup.
+                    </small>
+                @endif
             </div>
             <div class="pu-form-row">
                 <div class="pu-form-group" style="margin-bottom:0">

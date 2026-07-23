@@ -1,4 +1,4 @@
-@extends('admin.layouts.app')
+@extends('layouts.admin')
 
 @section('title', __('messages.pickup_requests'))
 
@@ -9,7 +9,7 @@
         <div>
             <h4 class="mb-0">{{ __('messages.pickup_requests') }}</h4>
             <p class="text-muted mb-0" style="font-size:13px;">
-                ইউজার যেসব sample pickup schedule করেছে সেগুলো এখান থেকে assign ও ট্র্যাক করুন
+                Assign and track sample pickup schedules created by users from here
             </p>
         </div>
     </div>
@@ -24,14 +24,17 @@
     {{-- Filters --}}
     <form method="GET" class="filter-bar mb-3 d-flex gap-2">
         <select name="status" class="form-select" style="max-width:200px;">
-            <option value="">সব স্ট্যাটাস</option>
-            <option value="requested" {{ request('status')=='requested'?'selected':'' }}>Requested</option>
-            <option value="assigned" {{ request('status')=='assigned'?'selected':'' }}>Assigned</option>
+            <option value="">All Statuses</option>
+            <option value="pending" {{ request('status')=='pending'?'selected':'' }}>Pending</option>
+            <option value="scheduled" {{ request('status')=='scheduled'?'selected':'' }}>Scheduled</option>
             <option value="collected" {{ request('status')=='collected'?'selected':'' }}>Collected</option>
             <option value="delivered_to_lab" {{ request('status')=='delivered_to_lab'?'selected':'' }}>Delivered to Lab</option>
             <option value="failed" {{ request('status')=='failed'?'selected':'' }}>Failed</option>
         </select>
-        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-filter"></i> ফিল্টার</button>
+        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-filter"></i> Filter</button>
+        @if(request('status'))
+            <a href="{{ url()->current() }}" class="btn btn-outline-secondary">Clear</a>
+        @endif
     </form>
 
     <div class="card">
@@ -40,11 +43,10 @@
                 <thead>
                     <tr>
                         <th>User</th>
-                        <th>Kit Code</th>
-                        <th>Plan</th>
-                        <th>Preferred Date/Time</th>
+                        <th>Kit Name</th>
+                        <th>Pickup Date & Time</th>
                         <th>Address</th>
-                        <th>Courier</th>
+                        <th>Notes</th>
                         <th>Status</th>
                         <th class="text-end">Action</th>
                     </tr>
@@ -53,29 +55,27 @@
                     @forelse($pickups as $pickup)
                         <tr>
                             <td>
-                                <div class="fw-semibold">{{ $pickup->kit->user->name ?? 'N/A' }}</div>
-                                <div class="text-muted" style="font-size:12px;">{{ $pickup->contact_phone }}</div>
+                                {{-- Direct Relationship Check --}}
+                                <div class="fw-semibold">{{ $pickup->user->name ?? 'User #'.$pickup->user_id }}</div>
+                                <div class="text-muted" style="font-size:12px;">{{ $pickup->user->email ?? '' }}</div>
                             </td>
-                            <td>{{ $pickup->kit->kit_code ?? '-' }}</td>
-                            <td>{{ $pickup->kit->plan->name ?? '-' }}</td>
+                            <td>{{ $pickup->kit_name ?? '-' }}</td>
                             <td>
-                                {{ optional($pickup->preferred_date)->format('d M Y') }}
-                                <div class="text-muted" style="font-size:12px;">{{ $pickup->preferred_time_slot }}</div>
+                                {{-- Database Column Name: pickup_date --}}
+                                {{ \Carbon\Carbon::parse($pickup->pickup_date)->format('d M Y') }}
+                                <div class="text-muted" style="font-size:12px;">{{ $pickup->time_slot }}</div>
                             </td>
-                            <td style="max-width:200px;font-size:13px;">{{ Str::limit($pickup->pickup_address, 60) }}</td>
-                            <td>
-                                @if($pickup->assigned_courier_name)
-                                    {{ $pickup->assigned_courier_name }}
-                                    <div class="text-muted" style="font-size:12px;">{{ $pickup->assigned_courier_phone }}</div>
-                                @else
-                                    <span class="text-muted">Not assigned</span>
-                                @endif
-                            </td>
+                            <td style="max-width:200px;font-size:13px;">{{ Str::limit($pickup->address, 60) }}</td>
+                            <td>{{ $pickup->notes ?? 'N/A' }}</td>
                             <td>
                                 @php
                                     $pBadge = [
-                                        'requested' => 'secondary', 'assigned' => 'primary', 'collected' => 'info',
-                                        'delivered_to_lab' => 'success', 'failed' => 'danger', 'cancelled' => 'dark',
+                                        'pending'   => 'warning', 
+                                        'scheduled' => 'primary', 
+                                        'collected' => 'info',
+                                        'delivered_to_lab' => 'success', 
+                                        'failed'    => 'danger', 
+                                        'cancelled' => 'dark',
                                     ];
                                 @endphp
                                 <span class="badge bg-{{ $pBadge[$pickup->status] ?? 'secondary' }}">
@@ -83,21 +83,19 @@
                                 </span>
                             </td>
                             <td class="text-end">
-                                @if($pickup->status === 'requested')
-                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#assignModal{{ $pickup->id }}">
-                                        <i class="fa-solid fa-truck"></i> Assign
-                                    </button>
-                                @elseif($pickup->status === 'assigned')
-                                    <form method="POST" action="{{ route('admin.pickup.collected', $pickup->id) }}" class="d-inline">
-                                        @csrf @method('PATCH')
-                                        <button class="btn btn-sm btn-info text-white">
-                                            <i class="fa-solid fa-check"></i> Collected
+                                @if(in_array($pickup->status, ['pending', 'scheduled']))
+                                    <form method="POST" action="{{ route('admin.pickup.collected', $pickup->id) }}">
+                                        @csrf 
+                                        @method('PATCH')
+                                        <button type="submit" class="btn btn-sm btn-info text-white">
+                                            Collected
                                         </button>
                                     </form>
                                 @elseif($pickup->status === 'collected')
-                                    <form method="POST" action="{{ route('admin.pickup.deliveredToLab', $pickup->id) }}" class="d-inline">
-                                        @csrf @method('PATCH')
-                                        <button class="btn btn-sm btn-success">
+                                    <form method="POST" action="{{ route('admin.pickup.delivered-to-lab', $pickup->id) }}" class="d-inline">
+                                        @csrf 
+                                        @method('PATCH')
+                                        <button type="submit" class="btn btn-sm btn-success">
                                             <i class="fa-solid fa-flask"></i> Delivered to Lab
                                         </button>
                                     </form>
@@ -111,39 +109,6 @@
                             </td>
                         </tr>
 
-                        {{-- Assign Modal --}}
-                        <div class="modal fade" id="assignModal{{ $pickup->id }}" tabindex="-1">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <form method="POST" action="{{ route('admin.pickup.assign', $pickup->id) }}">
-                                        @csrf @method('PATCH')
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">কুরিয়ার Assign করুন</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="mb-3">
-                                                <label class="form-label">Courier Name</label>
-                                                <input type="text" name="assigned_courier_name" class="form-control" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Courier Phone</label>
-                                                <input type="text" name="assigned_courier_phone" class="form-control" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Note</label>
-                                                <textarea name="admin_notes" class="form-control" rows="2"></textarea>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">বাতিল</button>
-                                            <button type="submit" class="btn btn-primary">Assign করুন</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-
                         {{-- Fail Modal --}}
                         <div class="modal fade" id="failModal{{ $pickup->id }}" tabindex="-1">
                             <div class="modal-dialog">
@@ -155,19 +120,19 @@
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <label class="form-label">কারণ</label>
+                                            <label class="form-label">Reason</label>
                                             <textarea name="failure_reason" class="form-control" rows="2" required></textarea>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">বাতিল</button>
-                                            <button type="submit" class="btn btn-danger">Fail করুন</button>
+                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="submit" class="btn btn-danger">Mark as Failed</button>
                                         </div>
                                     </form>
                                 </div>
                             </div>
                         </div>
                     @empty
-                        <tr><td colspan="8" class="text-center text-muted py-4">কোনো pickup request পাওয়া যায়নি।</td></tr>
+                        <tr><td colspan="7" class="text-center text-muted py-4">No pickup requests found.</td></tr>
                     @endforelse
                 </tbody>
             </table>

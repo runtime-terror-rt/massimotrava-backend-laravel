@@ -99,6 +99,8 @@ Route::prefix('user')->name('user.')->middleware(['auth'])->group(function () {
     Route::get('/notifications/edit', [NotificationSettingController::class, 'edit']);
     Route::post('/notifications/toggle', [NotificationSettingController::class, 'toggle']);
 
+    Route::get('/my-subscription', [SubscriptionController::class, 'mySubscription'])->name('subscription.my');
+
 });
 
 require __DIR__.'/admin.php';
