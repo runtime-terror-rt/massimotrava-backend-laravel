@@ -57,6 +57,7 @@ class SubscriptionPlanSeeder extends Seeder
                 'name'          => 'Premium',
                 'billing_cycle' => 'monthly',
                 'price'         => 39.00,
+                'kit_limit'     => NULL,
                 'duration'      => 30,
                 'features'      => [
                     'kits_per_year'                => 'Unlimited Kits Per Year',
@@ -74,6 +75,7 @@ class SubscriptionPlanSeeder extends Seeder
                 'name'          => 'Ultimate',
                 'billing_cycle' => 'monthly',
                 'price'         => 69.00,
+                'kit_limit'     => NULL,
                 'duration'      => 30,
                 'features'      => [
                     'kits_per_year'                => 'Unlimited Kits Per Year',
