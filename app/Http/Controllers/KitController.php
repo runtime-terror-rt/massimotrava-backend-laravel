@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Kit;
 use App\Models\KitPickup;
 use App\Models\Notification;
+use App\Models\PickupRequest;
 use App\Models\UserSubscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -29,7 +30,10 @@ class KitController extends Controller
         $kits = $query->paginate(10);
 
         $activeSubscriptions = $isAdminOrLab
-            ? \App\Models\UserSubscription::with(['user', 'plan'])
+            ? UserSubscription::with(['user', 'plan'])
+                ->withCount(['kits as used_kits_count' => function ($q) {
+                    $q->where('status', '!=', 'cancelled');
+                }])
                 ->where('status', 'active')
                 ->latest()
                 ->get()
@@ -47,7 +51,25 @@ class KitController extends Controller
     }
 
     /**
+     * [ADMIN] Show a subscription's kit history (used by admin.kits.show).
+     */
+    public function show(Request $request, $subscriptionId)
+    {
+        if (!$this->checkIsAdminOrLab($request->user())) {
+            abort(403);
+        }
+
+        $subscription = UserSubscription::with(['user', 'plan', 'kits' => function ($q) {
+            $q->latest();
+        }])->findOrFail($subscriptionId);
+
+        return view('admin.kits.show', compact('subscription'));
+    }
+
+    /**
      * [ADMIN] Dispatch a new kit for a user based on their active subscription.
+     * activation_code MUST be supplied by the admin (scanned/typed from the
+     * physical manufacturer kit box) — it is never auto-generated here.
      */
     public function dispatchKit(Request $request)
     {
@@ -105,10 +127,12 @@ class KitController extends Controller
             Log::error('Kit Dispatch Failed: ' . $e->getMessage());
             return $this->responseHandler($request, 'Failed to dispatch kit. Please try again.', null, false, 500);
         }
-    }   
+    }
 
     /**
-     * [ADMIN] Update dispatch status with validation
+     * [ADMIN] Update dispatch status. NOTE: "activated" is intentionally
+     * excluded here — activation must go through activateKit(), which is
+     * the only path that validates ownership and records inv_code.
      */
     public function updateDispatchStatus(Request $request, $id)
     {
@@ -141,7 +165,7 @@ class KitController extends Controller
     }
 
     /**
-     * [USER] Activate their kit using the activation code.
+     * [USER] Activate their kit using the activation code (typed or QR-scanned).
      */
     public function activateKit(Request $request, FcmNotificationService $fcmService)
     {
@@ -182,11 +206,10 @@ class KitController extends Controller
             $notificationMsg = 'Your test kit (' . $kit->activation_code . ') has been activated successfully.';
 
             DB::transaction(function () use (&$kit, &$dbNotification, $notificationMsg, $userId, $invCode) {
-                // Special case: activation needs extra fields, use direct update with status validation
                 if (!$kit->canTransitionTo('activated')) {
                     throw new \InvalidArgumentException("Cannot activate kit with status '{$kit->status}'");
                 }
-                
+
                 $kit->update([
                     'user_id'      => $userId,
                     'status'       => 'activated',
@@ -277,27 +300,31 @@ class KitController extends Controller
      * [ADMIN] List of pickup requests.
      */
     public function pickupIndex(Request $request)
-    {
-        $user = $request->user();
-        if (!$this->checkIsAdminOrLab($user)) {
-            abort(403);
-        }
-
-        $query = KitPickup::with(['kit.user', 'kit.userSubscription.plan']);
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        $pickups = $query->latest()->paginate(15);
-
-        if ($request->expectsJson()) {
-            return response()->json(['status' => 'success', 'data' => $pickups]);
-        }
-
-        return view('admin.pickups.index', compact('pickups'));
+{
+    $user = $request->user();
+    
+    if (!$this->checkIsAdminOrLab($user)) {
+        abort(403);
     }
 
+    // ১. সঠিক Model "PickupRequest" ব্যবহার করুন (KitPickup এর বদলে)
+    // ২. Direct user relationship eager-load করুন
+    $query = PickupRequest::with(['user']);
+
+    // Status filter
+    if ($request->filled('status')) {
+        $query->where('status', $request->status);
+    }
+
+    // Pagination সহ fetch
+    $pickups = $query->latest()->paginate(15);
+
+    if ($request->expectsJson()) {
+        return response()->json(['status' => 'success', 'data' => $pickups]);
+    }
+
+    return view('admin.pickups.index', compact('pickups'));
+}
     /**
      * [ADMIN] Assign a courier to a pickup request.
      */
@@ -343,18 +370,24 @@ class KitController extends Controller
             return $this->responseHandler($request, 'Unauthorized', null, false, 403);
         }
 
-        $pickup = KitPickup::with('kit')->findOrFail($id);
+        $pickup = PickupRequest::findOrFail($id);
 
         try {
             DB::transaction(function () use ($pickup) {
-                $pickup->update(['status' => 'collected', 'collected_at' => now()]);
-                $pickup->kit->updateStatus('sample_collected');
+                $pickup->update([
+                    'status' => 'collected', 
+                    'collected_at' => now()
+                ]);
+                
+                if ($pickup->kit) {
+                    $pickup->kit->updateStatus('sample_collected');
+                }
             });
 
-            return $this->responseHandler($request, 'Sample collection confirmed.');
+            return redirect()->back()->with('success', 'Sample collection confirmed.');
 
-        } catch (\InvalidArgumentException $e) {
-            return $this->responseHandler($request, $e->getMessage(), null, false, 422);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
@@ -364,25 +397,35 @@ class KitController extends Controller
     public function markPickupDeliveredToLab(Request $request, $id)
     {
         if (!$this->checkIsAdminOrLab($request->user())) {
-            return $this->responseHandler($request, 'Unauthorized', null, false, 403);
+            return redirect()->back()->with('error', 'Unauthorized access.');
         }
 
-        $pickup = KitPickup::with('kit')->findOrFail($id);
+        $pickup = PickupRequest::find($id);
+
+        if (!$pickup) {
+            return redirect()->back()->with('error', 'Pickup request not found with ID: ' . $id);
+        }
 
         if ($pickup->status !== 'collected') {
-            return $this->responseHandler($request, 'Sample must be marked as collected first.', null, false, 422);
+            return redirect()->back()->with('error', 'Sample must be marked as collected first.');
         }
 
         try {
             DB::transaction(function () use ($pickup) {
-                $pickup->update(['status' => 'delivered_to_lab', 'delivered_to_lab_at' => now()]);
-                $pickup->kit->updateStatus('received_at_lab');
+                $pickup->update([
+                    'status' => 'delivered_to_lab', 
+                    'delivered_to_lab_at' => now()
+                ]);
+
+                if ($pickup->kit) {
+                    $pickup->kit->updateStatus('received_at_lab');
+                }
             });
 
-            return $this->responseHandler($request, 'Sample marked as delivered to lab.');
+            return redirect()->back()->with('success', 'Sample marked as delivered to lab.');
 
-        } catch (\InvalidArgumentException $e) {
-            return $this->responseHandler($request, $e->getMessage(), null, false, 422);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
@@ -434,7 +477,10 @@ class KitController extends Controller
             return $this->responseHandler($request, 'Kit not found', null, false, 404);
         }
 
-        if (Auth::user()->role !== 'admin' && $kit->user_id !== auth()->id()) {
+        // Use the same authorization helper as the rest of the controller
+        // instead of a raw ->role check, which may not exist depending on
+        // how roles are implemented (Spatie hasRole(), custom roles(), etc.)
+        if (!$this->checkIsAdminOrLab($request->user()) && $kit->user_id !== auth()->id()) {
             return $this->responseHandler($request, 'Unauthorized', null, false, 403);
         }
 
@@ -443,10 +489,21 @@ class KitController extends Controller
         return $this->responseHandler($request, 'Kit deleted successfully');
     }
 
+    /**
+     * Returns a user's activatable kits (used e.g. by a biomarker-report
+     * creation form). Restricted so a caller can only fetch their own kits
+     * unless they are admin/lab.
+     */
     public function getUserKits(Request $request)
     {
-        $userId = $request->user_id;
-        $kits = Kit::where('user_id', $userId)
+        $requestedUserId = $request->user_id;
+        $authUserId = auth()->id();
+
+        if ((int) $requestedUserId !== (int) $authUserId && !$this->checkIsAdminOrLab($request->user())) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 403);
+        }
+
+        $kits = Kit::where('user_id', $requestedUserId)
             ->where('status', 'activated')
             ->whereDoesntHave('biomarkerReports')
             ->get(['id', 'activation_code', 'inv_code']);
@@ -515,8 +572,7 @@ class KitController extends Controller
 
         try {
             $kit->updateStatus('results_ready');
-            
-            // Notify user
+
             Notification::create([
                 'user_id' => $kit->user_id,
                 'type'    => 'kit_status',

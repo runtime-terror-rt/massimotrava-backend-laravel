@@ -48,7 +48,8 @@
             <table class="table align-middle mb-0">
                 <thead>
                     <tr>
-                        <th>Kit Code</th>
+                        <th>Activation Code</th>
+                        <th>Invoice Code</th>
                         <th>Status</th>
                         <th>Courier</th>
                         <th>Tracking No.</th>
@@ -61,14 +62,16 @@
                 <tbody>
                     @forelse($subscription->kits as $kit)
                         <tr>
-                            <td class="fw-semibold">{{ $kit->kit_code }}</td>
+                            <td class="fw-semibold">{{ $kit->activation_code }}</td>
+                            <td><code>{{ $kit->inv_code ?? '-' }}</code></td>
                             <td>
                                 @php
                                     $badgeMap = [
-                                        'requested' => 'secondary', 'processing' => 'warning', 'shipped' => 'primary',
+                                        'processing' => 'warning', 'shipped' => 'primary',
                                         'delivered' => 'info', 'activated' => 'success',
                                         'pickup_scheduled' => 'warning', 'pickup_assigned' => 'primary',
-                                        'sample_collected' => 'info', 'received_at_lab' => 'success',
+                                        'sample_collected' => 'info', 'received_at_lab' => 'secondary',
+                                        'processing_at_lab' => 'secondary', 'results_ready' => 'success',
                                         'completed' => 'dark', 'cancelled' => 'danger',
                                     ];
                                 @endphp
@@ -82,21 +85,31 @@
                             <td>{{ optional($kit->delivered_at)->format('d M Y') ?? '-' }}</td>
                             <td>{{ optional($kit->activated_at)->format('d M Y') ?? '-' }}</td>
                             <td class="text-end">
-                                <button type="button" class="btn btn-sm btn-outline-primary"
-                                        data-bs-toggle="modal" data-bs-target="#statusModal{{ $kit->id }}">
-                                    <i class="fa-solid fa-pen"></i> স্ট্যাটাস
-                                </button>
+                                {{-- Only dispatch-side statuses are editable here.
+                                     "activated" is set exclusively via the user's
+                                     activateKit() flow, which validates ownership
+                                     and generates inv_code — it must not be
+                                     settable from this generic status dropdown. --}}
+                                @if(!in_array($kit->status, ['activated', 'completed', 'cancelled']))
+                                    <button type="button" class="btn btn-sm btn-outline-primary"
+                                            data-bs-toggle="modal" data-bs-target="#statusModal{{ $kit->id }}">
+                                        <i class="fa-solid fa-pen"></i> স্ট্যাটাস
+                                    </button>
+                                @else
+                                    <span class="text-muted" style="font-size:12px;">-</span>
+                                @endif
                             </td>
                         </tr>
 
+                        @if(!in_array($kit->status, ['activated', 'completed', 'cancelled']))
                         {{-- Status Update Modal --}}
                         <div class="modal fade" id="statusModal{{ $kit->id }}" tabindex="-1">
                             <div class="modal-dialog">
                                 <div class="modal-content">
-                                    <form method="POST" action="{{ route('admin.kits.status', $kit->id) }}">
+                                    <form method="POST" action="{{ route('admin.kits.updateDispatchStatus', $kit->id) }}">
                                         @csrf @method('PATCH')
                                         <div class="modal-header">
-                                            <h5 class="modal-title">{{ $kit->kit_code }} — স্ট্যাটাস আপডেট</h5>
+                                            <h5 class="modal-title">{{ $kit->activation_code }} — স্ট্যাটাস আপডেট</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div class="modal-body">
@@ -106,9 +119,11 @@
                                                     <option value="processing" {{ $kit->status=='processing'?'selected':'' }}>Processing</option>
                                                     <option value="shipped" {{ $kit->status=='shipped'?'selected':'' }}>Shipped</option>
                                                     <option value="delivered" {{ $kit->status=='delivered'?'selected':'' }}>Delivered</option>
-                                                    <option value="activated" {{ $kit->status=='activated'?'selected':'' }}>Activated</option>
                                                     <option value="cancelled" {{ $kit->status=='cancelled'?'selected':'' }}>Cancelled</option>
                                                 </select>
+                                                <div class="form-text">
+                                                    "Activated" is set automatically when the user scans/enters the code — not selectable here.
+                                                </div>
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label">Courier Name</label>
@@ -127,25 +142,33 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
                     @empty
-                        <tr><td colspan="8" class="text-center text-muted py-4">এখনো কোনো কিট যোগ করা হয়নি।</td></tr>
+                        <tr><td colspan="9" class="text-center text-muted py-4"></td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
     </div>
 
-    {{-- Add Kit Modal --}}
+    {{-- Add Kit Modal — dispatches a kit against THIS subscription --}}
     <div class="modal fade" id="addKitModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form method="POST" action="{{ route('admin.kits.store', $subscription->id) }}">
+                <form method="POST" action="{{ route('admin.kits.dispatch') }}">
                     @csrf
+                    <input type="hidden" name="user_subscription_id" value="{{ $subscription->id }}">
                     <div class="modal-header">
-                        <h5 class="modal-title">নতুন কিট যোগ করুন</h5>
+                        <h5 class="modal-title">+ Add New Kit</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Activation Code <span class="text-danger">*</span></label>
+                            <input type="text" name="activation_code" class="form-control" required
+                                   placeholder="Scan or type the code printed on the kit box">
+                            <div class="form-text">Must match the manufacturer QR/code on the physical box exactly.</div>
+                        </div>
                         <div class="mb-3">
                             <label class="form-label">Courier Name</label>
                             <input type="text" name="courier_name" class="form-control">
@@ -156,8 +179,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">বাতিল</button>
-                        <button type="submit" class="btn btn-primary">যোগ করুন</button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">+ Add</button>
                     </div>
                 </form>
             </div>

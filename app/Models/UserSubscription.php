@@ -38,4 +38,12 @@ class UserSubscription extends Model
     {
         return $this->hasMany(Kit::class, 'user_subscription_id');
     }
+
+    public function remainingKits(): ?int
+    {
+        $limit = $this->plan->kit_limit ?? null;
+        if (is_null($limit)) return null;
+        $used = $this->kits()->where('status', '!=', 'cancelled')->count();
+        return max(0, $limit - $used);
+    }
 }

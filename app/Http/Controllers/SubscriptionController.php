@@ -267,4 +267,21 @@ class SubscriptionController extends Controller
             Log::info('[STRIPE WEBHOOK] Subscription ' . $stripeSubId . ' status updated to ' . $mappedStatus);
         }
     }
+
+    public function mySubscription()
+    {
+        $user = auth()->user();
+
+        $activeSubscription = UserSubscription::with('plan')
+            ->where('user_id', $user->id)
+            ->where('status', 'active')
+            ->latest()
+            ->first();
+
+        $payments = Payment::where('user_id', $user->id)
+            ->latest()
+            ->paginate(10);
+
+        return view('user.subscription.index', compact('activeSubscription', 'payments'));
+    }
 }

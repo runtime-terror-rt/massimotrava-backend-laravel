@@ -2,45 +2,55 @@
 namespace App\Http\Controllers;
 
 use App\Models\PickupRequest;
+use App\Models\Kit;
 use Illuminate\Http\Request;
 
 class PickupRequestController extends Controller
 {
-    public function index(Request $request)
+    public function adminIndex(Request $request)
     {
-        $query = PickupRequest::where('user_id', auth()->id())->latest();
-        if ($request->status) $query->where('status', $request->status);
+        $query = PickupRequest::with(['user'])->latest();
 
-        $pickupRequests = $query->get();
-        $stats = [
-            'total'     => PickupRequest::where('user_id', auth()->id())->count(),
-            'pending'   => PickupRequest::where('user_id', auth()->id())->where('status','pending')->count(),
-            'scheduled' => PickupRequest::where('user_id', auth()->id())->where('status','scheduled')->count(),
-            'collected' => PickupRequest::where('user_id', auth()->id())->where('status','collected')->count(),
-        ];
-        return view('user.pickup.index', compact('pickupRequests','stats'));
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $pickups = $query->paginate(10);
+
+        return view('admin.pickup.index', compact('pickups'));
     }
-
     public function store(Request $request)
     {
         $request->validate([
-            'kit_name'    => 'required|string|max:100',
+            'kit_id'      => 'required|integer|exists:kits,id',
             'pickup_date' => 'required|date|after:today',
             'time_slot'   => 'required|string|max:50',
             'address'     => 'required|string|max:255',
             'notes'       => 'nullable|string|max:500',
         ]);
 
-        $icons = [
-            'Longevity Panel' => '🧬', 'Cardio Panel' => '🫀',
-            'Vitamin Panel' => '☀️', 'Hormone Panel' => '⚗️',
-            'Full Body Panel' => '🩺',
-        ];
+        $kit = Kit::where('id', $request->kit_id)
+            ->where('user_id', auth()->id())
+            ->where('status', 'activated')
+            ->first();
+
+        if (!$kit) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Invalid or unavailable kit selected.');
+        }
+
+        if ($kit->pickupRequest()->exists()) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'A pickup request already exists for this kit.');
+        }
 
         PickupRequest::create([
             'user_id'     => auth()->id(),
-            'kit_name'    => $request->kit_name,
-            'kit_icon'    => $icons[$request->kit_name] ?? '🧬',
+            'kit_id'      => $kit->id,
+            'kit_name'    => $kit->activation_code,
+            'kit_icon'    => '🧬',
             'pickup_date' => $request->pickup_date,
             'time_slot'   => $request->time_slot,
             'address'     => $request->address,
@@ -73,7 +83,7 @@ class PickupRequestController extends Controller
     public function cancel(int $id)
     {
         $req = PickupRequest::where('user_id', auth()->id())
-            ->whereIn('status', ['pending','scheduled'])
+            ->whereIn('status', ['pending', 'scheduled'])
             ->findOrFail($id);
         $req->update(['status' => 'cancelled', 'cancelled_at' => now()]);
 
@@ -87,6 +97,3 @@ class PickupRequestController extends Controller
         return view('user.pickup.pickup-detail', compact('req'));
     }
 }
-
-
-

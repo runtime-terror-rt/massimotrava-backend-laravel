@@ -21,6 +21,7 @@ class SubscriptionPlanSeeder extends Seeder
                 'name'          => 'Free',
                 'billing_cycle' => 'monthly',
                 'price'         => 0.00,
+                'kit_limit'     => 1,
                 'duration'      => 30,
                 'features'      => [
                     'kits_per_year'                => '1 Kit Per Year Included',
@@ -38,6 +39,7 @@ class SubscriptionPlanSeeder extends Seeder
                 'name'          => 'Basic',
                 'billing_cycle' => 'monthly',
                 'price'         => 19.00,
+                'kit_limit'     => 4,
                 'duration'      => 30,
                 'features'      => [
                     'kits_per_year'                => '4 Kits Per Year Included',

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->text('address');
             $table->text('notes')->nullable();
             $table->text('admin_notes')->nullable();
-            $table->enum('status', ['pending','scheduled','collected','cancelled'])->default('pending');
+            $table->enum('status', ['pending','scheduled','collected','cancelled', 'delivered_to_lab','failed',])->default('pending');
             $table->timestamp('collected_at')->nullable();
             $table->timestamp('cancelled_at')->nullable();
             $table->timestamps();
