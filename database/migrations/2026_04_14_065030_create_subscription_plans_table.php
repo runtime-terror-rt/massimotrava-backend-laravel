@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('stripe_price_id')->nullable();
             $table->string('stripe_product_id')->nullable();
             $table->decimal('price', 10, 2)->nullable();
-            $table->unsignedInteger('kit_limit')->default(1); // null = unlimited kits
+            $table->unsignedInteger('kit_limit')->nullable(); // null = unlimited kits
             $table->integer('duration')->nullable();
             $table->json('features')->nullable();
             $table->boolean('status')->default(true);

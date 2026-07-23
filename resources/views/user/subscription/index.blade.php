@@ -68,7 +68,7 @@
                             </div>
                             <h6 class="fw-bold text-white mb-2">{{ __('messages.no_active_subscription_found') }}</h6>
                             <p class="small mb-4 text-break" style="color: #9ca3af;">{{ __('messages.no_active_subscription_desc') }}</p>
-                            <a href="{{ route('subscription.plans') }}" class="btn btn-primary rounded-pill px-4 btn-sm fs-md-6">
+                            <a href="{{ route('home.index') }}#pricing" class="btn btn-primary rounded-pill px-4 btn-sm fs-md-6">
                                 {{ __('messages.choose_a_plan') }}
                             </a>
                         </div>
