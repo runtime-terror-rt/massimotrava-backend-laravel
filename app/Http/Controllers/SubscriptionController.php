@@ -186,19 +186,37 @@ class SubscriptionController extends Controller
             'payment_status' => 'succeeded',
             'payment_method' => 'card',
         ]);
-        $shipping = $session->shipping_details;
-        $phone = $session->customer_details->phone;
-        \App\Models\PickupRequest::create([
-            'user_id'     => $userId,
-            'kit_id'      => null,
-            'kit_name'    => $plan->name . ' Sample Kit',
-            'kit_icon'    => '🧬',
-            'pickup_date' => now()->addDays(2)->format('Y-m-d'),
-            'time_slot'   => '10:00 AM - 01:00 PM',
-            'address'     => $shipping->address->line1 . ', ' . $shipping->address->city,
-            'contact_phone' => $phone,
-            'status'      => 'pending',
-        ]);
+        // Safe Extraction for Shipping & Phone
+        $shipping = $session->shipping_details ?? null;
+        $customerDetails = $session->customer_details ?? null;
+
+        $line1 = $shipping?->address?->line1 ?? '';
+        $city  = $shipping?->address?->city ?? '';
+        $fullAddress = trim($line1 . ($city ? ', ' . $city : ''));
+
+        if (empty($fullAddress)) {
+            $fullAddress = 'Address not provided in checkout';
+        }
+
+        $phone = $customerDetails?->phone ?? null;
+
+        // Create Pickup Request inside try-catch to avoid breaking the whole webhook flow
+        try {
+            $pickup = \App\Models\PickupRequest::create([
+                'user_id'       => $userId,
+                'kit_id'        => null,
+                'kit_name'      => $plan->name . ' Sample Kit',
+                'kit_icon'      => '🧬',
+                'pickup_date'   => now()->addDays(2)->format('Y-m-d'),
+                'address'       => $fullAddress,
+                'contact_phone' => $phone,
+                'status'        => 'pending',
+            ]);
+
+            Log::info('[STRIPE WEBHOOK] PickupRequest created successfully. ID: ' . $pickup->id);
+        } catch (\Exception $e) {
+            Log::error('[STRIPE WEBHOOK] PickupRequest Creation Failed: ' . $e->getMessage());
+        }
 
         Log::info('[STRIPE WEBHOOK] Subscription created for user ' . $userId);
     }
