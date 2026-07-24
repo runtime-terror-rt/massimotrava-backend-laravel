@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\BiomarkerReport;
 use App\Models\Lab;
+use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -33,9 +34,12 @@ class DashboardController extends Controller
     {
         $totalUsers = User::count();
         $totalLabs = Lab::count();
-        $totalGeneratedReports = BiomarkerReport::count();
         
-        $totalTransactions = '$0'; 
+        $totalGeneratedReports = BiomarkerReport::distinct('inv_code')->count('inv_code');
+
+        $totalAmount = Payment::where('payment_status', 'succeeded')->sum('amount');
+        
+        $totalTransactions = '$' . number_format($totalAmount, 2);
 
         $recentReports = BiomarkerReport::with(['user', 'kit'])
             ->latest()
