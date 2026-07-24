@@ -104,7 +104,7 @@ class SubscriptionPlanSeeder extends Seeder
                 $price = $stripe->prices->create([
                     'product'     => $product->id,
                     'unit_amount' => (int) round($planData['price'] * 100),
-                    'currency'    => 'usd',
+                    'currency'    => 'eur',
                     'recurring'   => [
                         'interval' => $planData['billing_cycle'] === 'annual' ? 'year' : 'month',
                     ],

@@ -70,7 +70,7 @@ class SubscriptionPlanController extends Controller
                 $price = $this->stripe->prices->create([
                     'product'     => $product->id,
                     'unit_amount' => (int) round($validated['price'] * 100),
-                    'currency'    => 'usd',
+                    'currency'    => 'eur',
                     'recurring'   => [
                         'interval' => $validated['billing_cycle'] === 'annual' ? 'year' : 'month',
                     ],
@@ -157,7 +157,7 @@ class SubscriptionPlanController extends Controller
                     $newStripePrice = $this->stripe->prices->create([
                         'product'     => $stripeProductId,
                         'unit_amount' => (int) round($newPrice * 100),
-                        'currency'    => 'usd',
+                        'currency'    => 'eur',
                         'recurring'   => [
                             'interval' => $validated['billing_cycle'] === 'annual' ? 'year' : 'month',
                         ],
