@@ -186,6 +186,7 @@ class SubscriptionController extends Controller
             'payment_status' => 'succeeded',
             'payment_method' => 'card',
         ]);
+
         // Safe Extraction for Shipping & Phone
         $shipping = $session->shipping_details ?? null;
         $customerDetails = $session->customer_details ?? null;
@@ -200,7 +201,7 @@ class SubscriptionController extends Controller
 
         $phone = $customerDetails?->phone ?? null;
 
-        // Create Pickup Request inside try-catch to avoid breaking the whole webhook flow
+        // Create Pickup Request
         try {
             $pickup = \App\Models\PickupRequest::create([
                 'user_id'       => $userId,
@@ -208,13 +209,14 @@ class SubscriptionController extends Controller
                 'kit_name'      => $plan->name . ' Sample Kit',
                 'kit_icon'      => '🧬',
                 'pickup_date'   => now()->addDays(2)->format('Y-m-d'),
+                'time_slot'     => '10:00 AM - 01:00 PM',
                 'address'       => $fullAddress,
                 'contact_phone' => $phone,
                 'status'        => 'pending',
             ]);
 
             Log::info('[STRIPE WEBHOOK] PickupRequest created successfully. ID: ' . $pickup->id);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('[STRIPE WEBHOOK] PickupRequest Creation Failed: ' . $e->getMessage());
         }
 
