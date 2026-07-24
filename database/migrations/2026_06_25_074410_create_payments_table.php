@@ -18,7 +18,7 @@ return new class extends Migration
                 $table->foreignId('user_subscription_id')->nullable()->constrained()->nullOnDelete();
                 $table->string('stripe_charge_id')->nullable();
                 $table->decimal('amount', 10, 2)->default(0);
-                $table->string('currency', 3)->default('USD');
+                $table->string('currency', 3)->default('eur');
                 $table->enum('payment_status', ['pending', 'succeeded', 'failed', 'refunded'])->default('pending');
                 $table->string('payment_method')->nullable();
                 $table->timestamps();

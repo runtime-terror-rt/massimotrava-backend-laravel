@@ -80,7 +80,7 @@
 <div class="pd">
 
     {{-- Back --}}
-    <a href="{{ route('admin.pickup.index') }}" class="pd-back">
+    <a href="{{ route('admin.pick-up.index') }}" class="pd-back">
         <i class="fa-solid fa-arrow-left"></i> Back to All Requests
     </a>
 

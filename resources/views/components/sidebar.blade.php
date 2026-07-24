@@ -160,7 +160,7 @@
       @endcan
 
       {{-- Admin Pickup Requests --}}
-      <a href="{{ Route::has('admin.pickup.index') ? route('admin.pickup.index') : '#' }}"
+      <a href="{{ Route::has('admin.pick-up.index') ? route('admin.pick-up.index') : '#' }}"
          class="nav-item {{ request()->routeIs('admin.pickup*') ? 'active' : '' }}"
          data-tooltip="{{ __('messages.pickup_requests') }}">
         <i class="fa-solid fa-truck-ramp-box"></i>
