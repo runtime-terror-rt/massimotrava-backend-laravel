@@ -26,6 +26,23 @@ class SubscriptionController extends Controller
             return redirect()->back()->with('error', 'Stripe Price ID is missing in your database for this plan.');
         }
 
+        // $stripeAllowedCountries = [
+        //     'AC', 'AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 
+        //     'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 
+        //     'BV', 'BW', 'BY', 'BZ', 'CA', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CV', 
+        //     'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 
+        //     'FI', 'FJ', 'FK', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 
+        //     'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 
+        //     'IO', 'IQ', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KR', 'KW', 'KY', 
+        //     'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 
+        //     'MG', 'MK', 'ML', 'MM', 'MN', 'MO', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 
+        //     'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 
+        //     'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 
+        //     'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SZ', 
+        //     'TA', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 
+        //     'UA', 'UG', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'XK', 'YE', 'YT', 
+        //     'ZA', 'ZM', 'ZW'
+        // ];
         try {
             \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
 
@@ -40,6 +57,10 @@ class SubscriptionController extends Controller
                     'quantity' => 1,
                 ]],
                 'mode' => $mode,
+                'phone_number_collection' => ['enabled' => true],
+                'shipping_address_collection' => [
+                    'allowed_countries' => ['US', 'DE', 'IT'], // USA, Germany, Italy
+                ],
                 'success_url' => route('user.subscription.success') . '?session_id={CHECKOUT_SESSION_ID}',
                 'cancel_url' => route('user.subscription.cancel'),
                 'customer_email' => $user->email,
@@ -164,6 +185,19 @@ class SubscriptionController extends Controller
             'currency' => strtoupper($session->currency),
             'payment_status' => 'succeeded',
             'payment_method' => 'card',
+        ]);
+        $shipping = $session->shipping_details;
+        $phone = $session->customer_details->phone;
+        \App\Models\PickupRequest::create([
+            'user_id'     => $userId,
+            'kit_id'      => null,
+            'kit_name'    => $plan->name . ' Sample Kit',
+            'kit_icon'    => '🧬',
+            'pickup_date' => now()->addDays(2)->format('Y-m-d'),
+            'time_slot'   => '10:00 AM - 01:00 PM',
+            'address'     => $shipping->address->line1 . ', ' . $shipping->address->city,
+            'contact_phone' => $phone,
+            'status'      => 'pending',
         ]);
 
         Log::info('[STRIPE WEBHOOK] Subscription created for user ' . $userId);
