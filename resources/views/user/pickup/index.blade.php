@@ -307,7 +307,7 @@
                     @endforelse
                 </select>
                 @if($activatedKits->isEmpty())
-                    <small class="text-muted d-block mt-1">
+                    <small class="d-block mt-1">
                         You have no activated kits yet. Activate a kit first before scheduling a pickup.
                     </small>
                 @endif

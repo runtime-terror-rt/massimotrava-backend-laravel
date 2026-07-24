@@ -300,31 +300,27 @@ class KitController extends Controller
      * [ADMIN] List of pickup requests.
      */
     public function pickupIndex(Request $request)
-{
-    $user = $request->user();
+    {
+        $user = $request->user();
+        
+        if (!$this->checkIsAdminOrLab($user)) {
+            abort(403);
+        }
+        $query = PickupRequest::with(['user']);
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $pickups = $query->latest()->paginate(15);
+
+        if ($request->expectsJson()) {
+            return response()->json(['status' => 'success', 'data' => $pickups]);
+        }
+
+        return view('admin.pickups.index', compact('pickups'));
+    }
     
-    if (!$this->checkIsAdminOrLab($user)) {
-        abort(403);
-    }
-
-    // ১. সঠিক Model "PickupRequest" ব্যবহার করুন (KitPickup এর বদলে)
-    // ২. Direct user relationship eager-load করুন
-    $query = PickupRequest::with(['user']);
-
-    // Status filter
-    if ($request->filled('status')) {
-        $query->where('status', $request->status);
-    }
-
-    // Pagination সহ fetch
-    $pickups = $query->latest()->paginate(15);
-
-    if ($request->expectsJson()) {
-        return response()->json(['status' => 'success', 'data' => $pickups]);
-    }
-
-    return view('admin.pickups.index', compact('pickups'));
-}
     /**
      * [ADMIN] Assign a courier to a pickup request.
      */
@@ -493,7 +489,8 @@ class KitController extends Controller
      * Returns a user's activatable kits (used e.g. by a biomarker-report
      * creation form). Restricted so a caller can only fetch their own kits
      * unless they are admin/lab.
-     */
+    */
+
     public function getUserKits(Request $request)
     {
         $requestedUserId = $request->user_id;

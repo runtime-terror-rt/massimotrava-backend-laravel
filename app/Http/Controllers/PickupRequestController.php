@@ -7,8 +7,10 @@ use Illuminate\Http\Request;
 
 class PickupRequestController extends Controller
 {
-    public function adminIndex(Request $request)
+    public function index(Request $request)
     {
+        $user = auth()->user();
+
         $query = PickupRequest::with(['user'])->latest();
 
         if ($request->filled('status')) {
@@ -17,7 +19,11 @@ class PickupRequestController extends Controller
 
         $pickups = $query->paginate(10);
 
-        return view('admin.pickup.index', compact('pickups'));
+        $activatedKits = Kit::where('user_id', $user->id)
+            ->where('status', 'activated') 
+            ->get();
+
+        return view('user.pickup.index', compact('pickups', 'activatedKits'));
     }
     public function store(Request $request)
     {
