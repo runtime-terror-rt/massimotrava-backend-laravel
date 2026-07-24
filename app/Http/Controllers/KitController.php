@@ -102,10 +102,12 @@ class KitController extends Controller
         }
 
         try {
+            $invCode = $kit->inv_code ?? 'INV-' . strtoupper(Str::random(10));
             $kit = Kit::create([
                 'user_id'              => $subscription->user_id,
                 'user_subscription_id' => $subscription->id,
                 'added_by_admin_id'    => $user->id,
+                'inv_code'             => $invCode,
                 'activation_code'      => $request->activation_code,
                 'status'               => 'processing',
                 'courier_name'         => $request->courier_name,
