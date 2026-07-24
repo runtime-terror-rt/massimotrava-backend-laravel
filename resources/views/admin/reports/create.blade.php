@@ -4,7 +4,6 @@
 @push('styles')
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <style>
-    /* Select2 থিম অ্যাডাপ্টেশন */
     .select2-container--default .select2-selection--single {
         background-color: var(--surface-input) !important;
         border: 1px solid var(--border) !important;
@@ -41,7 +40,6 @@
         color: var(--text-main) !important;
     }
 
-    /* গ্লোবাল ফর্ম ও বোতাম ট্রানজিশন ইফেক্ট */
     .report-container {
         transition: background-color 0.3s ease, color 0.3s ease;
     }
@@ -156,23 +154,41 @@
             @endforeach
         `;
 
-        $('#user_id_select').on('change', function() {
+        $('#user_id_select').on('change select2:select', function() {
             let userId = $(this).val();
             let $kitSelect = $('#kit_id_select');
+            
             $kitSelect.html(`<option value="">${localeMatrix.searchingKits}</option>`);
+
             if(userId) {
-                $.get("{{ route('admin.get-user-kits') }}", { user_id: userId }, function(data) {
-                    $kitSelect.empty().append(`<option value="">-- ${localeMatrix.selectKitDefault} --</option>`);
-                    data.forEach(kit => {
-                        $kitSelect.append(`<option value="${kit.id}">${kit.activation_code} [${kit.inv_code}]</option>`);
+                $.get("{{ route('admin.get-user-kits') }}", { user_id: userId })
+                    .done(function(response) {
+                        $kitSelect.empty().append(`<option value="">-- ${localeMatrix.selectKitDefault} --</option>`);
+                        
+                        let kits = Array.isArray(response) ? response : (response.data || []);
+
+                        if (kits.length > 0) {
+                            kits.forEach(kit => {
+                                let invText = kit.inv_code ? ` [${kit.inv_code}]` : '';
+                                let codeText = kit.activation_code ? kit.activation_code : `Kit #${kit.id}`;
+                                $kitSelect.append(`<option value="${kit.id}">${codeText}${invText}</option>`);
+                            });
+                        } else {
+                            $kitSelect.html('<option value="">-- No Eligible Kits Found --</option>');
+                        }
+                    })
+                    .fail(function(xhr) {
+                        console.error("Kit fetch error:", xhr);
+                        if (xhr.status === 403) {
+                            alert('Unauthorized access to fetch kits!');
+                        }
+                        $kitSelect.html('<option value="">-- Error Loading Kits --</option>');
                     });
-                });
             } else {
                 $kitSelect.html(`<option value="">-- {{ __('messages.opt_first_select_user') }} --</option>`);
             }
         });
 
-        // Add Category Block Layer (ইনলাইন কালার সরিয়ে ভ্যারিয়েবল দেওয়া হয়েছে)
         $('#add-category-btn').on('click', function() {
             let categoryHtml = `
             <div class="category-block" data-cat-id="${catIdx}" style="border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-bottom: 25px; position: relative;">
@@ -230,7 +246,6 @@
             addSubRow(currentCatIdx, $subContainer, data);
         });
 
-        // Dynamic Subcategory Row (ইনপুট এবং সিলেক্টে সিএসএস ভ্যারিয়েবল পুশ করা হয়েছে)
         function addSubRow(cIdx, container, subData) {
             let subIdx = container.find('.subcategory-row').length;
             let options = subData.map(sub => `<option value="${sub.id}">${sub.title} (${sub.unit})</option>`).join('');

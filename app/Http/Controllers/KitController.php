@@ -496,18 +496,18 @@ class KitController extends Controller
     public function getUserKits(Request $request)
     {
         $requestedUserId = $request->user_id;
-        $authUserId = auth()->id();
 
-        if ((int) $requestedUserId !== (int) $authUserId && !$this->checkIsAdminOrLab($request->user())) {
+        if ((int) $requestedUserId !== (int) auth()->id() && !$this->checkIsAdminOrLab($request->user())) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 403);
         }
 
         $kits = Kit::where('user_id', $requestedUserId)
-            ->where('status', 'activated')
-            ->whereDoesntHave('biomarkerReports')
-            ->get(['id', 'activation_code', 'inv_code']);
+            ->get(['id', 'activation_code', 'inv_code', 'status']);
 
-        return response()->json($kits);
+        return response()->json([
+            'status' => 'success',
+            'data'   => $kits
+        ]);
     }
 
     public function getSubcategories(Request $request)

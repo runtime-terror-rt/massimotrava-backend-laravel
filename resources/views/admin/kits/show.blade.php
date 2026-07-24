@@ -6,7 +6,7 @@
 <div class="content-wrapper">
 
     <a href="{{ route('admin.kits.index') }}" class="btn btn-sm btn-light mb-3">
-        <i class="fa-solid fa-arrow-left"></i> ফিরে যান
+        <i class="fa-solid fa-arrow-left"></i> Back
     </a>
 
     @if(session('success'))
@@ -39,7 +39,7 @@
             <strong>Kit History</strong>
             @if($subscription->status === 'active')
                 <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addKitModal">
-                    <i class="fa-solid fa-plus"></i> নতুন কিট যোগ করুন
+                    <i class="fa-solid fa-plus"></i> + Add New Kit
                 </button>
             @endif
         </div>
@@ -93,7 +93,7 @@
                                 @if(!in_array($kit->status, ['activated', 'completed', 'cancelled']))
                                     <button type="button" class="btn btn-sm btn-outline-primary"
                                             data-bs-toggle="modal" data-bs-target="#statusModal{{ $kit->id }}">
-                                        <i class="fa-solid fa-pen"></i> স্ট্যাটাস
+                                        <i class="fa-solid fa-pen"></i> Status
                                     </button>
                                 @else
                                     <span class="text-muted" style="font-size:12px;">-</span>
@@ -109,7 +109,7 @@
                                     <form method="POST" action="{{ route('admin.kits.updateDispatchStatus', $kit->id) }}">
                                         @csrf @method('PATCH')
                                         <div class="modal-header">
-                                            <h5 class="modal-title">{{ $kit->activation_code }} — স্ট্যাটাস আপডেট</h5>
+                                            <h5 class="modal-title">{{ $kit->activation_code }} — Status Updata</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div class="modal-body">
@@ -135,8 +135,8 @@
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">বাতিল</button>
-                                            <button type="submit" class="btn btn-primary">আপডেট করুন</button>
+                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="submit" class="btn btn-primary">Update</button>
                                         </div>
                                     </form>
                                 </div>
