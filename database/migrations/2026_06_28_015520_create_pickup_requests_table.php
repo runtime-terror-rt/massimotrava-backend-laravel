@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('pickup_requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('kit_id')->nullable()->constrained('kits')->nullOnDelete();
+            $table->unsignedBigInteger('kit_id')->nullable();
             $table->string('kit_name');
             $table->string('kit_icon', 10)->default('🧬');
             $table->date('pickup_date')->nullable();
